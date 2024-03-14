@@ -1,8 +1,41 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+const schuss = localFont({
+  src: [
+    {
+      path: "../styles/fonts/schuss/SchussSerifPro-Regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../styles/fonts/schuss/SchussSerifPro-Italic.woff2",
+      weight: "400",
+      style: "italic",
+    },
+    {
+      path: "../styles/fonts/schuss/SchussSerifPro-Bold.woff2",
+      weight: "700",
+      style: "normal",
+    },
+    {
+      path: "../styles/fonts/schuss/SchussSerifPro-BoldItalic.woff2",
+      weight: "700",
+      style: "italic",
+    },
+    {
+      path: "../styles/fonts/schuss/SchussSerifPro-Light.woff2",
+      weight: "100",
+      style: "normal",
+    },
+    {
+      path: "../styles/fonts/schuss/SchussSerifPro-LightItalic.woff2",
+      weight: "100",
+      style: "italic",
+    },
+  ],
+})
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -16,7 +49,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={schuss.className}>{children}</body>
     </html>
   );
 }
