@@ -18,7 +18,7 @@
 			</picture>
 		</span>
 
-		to your new<br />SvelteKit app
+		to your new<br /><span class="text-3xl text-blue-700">SvelteKit</span> app
 	</h1>
 
 	<h2>
@@ -28,7 +28,7 @@
 	<Counter />
 </section>
 
-<style>
+<style lang="postcss">
 	section {
 		display: flex;
 		flex-direction: column;
