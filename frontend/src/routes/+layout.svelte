@@ -23,7 +23,7 @@
   >
     <button
       on:click={goTop}
-      class="ml-auto rounded-full bg-white text-primary px-3 sm:px-4 hover:bg-secondary hover:text-white cursor-pointer aspect-square grid place-items-center"
+      class="ml-auto rounded-full bg-secondary text-secondary-foreground px-3 sm:px-4 hover:bg-secondary hover:text-white cursor-pointer aspect-square grid place-items-center"
     >
       <i class="fa-solid fa-arrow-up" />
     </button>
