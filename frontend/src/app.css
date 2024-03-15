@@ -16,6 +16,13 @@
     src: local('Monarda'), url('https://fonts.cdnfonts.com/s/38697/Monarda.woff') format('woff');
 }
 
+@font-face {
+    font-family: 'Fira Sans';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Fira Sans'), url('https://fonts.cdnfonts.com/s/15889/FiraSans-Regular.woff') format('woff');
+}
+
 html {
     scroll-behavior: smooth;
 }
@@ -27,4 +34,8 @@ html {
 
 .monarda {
     font-family: 'Monarda', sans-serif;
+}
+
+.fira-sans {
+    font-family: 'Fira Sans', sans-serif;
 }

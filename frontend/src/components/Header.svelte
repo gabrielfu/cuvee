@@ -6,10 +6,10 @@
     <div class="absolute left-1/2 transform -translate-x-1/2">
       <h1 class="monarda text-[3rem]">cuvée</h1>
     </div>
-    <div class="ml-auto pr-10 translate-y-1/3">
+    <div class="fira-sans ml-auto pr-10 translate-y-1/3">
       Register
     </div>
-    <div class="pr-10 translate-y-1/3">
+    <div class="fira-sans pr-10 translate-y-1/3">
       Sign in
     </div>
   </div>
