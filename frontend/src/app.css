@@ -82,7 +82,7 @@
   font-family: 'Schuss';
   font-style: normal;
   font-weight: 400;
-  src: url('../static/fonts/SchussSerifPro-Regular.woff2') format("woff2");
+  src: local('Schuss'), url('/fonts/SchussSerifPro-Regular.woff2') format("woff2");
 }
 
 @font-face {
