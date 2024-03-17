@@ -99,6 +99,13 @@
   src: local('Fira Sans'), url('https://fonts.cdnfonts.com/s/15889/FiraSans-Regular.woff') format('woff');
 }
 
+@font-face {
+  font-family: 'Fira Sans';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Fira Sans'), url('https://fonts.cdnfonts.com/s/15889/FiraSans-Light.woff') format('woff');
+}
+
 html {
   scroll-behavior: smooth;
 }
