@@ -71,9 +71,9 @@
 </script>
 
 <main>
-  <h1>Wine Cellar</h1>
+  <p class="font-bold text-2xl fira-sans px-2">MY CELLAR </p>
 
-  <div class="flex items-center space-x-2 my-4">
+  <div class="flex items-center space-x-2 my-4 px-2">
     <Switch id="detailed-view" bind:checked={detailedView} />
     <Label for="detailed-view">Purchase Details</Label>
   </div>
