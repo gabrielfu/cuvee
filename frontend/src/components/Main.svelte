@@ -65,8 +65,6 @@
     return { quantity: totalQuantity, price: totalPrice / totalQuantity };
   };
 
-  const aggregatedPurchases = wines.map((wine) => aggregatePurchase(wine.purchases));
-
   let detailedView = false;
 </script>
 
@@ -90,12 +88,13 @@
           <p class="mb-4">{wine.vintage}&#xff5c;{wine.region}&#xff5c;{wine.country}</p>
           <p class="text-sm mb-2">PURCHASES</p>
           {#if !detailedView}
+          {@const p = aggregatePurchase(wine.purchases)}
           <Card.Card class="w-1/4 mx-2 px-4 py-2">
             <p class="text-sm">
-              <i class="fa-solid fa-bottle-droplet text-sm" /> &nbsp;{aggregatedPurchases[i].quantity} bottle{aggregatedPurchases[i].quantity > 1 ? 's' : ''}
+              <i class="fa-solid fa-bottle-droplet text-sm" /> &nbsp;{p.quantity} bottle{p.quantity > 1 ? 's' : ''}
             </p>
             <p class="text-sm">
-              <i class="fa-solid fa-dollar-sign text-sm" /> &nbsp;HKD {aggregatedPurchases[i].price.toFixed(2)}
+              <i class="fa-solid fa-dollar-sign text-sm" /> &nbsp;HKD {p.price.toFixed(2)}
             </p>
           </Card.Card>
           {:else}
