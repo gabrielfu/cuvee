@@ -77,12 +77,25 @@
   }
 }
 
-
 @font-face {
   font-family: 'Schuss';
   font-style: normal;
   font-weight: 400;
   src: local('Schuss'), url('/fonts/SchussSerifPro-Regular.woff2') format("woff2");
+}
+
+@font-face {
+  font-family: 'Schuss';
+  font-style: normal;
+  font-weight: 500;
+  src: local('Schuss'), url('/fonts/SchussSerifPro-Medium.woff2') format("woff2");
+}
+
+@font-face {
+  font-family: 'Schuss';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Schuss'), url('/fonts/SchussSerifPro-Bold.woff2') format("woff2");
 }
 
 @font-face {
