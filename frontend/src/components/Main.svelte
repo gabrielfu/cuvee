@@ -13,6 +13,7 @@
   type Wine = {
     name: string;
     vintage: Vintage;
+    format: string;
     country: string;
     region: string;
     purchases: Purchase[];
@@ -22,6 +23,7 @@
     {
       name: "Château Lafite Rothschild",
       vintage: 2018,
+      format: "750ml",
       country: "France",
       region: "Bordeaux",
       purchases: [
@@ -31,6 +33,7 @@
     {
       name: "Albert Bichot Chassagne-Montrachet Blanc",
       vintage: 2019,
+      format: "750ml",
       country: "France",
       region: "Burgundy",
       purchases: [
@@ -44,6 +47,7 @@
     {
       name: "Louis Roederer",
       vintage: "NV",
+      format: "750ml",
       country: "France",
       region: "Champagne",
       purchases: [
@@ -79,35 +83,34 @@
   {#each wines as wine, i}
   <Card.Card class="bg-card text-card-foreground">
     <Card.Content>
-      <div class="grid grid-cols-[1fr,3fr] pt-4">
+      <div class="grid grid-cols-[1fr,3fr,2fr] pt-4">
         <img src={images[i]} alt={wine.name} width="224" />
         <div>
-          <Card.Title class="font-medium my-4">
-            {wine.name.toUpperCase()}
+          <Card.Title class="font-medium mt-4 mb-2">
+            {wine.name}
           </Card.Title>
-          <p class="mb-4">{wine.vintage}&#xff5c;{wine.region}&#xff5c;{wine.country}</p>
-          <p class="text-sm mb-2">PURCHASES</p>
+          <p class="text-sm text-muted-foreground mb-4">{wine.vintage}&#xff5c;{wine.format}&#xff5c;{wine.region}&#xff5c;{wine.country}</p>
           {#if !detailedView}
           {@const p = aggregatePurchase(wine.purchases)}
-          <Card.Card class="w-1/4 mx-2 px-4 py-2">
+          <Card.Card class="w-1/3 mx-2 px-4 py-2">
             <p class="text-sm">
               <i class="fa-solid fa-bottle-droplet text-sm" /> &nbsp;{p.quantity} bottle{p.quantity > 1 ? 's' : ''}
             </p>
             <p class="text-sm">
-              <i class="fa-solid fa-dollar-sign text-sm" /> &nbsp;HKD {p.price.toFixed(2)}
+              <i class="fa-solid fa-dollar-sign text-sm" /> &nbsp;{p.price.toFixed(2)}
             </p>
           </Card.Card>
           {:else}
           <Carousel.Root class="mx-12">
             <Carousel.Content>
-              {#each wine.purchases as p}
-              <Carousel.Item class="basis-1/4 pl-4">
+              {#each wine.purchases.sort().reverse() as p}
+              <Carousel.Item class="basis-1/3 pl-4">
                 <Card.Card class="px-4 py-2">
                   <p class="text-sm">
                     <i class="fa-solid fa-bottle-droplet text-sm" /> &nbsp;{p.quantity} bottle{p.quantity > 1 ? 's' : ''}
                   </p>
                   <p class="text-sm">
-                    <i class="fa-solid fa-dollar-sign text-sm" /> &nbsp;HKD {p.price}
+                    <i class="fa-solid fa-dollar-sign text-sm" /> &nbsp;{p.price}
                   </p>
                   <p class="text-sm">
                     <i class="fa-regular fa-calendar text-sm" /> &nbsp;{p.date.toISOString().slice(0, 10)}
@@ -120,6 +123,9 @@
             <Carousel.Next />
           </Carousel.Root>
           {/if}
+        </div>
+        <div>
+
         </div>
       </div>
     </Card.Content>
