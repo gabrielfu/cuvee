@@ -1,8 +1,10 @@
 <script lang="ts">
   import * as Card from "$lib/components/ui/card";
   import * as Carousel from "$lib/components/ui/carousel";
+  import { Input } from "$lib/components/ui/input";
   import { Label } from "$lib/components/ui/label";
   import { Switch } from "$lib/components/ui/switch";
+  import * as Select from "$lib/components/ui/select";
 
   type Vintage = number | "NV";
   type Purchase = {
@@ -70,14 +72,47 @@
   };
 
   let detailedView = false;
+
+  const sortBys = {
+    "default": "Default",
+    "name_asc": "Name (asc)",
+    "name_desc": "Name (desc)",
+    "vintage_asc": "Vintage (asc)",
+    "vintage_desc": "Vintage (desc)",
+    "price_asc": "Price (asc)",
+    "price_desc": "Price (desc)",
+    "newest": "Newest",
+    "oldest": "Oldest",
+  };
+  let sortBy = { value: "default", label: sortBys["default"] };
 </script>
 
 <main>
   <p class="fira-sans font-bold text-2xl px-2">MY CELLAR </p>
 
-  <div class="flex items-center space-x-2 my-4 px-2">
-    <Switch id="detailed-view" bind:checked={detailedView} />
-    <Label for="detailed-view">Purchase Details</Label>
+  <div class="flex items-center justify-between">
+
+    <Input class="max-w-sm h-[36px]" type="text" id="search" placeholder="Search" />
+
+    <div class="flex items-center space-x-2 my-4 px-2">
+      <Switch id="detailed-view" bind:checked={detailedView} />
+      <Label for="detailed-view" class="font-normal">Purchase Details</Label>
+    </div>
+
+    <div class="flex items-center space-x-2 my-4 px-2">
+      <Label class="font-normal pr-1">Sort By</Label>
+      <Select.Root selected={sortBy}>
+        <Select.Trigger class="w-[180px] h-[36px]">
+          <Select.Value class="text-sm" placeholder="" />
+        </Select.Trigger>
+        <Select.Content>
+          {#each Object.entries(sortBys) as [value, label]}
+          <Select.Item class="text-sm" value={value}>{label}</Select.Item>
+          {/each}
+        </Select.Content>
+      </Select.Root>
+    </div>
+
   </div>
 
   {#each wines as wine, i}
