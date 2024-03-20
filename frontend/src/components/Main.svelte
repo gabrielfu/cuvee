@@ -95,8 +95,8 @@
     <Input class="max-w-sm h-[36px]" type="text" id="search" placeholder="Search" />
 
     <div class="flex items-center space-x-2 my-4 px-2">
-      <Switch id="detailed-view" bind:checked={detailedView} />
       <Label for="detailed-view" class="font-normal">Purchase Details</Label>
+      <Switch id="detailed-view" bind:checked={detailedView} />
     </div>
 
     <div class="flex items-center space-x-2 my-4 px-2">
@@ -118,7 +118,7 @@
   {#each wines as wine, i}
   <Card.Card class="bg-card text-card-foreground">
     <Card.Content>
-      <div class="grid grid-cols-[1fr,3fr,2fr] pt-4">
+      <div class="grid grid-cols-[minmax(224px,1fr),3fr,2fr] pt-4">
         <img src={images[i]} alt={wine.name} width="224" />
         <div>
           <Card.Title class="font-medium mt-4 mb-2">
