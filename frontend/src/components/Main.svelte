@@ -131,15 +131,15 @@
             </p>
           </Card.Card>
 
-          <Collapsible.Root class="pl-4">
+          <Collapsible.Root class="pl-4 pt-2">
             <Collapsible.Trigger class="text-sm text-muted-foreground">Expand purchases <i class="fa-solid fa-chevron-down text-sm" /></Collapsible.Trigger>
             <Collapsible.Content>
-              <Table.Root class="w-auto">
+              <Table.Root class="w-auto pt-2">
                 <Table.Header>
                   <Table.Row class="leading-none">
-                    <Table.Head class="h-auto py-1 text-sm"><i class="fa-solid fa-bottle-droplet text-sm" /></Table.Head>
-                    <Table.Head class="h-auto py-1 text-sm"><i class="fa-solid fa-dollar-sign text-sm" /></Table.Head>
-                    <Table.Head class="h-auto py-1 text-sm"><i class="fa-regular fa-calendar text-sm" /></Table.Head>
+                    <Table.Head class="h-auto py-1 text-sm text-muted-foreground"><i class="fa-solid fa-bottle-droplet text-sm" /></Table.Head>
+                    <Table.Head class="h-auto py-1 text-sm text-muted-foreground"><i class="fa-solid fa-dollar-sign text-sm" /></Table.Head>
+                    <Table.Head class="h-auto py-1 text-sm text-muted-foreground"><i class="fa-regular fa-calendar text-sm" /></Table.Head>
                   </Table.Row>
                 </Table.Header>
                 <Table.Body>
