@@ -75,7 +75,7 @@ func (r *WineRepository) Create(ctx context.Context, w *MongoWine) (string, erro
 	return w.ID.Hex(), nil
 }
 
-func (r *WineRepository) Update(id string, w *MongoWine) error {
+func (r *WineRepository) Update(ctx context.Context, id string, w *MongoWine) error {
 	objectId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return err
@@ -86,7 +86,7 @@ func (r *WineRepository) Update(id string, w *MongoWine) error {
 	return err
 }
 
-func (r *WineRepository) Delete(id string) error {
+func (r *WineRepository) Delete(ctx context.Context, id string) error {
 	objectId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return err
@@ -96,7 +96,7 @@ func (r *WineRepository) Delete(id string) error {
 	return err
 }
 
-func (r *WineRepository) ListPurchases(wineId string) ([]*MongoPurchase, error) {
+func (r *WineRepository) ListPurchases(ctx context.Context, wineId string) ([]*MongoPurchase, error) {
 	objectId, err := primitive.ObjectIDFromHex(wineId)
 	if err != nil {
 		return nil, err
@@ -113,13 +113,17 @@ func (r *WineRepository) ListPurchases(wineId string) ([]*MongoPurchase, error) 
 	return out, nil
 }
 
-func (r *WineRepository) GetPurchase(wineId, purchaseId string) (*MongoPurchase, error) {
-	objectId, err := primitive.ObjectIDFromHex(wineId)
+func (r *WineRepository) GetPurchase(ctx context.Context, wineId, purchaseId string) (*MongoPurchase, error) {
+	wineObjectId, err := primitive.ObjectIDFromHex(wineId)
+	if err != nil {
+		return nil, err
+	}
+	purchaseObjectId, err := primitive.ObjectIDFromHex(purchaseId)
 	if err != nil {
 		return nil, err
 	}
 	var purchase *MongoPurchase
-	filter := bson.D{{Key: "_id", Value: objectId}, {Key: "purchases._id", Value: purchaseId}}
+	filter := bson.D{{Key: "_id", Value: wineObjectId}, {Key: "purchases._id", Value: purchaseObjectId}}
 	res := r.collection.FindOne(context.Background(), filter)
 	if err := res.Decode(&purchase); err != nil {
 		return nil, err
@@ -127,7 +131,7 @@ func (r *WineRepository) GetPurchase(wineId, purchaseId string) (*MongoPurchase,
 	return purchase, nil
 }
 
-func (r *WineRepository) CreatePurchase(wineId string, p *MongoPurchase) (string, error) {
+func (r *WineRepository) CreatePurchase(ctx context.Context, wineId string, p *MongoPurchase) (string, error) {
 	objectId, err := primitive.ObjectIDFromHex(wineId)
 	if err != nil {
 		return "", err
@@ -141,7 +145,7 @@ func (r *WineRepository) CreatePurchase(wineId string, p *MongoPurchase) (string
 	return p.ID.Hex(), nil
 }
 
-func (r *WineRepository) UpdatePurchase(wineId, purchaseId string, p *MongoPurchase) error {
+func (r *WineRepository) UpdatePurchase(ctx context.Context, wineId, purchaseId string, p *MongoPurchase) error {
 	objectId, err := primitive.ObjectIDFromHex(wineId)
 	if err != nil {
 		return err
@@ -152,7 +156,7 @@ func (r *WineRepository) UpdatePurchase(wineId, purchaseId string, p *MongoPurch
 	return err
 }
 
-func (r *WineRepository) DeletePurchase(wineId, purchaseId string) error {
+func (r *WineRepository) DeletePurchase(ctx context.Context, wineId, purchaseId string) error {
 	objectId, err := primitive.ObjectIDFromHex(wineId)
 	if err != nil {
 		return err
