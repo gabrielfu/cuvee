@@ -279,10 +279,11 @@ func TestUpdatePurchase(t *testing.T) {
 
 	wine := mockWine()
 	purchase := mockPurchase()
-	out := createWine(t, collection, wine, purchase)
+	purchase2 := mockPurchase2()
+	out := createWine(t, collection, wine, purchase2)
 
-	newPurchase := mockPurchase2()
-	err := repo.UpdatePurchase(ctx, out.PurchaseIDs[0], newPurchase)
+	purchase.Price = 9999
+	err := repo.UpdatePurchase(ctx, out.PurchaseIDs[0], purchase)
 	if err != nil {
 		t.Fatalf("Update purchase failed: %s", err)
 	}
@@ -292,5 +293,5 @@ func TestUpdatePurchase(t *testing.T) {
 		t.Fatalf("Get purchase failed: %s", err)
 	}
 
-	assert.Equal(t, newPurchase.Quantity, get.Quantity)
+	assert.Equal(t, purchase.Price, get.Price)
 }
