@@ -10,20 +10,37 @@ import (
 )
 
 type MongoPurchase struct {
-	ID       primitive.ObjectID `bson:"_id"`
+	ID       primitive.ObjectID `bson:"_id,omitempty"`
 	Quantity int                `bson:"quantity"`
 	Price    float64            `bson:"price"`
 	Date     string             `bson:"date"`
 }
 
 type MongoWine struct {
-	ID        primitive.ObjectID `bson:"_id"`
+	ID        primitive.ObjectID `bson:"_id,omitempty"`
 	Name      string             `bson:"name"`
 	Vintage   string             `bson:"vintage"`
 	Format    string             `bson:"format"`
 	Country   string             `bson:"country"`
 	Region    string             `bson:"region"`
 	Purchases []MongoPurchase    `bson:"purchases"`
+}
+
+func (p *MongoPurchase) CopyWithNewID() *MongoPurchase {
+	return &MongoPurchase{
+		ID:       primitive.NewObjectID(),
+		Quantity: p.Quantity,
+		Price:    p.Price,
+		Date:     p.Date,
+	}
+}
+
+func (p *MongoPurchase) CopyWithoutID() *MongoPurchase {
+	return &MongoPurchase{
+		Quantity: p.Quantity,
+		Price:    p.Price,
+		Date:     p.Date,
+	}
 }
 
 // WineRepository implements WineRepository
@@ -69,11 +86,11 @@ func (r *WineRepository) Get(ctx context.Context, id string) (*MongoWine, error)
 }
 
 func (r *WineRepository) Create(ctx context.Context, w *MongoWine) (string, error) {
-	_, err := r.collection.InsertOne(ctx, w)
+	res, err := r.collection.InsertOne(ctx, w)
 	if err != nil {
 		return "", err
 	}
-	return w.ID.Hex(), nil
+	return res.InsertedID.(primitive.ObjectID).Hex(), nil
 }
 
 func (r *WineRepository) Update(ctx context.Context, id string, w *MongoWine) error {
@@ -114,17 +131,13 @@ func (r *WineRepository) ListPurchases(ctx context.Context, wineId string) ([]*M
 	return out, nil
 }
 
-func (r *WineRepository) GetPurchase(ctx context.Context, wineId, purchaseId string) (*MongoPurchase, error) {
-	wineObjectId, err := primitive.ObjectIDFromHex(wineId)
-	if err != nil {
-		return nil, err
-	}
+func (r *WineRepository) GetPurchase(ctx context.Context, purchaseId string) (*MongoPurchase, error) {
 	purchaseObjectId, err := primitive.ObjectIDFromHex(purchaseId)
 	if err != nil {
 		return nil, err
 	}
 	var wine *MongoWine
-	filter := bson.D{{Key: "_id", Value: wineObjectId}, {Key: "purchases._id", Value: purchaseObjectId}}
+	filter := bson.D{{Key: "purchases._id", Value: purchaseObjectId}}
 	res := r.collection.FindOne(context.Background(), filter)
 	if err := res.Decode(&wine); err != nil {
 		return nil, err
@@ -143,22 +156,31 @@ func (r *WineRepository) CreatePurchase(ctx context.Context, wineId string, p *M
 	if err != nil {
 		return "", err
 	}
+	p = p.CopyWithNewID()
 	filter := bson.D{{Key: "_id", Value: objectId}}
 	update := bson.D{{Key: "$push", Value: bson.D{{Key: "purchases", Value: p}}}}
 	_, err = r.collection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
 		return "", err
 	}
+	// retrieve last purchase id
 	return p.ID.Hex(), nil
 }
 
-func (r *WineRepository) UpdatePurchase(ctx context.Context, wineId, purchaseId string, p *MongoPurchase) error {
-	objectId, err := primitive.ObjectIDFromHex(wineId)
+func (r *WineRepository) UpdatePurchase(ctx context.Context, purchaseId string, p *MongoPurchase) error {
+	old, err := r.GetPurchase(ctx, purchaseId)
 	if err != nil {
 		return err
 	}
-	filter := bson.D{{Key: "_id", Value: objectId}, {Key: "purchases._id", Value: purchaseId}}
-	update := bson.D{{Key: "$set", Value: p}}
+
+	purchaseObjectId, err := primitive.ObjectIDFromHex(purchaseId)
+	if err != nil {
+		return err
+	}
+	filter := bson.D{{Key: "purchases._id", Value: purchaseObjectId}}
+	new := p.CopyWithoutID()
+	new.ID = old.ID
+	update := bson.D{{Key: "$set", Value: bson.M{"purchases.$": new}}}
 	_, err = r.collection.UpdateOne(context.Background(), filter, update)
 	return err
 }

@@ -57,18 +57,32 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
+func mustObjectId(id string) primitive.ObjectID {
+	objectId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		panic(err)
+	}
+	return objectId
+}
+
 func mockPurchase() *wines.MongoPurchase {
 	return &wines.MongoPurchase{
-		ID:       primitive.NewObjectID(),
 		Quantity: 1,
 		Price:    1000,
 		Date:     "2020-01-01",
 	}
 }
 
+func mockPurchase2() *wines.MongoPurchase {
+	return &wines.MongoPurchase{
+		Quantity: 2,
+		Price:    2000,
+		Date:     "2020-02-02",
+	}
+}
+
 func mockWine() *wines.MongoWine {
 	return &wines.MongoWine{
-		ID:        primitive.NewObjectID(),
 		Name:      "Chateau Margaux",
 		Vintage:   "2015",
 		Format:    "750ml",
@@ -78,25 +92,41 @@ func mockWine() *wines.MongoWine {
 	}
 }
 
-func createWine(t *testing.T, collection *mongo.Collection, wine *wines.MongoWine, purchases ...*wines.MongoPurchase) {
+type WinePurchaseIDs struct {
+	WineID      string
+	PurchaseIDs []string
+}
+
+func createWine(
+	t *testing.T,
+	collection *mongo.Collection,
+	wine *wines.MongoWine,
+	purchases ...*wines.MongoPurchase,
+) WinePurchaseIDs {
+	var out WinePurchaseIDs
+
 	ctx := context.Background()
-	_, err := collection.InsertOne(ctx, wine)
+	wineRes, err := collection.InsertOne(ctx, wine)
 	if err != nil {
 		t.Fatalf("Insert wine failed: %s", err)
 	}
+	out.WineID = wineRes.InsertedID.(primitive.ObjectID).Hex()
 
 	for _, purchase := range purchases {
-		filter := bson.M{"_id": wine.ID}
+		purchase = purchase.CopyWithNewID()
+		filter := bson.M{"_id": mustObjectId(out.WineID)}
 		update := bson.M{"$push": bson.M{"purchases": purchase}}
 		_, err := collection.UpdateOne(ctx, filter, update)
 		if err != nil {
 			t.Fatalf("Insert purchase failed: %s", err)
 		}
+		out.PurchaseIDs = append(out.PurchaseIDs, purchase.ID.Hex())
 	}
 
 	t.Cleanup(func() {
-		deleteWine(t, collection, wine.ID)
+		deleteWine(t, collection, mustObjectId(out.WineID))
 	})
+	return out
 }
 
 func deleteWine(t *testing.T, collection *mongo.Collection, id primitive.ObjectID) {
@@ -116,10 +146,9 @@ func TestCreateWine(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Create wine failed: %s", err)
 	}
-	assert.Equal(t, wine.ID.Hex(), wineId)
 
-	assert.Nil(t, collection.FindOne(ctx, bson.M{"_id": wine.ID}).Err())
-	deleteWine(t, collection, wine.ID)
+	assert.Nil(t, collection.FindOne(ctx, bson.M{"_id": mustObjectId(wineId)}).Err())
+	deleteWine(t, collection, mustObjectId(wineId))
 }
 
 func TestListWines(t *testing.T) {
@@ -143,9 +172,9 @@ func TestGettWines(t *testing.T) {
 	ctx := context.Background()
 
 	wine := mockWine()
-	createWine(t, collection, wine)
+	out := createWine(t, collection, wine)
 
-	get, err := repo.Get(ctx, wine.ID.Hex())
+	get, err := repo.Get(ctx, out.WineID)
 	if err != nil {
 		t.Fatalf("Get wine failed: %s", err)
 	}
@@ -158,15 +187,15 @@ func TestUpdateWines(t *testing.T) {
 	ctx := context.Background()
 
 	wine := mockWine()
-	createWine(t, collection, wine)
+	out := createWine(t, collection, wine)
 
 	wine.Name = "Chateau Latour"
-	err := repo.Update(ctx, wine.ID.Hex(), wine)
+	err := repo.Update(ctx, out.WineID, wine)
 	if err != nil {
 		t.Fatalf("Update wine failed: %s", err)
 	}
 
-	get, err := repo.Get(ctx, wine.ID.Hex())
+	get, err := repo.Get(ctx, out.WineID)
 	if err != nil {
 		t.Fatalf("Get wine failed: %s", err)
 	}
@@ -179,9 +208,9 @@ func TestDeleteWines(t *testing.T) {
 	ctx := context.Background()
 
 	wine := mockWine()
-	createWine(t, collection, wine)
+	out := createWine(t, collection, wine)
 
-	err := repo.Delete(ctx, wine.ID.Hex())
+	err := repo.Delete(ctx, out.WineID)
 	if err != nil {
 		t.Fatalf("Delete wine failed: %s", err)
 	}
@@ -199,16 +228,15 @@ func TestCreatePurchase(t *testing.T) {
 	ctx := context.Background()
 
 	wine := mockWine()
-	createWine(t, collection, wine)
+	out := createWine(t, collection, wine)
 
 	purchase := mockPurchase()
-	purchaseId, err := repo.CreatePurchase(ctx, wine.ID.Hex(), purchase)
+	purchaseId, err := repo.CreatePurchase(ctx, out.WineID, purchase)
 	if err != nil {
 		t.Fatalf("Create purchase failed: %s", err)
 	}
-	assert.Equal(t, purchase.ID.Hex(), purchaseId)
 
-	filter := bson.D{{Key: "_id", Value: wine.ID}, {Key: "purchases._id", Value: purchase.ID}}
+	filter := bson.D{{Key: "_id", Value: mustObjectId(out.WineID)}, {Key: "purchases._id", Value: mustObjectId(purchaseId)}}
 	assert.Nil(t, collection.FindOne(ctx, filter).Err())
 }
 
@@ -218,15 +246,15 @@ func TestListPurchases(t *testing.T) {
 
 	wine := mockWine()
 	purchase := mockPurchase()
-	createWine(t, collection, wine, purchase)
+	out := createWine(t, collection, wine, purchase)
 
-	list, err := repo.ListPurchases(ctx, wine.ID.Hex())
+	list, err := repo.ListPurchases(ctx, out.WineID)
 	if err != nil {
 		t.Fatalf("List purchases failed: %s", err)
 	}
 
 	assert.Equal(t, 1, len(list))
-	assert.Equal(t, purchase.ID.Hex(), list[0].ID.Hex())
+	assert.Equal(t, out.PurchaseIDs[0], list[0].ID.Hex())
 }
 
 func TestGetPurchase(t *testing.T) {
@@ -235,14 +263,34 @@ func TestGetPurchase(t *testing.T) {
 
 	wine := mockWine()
 	purchase := mockPurchase()
-	createWine(t, collection, wine, purchase)
+	out := createWine(t, collection, wine, purchase)
 
-	get, err := repo.GetPurchase(ctx, wine.ID.Hex(), purchase.ID.Hex())
+	get, err := repo.GetPurchase(ctx, out.PurchaseIDs[0])
 	if err != nil {
 		t.Fatalf("Get purchase failed: %s", err)
 	}
-	log.Printf("%v\n", purchase)
-	log.Printf("%v\n", get)
 
-	assert.Equal(t, purchase.ID.Hex(), get.ID.Hex())
+	assert.Equal(t, out.PurchaseIDs[0], get.ID.Hex())
+}
+
+func TestUpdatePurchase(t *testing.T) {
+	repo := wines.NewWineRepository(collection)
+	ctx := context.Background()
+
+	wine := mockWine()
+	purchase := mockPurchase()
+	out := createWine(t, collection, wine, purchase)
+
+	newPurchase := mockPurchase2()
+	err := repo.UpdatePurchase(ctx, out.PurchaseIDs[0], newPurchase)
+	if err != nil {
+		t.Fatalf("Update purchase failed: %s", err)
+	}
+
+	get, err := repo.GetPurchase(ctx, out.PurchaseIDs[0])
+	if err != nil {
+		t.Fatalf("Get purchase failed: %s", err)
+	}
+
+	assert.Equal(t, newPurchase.Quantity, get.Quantity)
 }
