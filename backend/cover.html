@@ -1,0 +1,429 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>api: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">cuvee/api/api.go (0.0%)</option>
+				
+				<option value="file1">cuvee/cmd/main.go (0.0%)</option>
+				
+				<option value="file2">cuvee/db/db.go (0.0%)</option>
+				
+				<option value="file3">cuvee/domain/wines/controller.go (0.0%)</option>
+				
+				<option value="file4">cuvee/domain/wines/repository.go (81.3%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package api
+
+import (
+        "context"
+        "log"
+        "net/http"
+        "os"
+        "os/signal"
+        "syscall"
+        "time"
+
+        "github.com/gin-gonic/gin"
+)
+
+func initServer(r *gin.Engine) <span class="cov0" title="0">{
+        // graceful shutdown from Gin example
+        srv := &amp;http.Server{
+                Addr:    ":8080",
+                Handler: r,
+        }
+
+        go func() </span><span class="cov0" title="0">{
+                if err := srv.ListenAndServe(); err != nil &amp;&amp; err != http.ErrServerClosed </span><span class="cov0" title="0">{
+                        log.Fatalf("listen: %s\n", err)
+                }</span>
+        }()
+
+        <span class="cov0" title="0">quit := make(chan os.Signal, 1)
+        signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+        &lt;-quit
+        log.Println("Shutting down server...")
+
+        ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+        defer cancel()
+        if err := srv.Shutdown(ctx); err != nil </span><span class="cov0" title="0">{
+                log.Fatal("Server forced to shutdown: ", err)
+        }</span>
+
+        <span class="cov0" title="0">log.Println("Server exiting")</span>
+}
+
+func initRouter() *gin.Engine <span class="cov0" title="0">{
+        r := gin.Default()
+        r.GET("/health", func(c *gin.Context) </span><span class="cov0" title="0">{
+                c.JSON(http.StatusOK, gin.H{
+                        "message": "ok",
+                })
+        }</span>)
+
+        <span class="cov0" title="0">r.GET("/wines", func(c *gin.Context) </span><span class="cov0" title="0">{
+                c.JSON(http.StatusOK, gin.H{
+                        "message": "wines",
+                })
+        }</span>)
+
+        <span class="cov0" title="0">return r</span>
+}
+
+func Run() <span class="cov0" title="0">{
+        r := initRouter()
+        initServer(r)
+}</span>
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package main
+
+import (
+        "cuvee/api"
+)
+
+func main() <span class="cov0" title="0">{
+        api.Run()
+}</span>
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package db
+
+import (
+        "context"
+
+        "go.mongodb.org/mongo-driver/mongo"
+        "go.mongodb.org/mongo-driver/mongo/options"
+)
+
+type MongoConnector struct {
+        URI        string
+        Database   string
+        Collection string
+}
+
+func NewMongoConnector(uri, database, collection string) *MongoConnector <span class="cov0" title="0">{
+        return &amp;MongoConnector{
+                URI:        uri,
+                Database:   database,
+                Collection: collection,
+        }
+}</span>
+
+func (c *MongoConnector) Connect(ctx context.Context) (*mongo.Collection, error) <span class="cov0" title="0">{
+        opts := options.Client().ApplyURI(c.URI)
+        client, err := mongo.Connect(ctx, opts)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov0" title="0">db := client.Database(c.Database)
+        collection := db.Collection(c.Collection)
+        return collection, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">package wines
+
+type WineController struct {
+}
+
+func NewWineController() *WineController <span class="cov0" title="0">{
+        return &amp;WineController{}
+}</span>
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">package wines
+
+import (
+        "context"
+        "fmt"
+
+        "go.mongodb.org/mongo-driver/bson"
+        "go.mongodb.org/mongo-driver/bson/primitive"
+        "go.mongodb.org/mongo-driver/mongo"
+)
+
+type MongoPurchase struct {
+        ID       primitive.ObjectID `bson:"_id,omitempty"`
+        Quantity int                `bson:"quantity"`
+        Price    float64            `bson:"price"`
+        Date     string             `bson:"date"`
+}
+
+type MongoWine struct {
+        ID        primitive.ObjectID `bson:"_id,omitempty"`
+        Name      string             `bson:"name"`
+        Vintage   string             `bson:"vintage"`
+        Format    string             `bson:"format"`
+        Country   string             `bson:"country"`
+        Region    string             `bson:"region"`
+        Purchases []MongoPurchase    `bson:"purchases"`
+}
+
+func (p *MongoPurchase) CopyWithNewID() *MongoPurchase <span class="cov8" title="1">{
+        return &amp;MongoPurchase{
+                ID:       primitive.NewObjectID(),
+                Quantity: p.Quantity,
+                Price:    p.Price,
+                Date:     p.Date,
+        }
+}</span>
+
+func (p *MongoPurchase) CopyWithoutID() *MongoPurchase <span class="cov8" title="1">{
+        return &amp;MongoPurchase{
+                Quantity: p.Quantity,
+                Price:    p.Price,
+                Date:     p.Date,
+        }
+}</span>
+
+// WineRepository implements WineRepository
+type WineRepository struct {
+        collection *mongo.Collection
+}
+
+func NewWineRepository(collection *mongo.Collection) *WineRepository <span class="cov8" title="1">{
+        return &amp;WineRepository{
+                collection: collection,
+        }
+}</span>
+
+func (r *WineRepository) List(ctx context.Context) ([]*MongoWine, error) <span class="cov8" title="1">{
+        cur, err := r.collection.Find(ctx, bson.D{})
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">defer cur.Close(ctx)
+
+        var wines []*MongoWine
+        for cur.Next(ctx) </span><span class="cov8" title="1">{
+                var w MongoWine
+                if err := cur.Decode(&amp;w); err != nil </span><span class="cov0" title="0">{
+                        return nil, err
+                }</span>
+                <span class="cov8" title="1">wines = append(wines, &amp;w)</span>
+        }
+        <span class="cov8" title="1">return wines, nil</span>
+}
+
+func (r *WineRepository) Get(ctx context.Context, id string) (*MongoWine, error) <span class="cov8" title="1">{
+        objectId, err := primitive.ObjectIDFromHex(id)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">var wine *MongoWine
+        res := r.collection.FindOne(ctx, bson.D{{Key: "_id", Value: objectId}})
+        if err := res.Decode(&amp;wine); err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">return wine, nil</span>
+}
+
+func (r *WineRepository) Create(ctx context.Context, w *MongoWine) (string, error) <span class="cov8" title="1">{
+        res, err := r.collection.InsertOne(ctx, w)
+        if err != nil </span><span class="cov0" title="0">{
+                return "", err
+        }</span>
+        <span class="cov8" title="1">return res.InsertedID.(primitive.ObjectID).Hex(), nil</span>
+}
+
+func (r *WineRepository) Update(ctx context.Context, id string, w *MongoWine) error <span class="cov8" title="1">{
+        objectId, err := primitive.ObjectIDFromHex(id)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov8" title="1">filter := bson.D{{Key: "_id", Value: objectId}}
+        update := bson.D{{Key: "$set", Value: w}}
+        _, err = r.collection.UpdateOne(context.Background(), filter, update)
+        return err</span>
+}
+
+func (r *WineRepository) Delete(ctx context.Context, id string) error <span class="cov8" title="1">{
+        objectId, err := primitive.ObjectIDFromHex(id)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov8" title="1">filter := bson.D{{Key: "_id", Value: objectId}}
+        _, err = r.collection.DeleteOne(context.Background(), filter)
+        return err</span>
+}
+
+func (r *WineRepository) ListPurchases(ctx context.Context, wineId string) ([]*MongoPurchase, error) <span class="cov8" title="1">{
+        objectId, err := primitive.ObjectIDFromHex(wineId)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">var wine *MongoWine
+        res := r.collection.FindOne(context.Background(), bson.D{{Key: "_id", Value: objectId}})
+        if err := res.Decode(&amp;wine); err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">var out []*MongoPurchase
+        for i := range wine.Purchases </span><span class="cov8" title="1">{
+                out = append(out, &amp;wine.Purchases[i])
+        }</span>
+        <span class="cov8" title="1">return out, nil</span>
+}
+
+func (r *WineRepository) GetPurchase(ctx context.Context, purchaseId string) (*MongoPurchase, error) <span class="cov8" title="1">{
+        purchaseObjectId, err := primitive.ObjectIDFromHex(purchaseId)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">var wine *MongoWine
+        filter := bson.D{{Key: "purchases._id", Value: purchaseObjectId}}
+        res := r.collection.FindOne(context.Background(), filter)
+        if err := res.Decode(&amp;wine); err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov8" title="1">for i := range wine.Purchases </span><span class="cov8" title="1">{
+                if wine.Purchases[i].ID == purchaseObjectId </span><span class="cov8" title="1">{
+                        return &amp;wine.Purchases[i], nil
+                }</span>
+        }
+        <span class="cov0" title="0">return nil, fmt.Errorf("purchase %s not found", purchaseId)</span>
+}
+
+func (r *WineRepository) CreatePurchase(ctx context.Context, wineId string, p *MongoPurchase) (string, error) <span class="cov8" title="1">{
+        objectId, err := primitive.ObjectIDFromHex(wineId)
+        if err != nil </span><span class="cov0" title="0">{
+                return "", err
+        }</span>
+        <span class="cov8" title="1">p = p.CopyWithNewID()
+        filter := bson.D{{Key: "_id", Value: objectId}}
+        update := bson.D{{Key: "$push", Value: bson.D{{Key: "purchases", Value: p}}}}
+        _, err = r.collection.UpdateOne(context.Background(), filter, update)
+        if err != nil </span><span class="cov0" title="0">{
+                return "", err
+        }</span>
+        // retrieve last purchase id
+        <span class="cov8" title="1">return p.ID.Hex(), nil</span>
+}
+
+func (r *WineRepository) UpdatePurchase(ctx context.Context, purchaseId string, p *MongoPurchase) error <span class="cov8" title="1">{
+        old, err := r.GetPurchase(ctx, purchaseId)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        <span class="cov8" title="1">purchaseObjectId, err := primitive.ObjectIDFromHex(purchaseId)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov8" title="1">filter := bson.D{{Key: "purchases._id", Value: purchaseObjectId}}
+        new := p.CopyWithoutID()
+        new.ID = old.ID
+        update := bson.D{{Key: "$set", Value: bson.M{"purchases.$": new}}}
+        _, err = r.collection.UpdateOne(context.Background(), filter, update)
+        return err</span>
+}
+
+func (r *WineRepository) DeletePurchase(ctx context.Context, purchaseId string) error <span class="cov8" title="1">{
+        purchaseObjectId, err := primitive.ObjectIDFromHex(purchaseId)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov8" title="1">filter := bson.D{{Key: "purchases._id", Value: purchaseObjectId}}
+        update := bson.D{{Key: "$pull", Value: bson.D{{Key: "purchases", Value: bson.M{"_id": purchaseObjectId}}}}}
+        _, err = r.collection.UpdateOne(context.Background(), filter, update)
+        return err</span>
+}
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>
