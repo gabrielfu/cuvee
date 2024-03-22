@@ -295,3 +295,25 @@ func TestUpdatePurchase(t *testing.T) {
 
 	assert.Equal(t, purchase.Price, get.Price)
 }
+
+func TestDeletePurchase(t *testing.T) {
+	repo := wines.NewWineRepository(collection)
+	ctx := context.Background()
+
+	wine := mockWine()
+	purchase := mockPurchase()
+	purchase2 := mockPurchase2()
+	out := createWine(t, collection, wine, purchase, purchase2)
+
+	err := repo.DeletePurchase(ctx, out.PurchaseIDs[0])
+	if err != nil {
+		t.Fatalf("Delete purchase failed: %s", err)
+	}
+
+	list, err := repo.ListPurchases(ctx, out.WineID)
+	if err != nil {
+		t.Fatalf("List purchases failed: %s", err)
+	}
+
+	assert.Equal(t, 1, len(list))
+}

@@ -185,13 +185,13 @@ func (r *WineRepository) UpdatePurchase(ctx context.Context, purchaseId string, 
 	return err
 }
 
-func (r *WineRepository) DeletePurchase(ctx context.Context, wineId, purchaseId string) error {
-	objectId, err := primitive.ObjectIDFromHex(wineId)
+func (r *WineRepository) DeletePurchase(ctx context.Context, purchaseId string) error {
+	purchaseObjectId, err := primitive.ObjectIDFromHex(purchaseId)
 	if err != nil {
 		return err
 	}
-	filter := bson.D{{Key: "_id", Value: objectId}}
-	update := bson.D{{Key: "$pull", Value: bson.D{{Key: "purchases._id", Value: purchaseId}}}}
+	filter := bson.D{{Key: "purchases._id", Value: purchaseObjectId}}
+	update := bson.D{{Key: "$pull", Value: bson.D{{Key: "purchases", Value: bson.M{"_id": purchaseObjectId}}}}}
 	_, err = r.collection.UpdateOne(context.Background(), filter, update)
 	return err
 }
