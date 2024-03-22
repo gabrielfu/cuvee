@@ -2,6 +2,7 @@ package wines
 
 import (
 	"context"
+	"fmt"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -122,13 +123,19 @@ func (r *WineRepository) GetPurchase(ctx context.Context, wineId, purchaseId str
 	if err != nil {
 		return nil, err
 	}
-	var purchase *MongoPurchase
+	var wine *MongoWine
 	filter := bson.D{{Key: "_id", Value: wineObjectId}, {Key: "purchases._id", Value: purchaseObjectId}}
 	res := r.collection.FindOne(context.Background(), filter)
-	if err := res.Decode(&purchase); err != nil {
+	if err := res.Decode(&wine); err != nil {
 		return nil, err
 	}
-	return purchase, nil
+
+	for i := range wine.Purchases {
+		if wine.Purchases[i].ID == purchaseObjectId {
+			return &wine.Purchases[i], nil
+		}
+	}
+	return nil, fmt.Errorf("purchase %s not found", purchaseId)
 }
 
 func (r *WineRepository) CreatePurchase(ctx context.Context, wineId string, p *MongoPurchase) (string, error) {

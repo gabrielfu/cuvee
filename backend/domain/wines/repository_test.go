@@ -74,15 +74,24 @@ func mockWine() *wines.MongoWine {
 		Format:    "750ml",
 		Country:   "France",
 		Region:    "Bordeaux",
-		Purchases: []wines.MongoPurchase{*mockPurchase()},
+		Purchases: []wines.MongoPurchase{},
 	}
 }
 
-func createWine(t *testing.T, collection *mongo.Collection, wine *wines.MongoWine) {
+func createWine(t *testing.T, collection *mongo.Collection, wine *wines.MongoWine, purchases ...*wines.MongoPurchase) {
 	ctx := context.Background()
 	_, err := collection.InsertOne(ctx, wine)
 	if err != nil {
 		t.Fatalf("Insert wine failed: %s", err)
+	}
+
+	for _, purchase := range purchases {
+		filter := bson.M{"_id": wine.ID}
+		update := bson.M{"$push": bson.M{"purchases": purchase}}
+		_, err := collection.UpdateOne(ctx, filter, update)
+		if err != nil {
+			t.Fatalf("Insert purchase failed: %s", err)
+		}
 	}
 
 	t.Cleanup(func() {
@@ -208,7 +217,8 @@ func TestListPurchases(t *testing.T) {
 	ctx := context.Background()
 
 	wine := mockWine()
-	createWine(t, collection, wine)
+	purchase := mockPurchase()
+	createWine(t, collection, wine, purchase)
 
 	list, err := repo.ListPurchases(ctx, wine.ID.Hex())
 	if err != nil {
@@ -216,7 +226,7 @@ func TestListPurchases(t *testing.T) {
 	}
 
 	assert.Equal(t, 1, len(list))
-	assert.Equal(t, wine.Purchases[0].ID.Hex(), list[0].ID.Hex())
+	assert.Equal(t, purchase.ID.Hex(), list[0].ID.Hex())
 }
 
 func TestGetPurchase(t *testing.T) {
@@ -224,14 +234,15 @@ func TestGetPurchase(t *testing.T) {
 	ctx := context.Background()
 
 	wine := mockWine()
-	createWine(t, collection, wine)
+	purchase := mockPurchase()
+	createWine(t, collection, wine, purchase)
 
-	get, err := repo.GetPurchase(ctx, wine.ID.Hex(), wine.Purchases[0].ID.Hex())
+	get, err := repo.GetPurchase(ctx, wine.ID.Hex(), purchase.ID.Hex())
 	if err != nil {
 		t.Fatalf("Get purchase failed: %s", err)
 	}
-	log.Printf("%v\n", wine.Purchases[0])
+	log.Printf("%v\n", purchase)
 	log.Printf("%v\n", get)
 
-	assert.Equal(t, wine.Purchases[0].ID.Hex(), get.ID.Hex())
+	assert.Equal(t, purchase.ID.Hex(), get.ID.Hex())
 }
