@@ -87,7 +87,7 @@
 </script>
 
 <main>
-  <p class="fira-sans font-bold text-2xl px-2">MY CELLAR </p>
+  <p class="fira-sans font-bold text-3xl px-2">MY CELLAR </p>
 
   <div class="flex items-center justify-between">
 
@@ -111,7 +111,7 @@
 
   {#each wines as wine, i}
   {@const p = aggregatePurchase(wine.purchases)}
-  <Card.Card class="bg-card text-card-foreground">
+  <Card.Card class="bg-transparent border-x-transparent border-t-transparent text-card-foreground">
     <Card.Content>
       <div class="grid grid-cols-[minmax(224px,1fr),3fr,2fr] pt-4">
         <img src={images[i]} alt={wine.name} width="224" />
@@ -122,7 +122,7 @@
 
           <p class="text-sm text-muted-foreground mb-4">{wine.vintage}&#xff5c;{wine.format}&#xff5c;{wine.region}&#xff5c;{wine.country}</p>
 
-          <Card.Card class="w-1/3 mx-2 px-4 py-2 mb-2">
+          <Card.Card class="bg-card w-[160px] mx-2 px-4 py-2 mb-2">
             <p class="text-sm">
               <i class="fa-solid fa-bottle-droplet text-sm" /> &nbsp;{p.quantity} bottle{p.quantity > 1 ? 's' : ''}
             </p>
