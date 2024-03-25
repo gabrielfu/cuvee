@@ -1,76 +1,14 @@
 <script lang="ts">
+	import type { Wine } from "$lib/api/wines";
   import * as Card from "$lib/components/ui/card";
   import * as Collapsible from "$lib/components/ui/collapsible";
   import { Input } from "$lib/components/ui/input";
   import { Label } from "$lib/components/ui/label";
-  import { Switch } from "$lib/components/ui/switch";
   import * as Select from "$lib/components/ui/select";
   import * as Table from "$lib/components/ui/table";
 
-  type Vintage = number | "NV";
-  type Purchase = {
-    quantity: number;
-    price: number;
-    date: Date;
-  };
-  type Wine = {
-    name: string;
-    vintage: Vintage;
-    format: string;
-    country: string;
-    region: string;
-    purchases: Purchase[];
-  };
-
-  let wines: Wine[] = [
-    {
-      name: "Château Lafite Rothschild",
-      vintage: 2018,
-      format: "750ml",
-      country: "France",
-      region: "Bordeaux",
-      purchases: [
-        { quantity: 1, price: 5000, date: new Date("2024-01-01") },
-      ],
-    },
-    {
-      name: "Albert Bichot Chassagne-Montrachet Blanc",
-      vintage: 2019,
-      format: "750ml",
-      country: "France",
-      region: "Burgundy",
-      purchases: [
-        { quantity: 2, price: 800, date: new Date("2024-02-02") },
-        { quantity: 1, price: 750, date: new Date("2024-02-03") },
-        { quantity: 1, price: 780, date: new Date("2024-02-04") },
-        { quantity: 3, price: 720, date: new Date("2024-02-05") },
-        { quantity: 1, price: 820, date: new Date("2024-02-06") },
-      ],
-    },
-    {
-      name: "Louis Roederer",
-      vintage: "NV",
-      format: "750ml",
-      country: "France",
-      region: "Champagne",
-      purchases: [
-        { quantity: 1, price: 600, date: new Date("2024-03-03") },
-        { quantity: 2, price: 560, date: new Date("2024-03-04") },
-      ],
-    },
-  ];
-
-  let images: string[] = [
-    "https://images.vivino.com/thumbs/uDMfPG10R1efm5H1do--Ow_pb_600x600.png",
-    "https://images.vivino.com/thumbs/Eh506eKdSXGvndyHHfqPug_pb_600x600.png",
-    "https://images.vivino.com/thumbs/MCs7Ix2zS56U3-vs6GOR4A_pb_600x600.png",
-  ];
-
-  const aggregatePurchase = (purchases: Purchase[]) => {
-    const totalQuantity = purchases.reduce((acc, p) => acc + p.quantity, 0);
-    const totalPrice = purchases.reduce((acc, p) => acc + p.price * p.quantity, 0);
-    return { quantity: totalQuantity, price: totalPrice / totalQuantity };
-  };
+  export let wines: Wine[];
+  export let images: string[];
 
   const sortBys = {
     "default": "Default",
@@ -110,7 +48,6 @@
   </div>
 
   {#each wines as wine, i}
-  {@const p = aggregatePurchase(wine.purchases)}
   <Card.Card class="bg-transparent border-x-transparent border-t-transparent text-card-foreground">
     <Card.Content>
       <div class="grid grid-cols-[minmax(224px,1fr),3fr,2fr] pt-4">
@@ -124,10 +61,10 @@
 
           <Card.Card class="bg-card w-[160px] mx-2 px-4 py-2 mb-2">
             <p class="text-sm">
-              <i class="fa-solid fa-bottle-droplet text-sm" /> &nbsp;{p.quantity} bottle{p.quantity > 1 ? 's' : ''}
+              <i class="fa-solid fa-bottle-droplet text-sm" /> &nbsp;{wine.summary.quantity} bottle{wine.summary.quantity > 1 ? 's' : ''}
             </p>
             <p class="text-sm">
-              <i class="fa-solid fa-dollar-sign text-sm" /> &nbsp;{p.price.toFixed(2)}
+              <i class="fa-solid fa-dollar-sign text-sm" /> &nbsp;{wine.summary.price.toFixed(2)}
             </p>
           </Card.Card>
 
