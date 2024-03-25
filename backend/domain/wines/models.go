@@ -42,11 +42,7 @@ func daoToWine(w WineDAO) Wine {
 func wineToDAO(w Wine) WineDAO {
 	var purchases []PurchaseDAO
 	for i := range w.Details {
-		purchases = append(purchases, PurchaseDAO{
-			Quantity: w.Details[i].Quantity,
-			Price:    w.Details[i].Price,
-			Date:     w.Details[i].Date,
-		})
+		purchases = append(purchases, purchaseToDAO(w.Details[i]))
 	}
 	return WineDAO{
 		Name:      w.Name,
