@@ -65,30 +65,52 @@ func mustObjectId(id string) primitive.ObjectID {
 	return objectId
 }
 
-func mockPurchase() *wines.MongoPurchase {
-	return &wines.MongoPurchase{
+func mockPurchase() wines.PurchaseDAO {
+	return wines.PurchaseDAO{
 		Quantity: 1,
 		Price:    1000,
 		Date:     "2020-01-01",
 	}
 }
 
-func mockPurchase2() *wines.MongoPurchase {
-	return &wines.MongoPurchase{
+func mockPurchase2() wines.PurchaseDAO {
+	return wines.PurchaseDAO{
 		Quantity: 2,
 		Price:    2000,
 		Date:     "2020-02-02",
 	}
 }
 
-func mockWine() *wines.MongoWine {
-	return &wines.MongoWine{
+func mockPurchase3() wines.PurchaseDAO {
+	return wines.PurchaseDAO{
+		Quantity: 3,
+		Price:    3000,
+		Date:     "2020-03-03",
+	}
+}
+
+func mockWine() wines.WineDAO {
+	return wines.WineDAO{
 		Name:      "Chateau Margaux",
 		Vintage:   "2015",
 		Format:    "750ml",
 		Country:   "France",
 		Region:    "Bordeaux",
-		Purchases: []wines.MongoPurchase{},
+		Purchases: []wines.PurchaseDAO{},
+	}
+}
+
+func mockWineWithPurchases() wines.WineDAO {
+	return wines.WineDAO{
+		Name:    "Chateau Margaux",
+		Vintage: "2015",
+		Format:  "750ml",
+		Country: "France",
+		Region:  "Bordeaux",
+		Purchases: []wines.PurchaseDAO{
+			mockPurchase(),
+			mockPurchase2(),
+		},
 	}
 }
 
@@ -97,36 +119,33 @@ type WinePurchaseIDs struct {
 	PurchaseIDs []string
 }
 
+// returns the WineDAO id as a string
 func createWine(
 	t *testing.T,
 	collection *mongo.Collection,
-	wine *wines.MongoWine,
-	purchases ...*wines.MongoPurchase,
-) WinePurchaseIDs {
-	var out WinePurchaseIDs
-
+	wine wines.WineDAO,
+	purchases ...wines.PurchaseDAO,
+) string {
 	ctx := context.Background()
 	wineRes, err := collection.InsertOne(ctx, wine)
 	if err != nil {
 		t.Fatalf("Insert wine failed: %s", err)
 	}
-	out.WineID = wineRes.InsertedID.(primitive.ObjectID).Hex()
+	wineID := wineRes.InsertedID.(primitive.ObjectID).Hex()
 
 	for _, purchase := range purchases {
-		purchase = purchase.CopyWithNewID()
-		filter := bson.M{"_id": mustObjectId(out.WineID)}
+		filter := bson.M{"_id": mustObjectId(wineID)}
 		update := bson.M{"$push": bson.M{"purchases": purchase}}
 		_, err := collection.UpdateOne(ctx, filter, update)
 		if err != nil {
 			t.Fatalf("Insert purchase failed: %s", err)
 		}
-		out.PurchaseIDs = append(out.PurchaseIDs, purchase.ID.Hex())
 	}
 
 	t.Cleanup(func() {
-		deleteWine(t, collection, mustObjectId(out.WineID))
+		deleteWine(t, collection, mustObjectId(wineID))
 	})
-	return out
+	return wineID
 }
 
 func deleteWine(t *testing.T, collection *mongo.Collection, id primitive.ObjectID) {
@@ -142,12 +161,27 @@ func TestCreateWine(t *testing.T) {
 	ctx := context.Background()
 
 	wine := mockWine()
-	wineId, err := repo.Create(ctx, wine)
+	wineId, err := repo.Create(ctx, &wine)
 	if err != nil {
 		t.Fatalf("Create wine failed: %s", err)
 	}
 
 	assert.Nil(t, collection.FindOne(ctx, bson.M{"_id": mustObjectId(wineId)}).Err())
+	deleteWine(t, collection, mustObjectId(wineId))
+}
+
+func TestCreateWineWithPurchases(t *testing.T) {
+	repo := wines.NewWineRepository(collection)
+	ctx := context.Background()
+
+	wine := mockWineWithPurchases()
+	wineId, err := repo.Create(ctx, &wine)
+	if err != nil {
+		t.Fatalf("Create wine failed: %s", err)
+	}
+
+	assert.Nil(t, collection.FindOne(ctx, bson.M{"_id": mustObjectId(wineId)}).Err())
+	assert.Equal(t, 2, len(wine.Purchases))
 	deleteWine(t, collection, mustObjectId(wineId))
 }
 
@@ -167,14 +201,14 @@ func TestListWines(t *testing.T) {
 	assert.Equal(t, wine.Name, list[0].Name)
 }
 
-func TestGettWines(t *testing.T) {
+func TestGetWines(t *testing.T) {
 	repo := wines.NewWineRepository(collection)
 	ctx := context.Background()
 
 	wine := mockWine()
-	out := createWine(t, collection, wine)
+	wineID := createWine(t, collection, wine)
 
-	get, err := repo.Get(ctx, out.WineID)
+	get, err := repo.Get(ctx, wineID)
 	if err != nil {
 		t.Fatalf("Get wine failed: %s", err)
 	}
@@ -187,15 +221,15 @@ func TestUpdateWines(t *testing.T) {
 	ctx := context.Background()
 
 	wine := mockWine()
-	out := createWine(t, collection, wine)
+	wineID := createWine(t, collection, wine)
 
 	wine.Name = "Chateau Latour"
-	err := repo.Update(ctx, out.WineID, wine)
+	err := repo.Update(ctx, wineID, &wine)
 	if err != nil {
 		t.Fatalf("Update wine failed: %s", err)
 	}
 
-	get, err := repo.Get(ctx, out.WineID)
+	get, err := repo.Get(ctx, wineID)
 	if err != nil {
 		t.Fatalf("Get wine failed: %s", err)
 	}
@@ -208,9 +242,9 @@ func TestDeleteWines(t *testing.T) {
 	ctx := context.Background()
 
 	wine := mockWine()
-	out := createWine(t, collection, wine)
+	wineID := createWine(t, collection, wine)
 
-	err := repo.Delete(ctx, out.WineID)
+	err := repo.Delete(ctx, wineID)
 	if err != nil {
 		t.Fatalf("Delete wine failed: %s", err)
 	}
@@ -223,97 +257,50 @@ func TestDeleteWines(t *testing.T) {
 	assert.Equal(t, 0, len(list))
 }
 
-func TestCreatePurchase(t *testing.T) {
+func TestAddPurchaseToWine(t *testing.T) {
 	repo := wines.NewWineRepository(collection)
 	ctx := context.Background()
 
 	wine := mockWine()
-	out := createWine(t, collection, wine)
+	wineID := createWine(t, collection, wine)
 
 	purchase := mockPurchase()
-	purchaseId, err := repo.CreatePurchase(ctx, out.WineID, purchase)
+	wine.Purchases = append(wine.Purchases, purchase)
+
+	err := repo.Update(ctx, wineID, &wine)
 	if err != nil {
 		t.Fatalf("Create purchase failed: %s", err)
 	}
 
-	filter := bson.D{{Key: "_id", Value: mustObjectId(out.WineID)}, {Key: "purchases._id", Value: mustObjectId(purchaseId)}}
-	assert.Nil(t, collection.FindOne(ctx, filter).Err())
+	get, err := repo.Get(ctx, wineID)
+	if err != nil {
+		t.Fatalf("Get wine failed: %s", err)
+	}
+
+	assert.Equal(t, 1, len(get.Purchases))
+	assert.Equal(t, purchase.Quantity, get.Purchases[0].Quantity)
 }
 
-func TestListPurchases(t *testing.T) {
+func TestModifyPurchasesInWine(t *testing.T) {
 	repo := wines.NewWineRepository(collection)
 	ctx := context.Background()
 
-	wine := mockWine()
-	purchase := mockPurchase()
-	out := createWine(t, collection, wine, purchase)
+	wine := mockWineWithPurchases()
+	wineID := createWine(t, collection, wine)
 
-	list, err := repo.ListPurchases(ctx, out.WineID)
+	purchase := mockPurchase3()
+	wine.Purchases = []wines.PurchaseDAO{purchase}
+
+	err := repo.Update(ctx, wineID, &wine)
 	if err != nil {
-		t.Fatalf("List purchases failed: %s", err)
+		t.Fatalf("Create purchase failed: %s", err)
 	}
 
-	assert.Equal(t, 1, len(list))
-	assert.Equal(t, out.PurchaseIDs[0], list[0].ID.Hex())
-}
-
-func TestGetPurchase(t *testing.T) {
-	repo := wines.NewWineRepository(collection)
-	ctx := context.Background()
-
-	wine := mockWine()
-	purchase := mockPurchase()
-	out := createWine(t, collection, wine, purchase)
-
-	get, err := repo.GetPurchase(ctx, out.PurchaseIDs[0])
+	get, err := repo.Get(ctx, wineID)
 	if err != nil {
-		t.Fatalf("Get purchase failed: %s", err)
+		t.Fatalf("Get wine failed: %s", err)
 	}
 
-	assert.Equal(t, out.PurchaseIDs[0], get.ID.Hex())
-}
-
-func TestUpdatePurchase(t *testing.T) {
-	repo := wines.NewWineRepository(collection)
-	ctx := context.Background()
-
-	wine := mockWine()
-	purchase := mockPurchase()
-	purchase2 := mockPurchase2()
-	out := createWine(t, collection, wine, purchase2)
-
-	purchase.Price = 9999
-	err := repo.UpdatePurchase(ctx, out.PurchaseIDs[0], purchase)
-	if err != nil {
-		t.Fatalf("Update purchase failed: %s", err)
-	}
-
-	get, err := repo.GetPurchase(ctx, out.PurchaseIDs[0])
-	if err != nil {
-		t.Fatalf("Get purchase failed: %s", err)
-	}
-
-	assert.Equal(t, purchase.Price, get.Price)
-}
-
-func TestDeletePurchase(t *testing.T) {
-	repo := wines.NewWineRepository(collection)
-	ctx := context.Background()
-
-	wine := mockWine()
-	purchase := mockPurchase()
-	purchase2 := mockPurchase2()
-	out := createWine(t, collection, wine, purchase, purchase2)
-
-	err := repo.DeletePurchase(ctx, out.PurchaseIDs[0])
-	if err != nil {
-		t.Fatalf("Delete purchase failed: %s", err)
-	}
-
-	list, err := repo.ListPurchases(ctx, out.WineID)
-	if err != nil {
-		t.Fatalf("List purchases failed: %s", err)
-	}
-
-	assert.Equal(t, 1, len(list))
+	assert.Equal(t, 1, len(get.Purchases))
+	assert.Equal(t, purchase.Quantity, get.Purchases[0].Quantity)
 }
