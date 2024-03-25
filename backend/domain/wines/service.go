@@ -3,11 +3,12 @@ package wines
 import "context"
 
 type WineService struct {
-	repo *WineRepository
+	repo     *WineRepository
+	validate *WineJSONValidator
 }
 
-func NewWineService(repo *WineRepository) *WineService {
-	return &WineService{repo}
+func NewWineService(repo *WineRepository, validate *WineJSONValidator) *WineService {
+	return &WineService{repo: repo, validate: validate}
 }
 
 func (s *WineService) CreateWine(ctx context.Context, wine *Wine) (string, error) {

@@ -63,7 +63,8 @@ func Run() {
 
 	// register service routes
 	repo := wines.NewWineRepository(collection)
-	service := wines.NewWineService(repo)
+	validate := wines.NewWineJSONValidator()
+	service := wines.NewWineService(repo, validate)
 	wines.RegisterRoutes(r, service)
 
 	initServer(r)

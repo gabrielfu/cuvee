@@ -6,20 +6,20 @@ type PurchaseSummary struct {
 }
 
 type Purchase struct {
-	Quantity int     `json:"quantity"`
-	Price    float64 `json:"price"`
-	Date     string  `json:"date"`
+	Quantity int     `json:"quantity" validate:"required"`
+	Price    float64 `json:"price" validate:"required"`
+	Date     string  `json:"date" validate:"required"`
 }
 
 type Wine struct {
-	ID      string          `json:"id"`
-	Name    string          `json:"name"`
-	Vintage string          `json:"vintage"`
-	Format  string          `json:"format"`
-	Country string          `json:"country"`
-	Region  string          `json:"region"`
-	Details []Purchase      `json:"details"` // purchase records
-	Summary PurchaseSummary `json:"summary"` // total quantity and average price
+	ID        string          `json:"id"`
+	Name      string          `json:"name" validate:"required"`
+	Vintage   string          `json:"vintage" validate:"required,vintage"`
+	Format    string          `json:"format" validate:"required"`
+	Country   string          `json:"country" validate:"required"`
+	Region    string          `json:"region" validate:"required"`
+	Purchases []Purchase      `json:"purchases" validate:"dive,required"` // purchase records
+	Summary   PurchaseSummary `json:"summary"`                            // total quantity and average price
 }
 
 func daoToWine(w WineDAO) Wine {
@@ -28,21 +28,21 @@ func daoToWine(w WineDAO) Wine {
 		purchases = append(purchases, daoToPurchase(w.Purchases[i]))
 	}
 	return Wine{
-		ID:      w.ID.Hex(),
-		Name:    w.Name,
-		Vintage: w.Vintage,
-		Format:  w.Format,
-		Country: w.Country,
-		Region:  w.Region,
-		Details: purchases,
-		Summary: SummarizePurchases(purchases),
+		ID:        w.ID.Hex(),
+		Name:      w.Name,
+		Vintage:   w.Vintage,
+		Format:    w.Format,
+		Country:   w.Country,
+		Region:    w.Region,
+		Purchases: purchases,
+		Summary:   SummarizePurchases(purchases),
 	}
 }
 
 func wineToDAO(w Wine) WineDAO {
 	var purchases []PurchaseDAO
-	for i := range w.Details {
-		purchases = append(purchases, purchaseToDAO(w.Details[i]))
+	for i := range w.Purchases {
+		purchases = append(purchases, purchaseToDAO(w.Purchases[i]))
 	}
 	return WineDAO{
 		Name:      w.Name,
