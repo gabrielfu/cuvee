@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Main from "../components/Main.svelte";
+  import WineCatalog from "../components/cellar/WineCatalog.svelte";
 
   import type { PageData } from './$types';
   export let data: PageData;
@@ -9,4 +9,4 @@
   <title>cuvée</title>
 </svelte:head>
 
-<Main wines={data.wines} images={data.images}/>
+<WineCatalog wines={data.wines} images={data.images}/>
