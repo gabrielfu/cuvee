@@ -40,7 +40,7 @@ func initServer(r *gin.Engine) {
 	log.Println("Server exiting")
 }
 
-func initRouter(service *wines.WineService) *gin.Engine {
+func initRouter() *gin.Engine {
 	r := gin.Default()
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
@@ -48,17 +48,15 @@ func initRouter(service *wines.WineService) *gin.Engine {
 		})
 	})
 
-	r.GET("/wines/:id", handleGetWine(service))
-	r.GET("/wines", handleListWines(service))
-	r.POST("/wines", handleCreateWine(service))
-	r.PATCH("/wines/:id", handleUpdateWine(service))
-	r.DELETE("/wines/:id", handleDeleteWine(service))
-
 	return r
 }
 
 func Run() {
+	r := initRouter()
+
+	// register service routes
 	service := &wines.WineService{}
-	r := initRouter(service)
+	wines.RegisterRoutes(r, service)
+
 	initServer(r)
 }
