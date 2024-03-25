@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"cuvee/db"
 	"cuvee/domain/wines"
 	"log"
 	"net/http"
@@ -54,8 +55,15 @@ func initRouter() *gin.Engine {
 func Run() {
 	r := initRouter()
 
+	connector := db.NewMongoConnector("mongodb://localhost:27017", "cuvee", "wines")
+	collection, err := connector.Connect(context.Background())
+	if err != nil {
+		log.Fatalf("Failed to connect to MongoDB: %v", err)
+	}
+
 	// register service routes
-	service := &wines.WineService{}
+	repo := wines.NewWineRepository(collection)
+	service := wines.NewWineService(repo)
 	wines.RegisterRoutes(r, service)
 
 	initServer(r)
