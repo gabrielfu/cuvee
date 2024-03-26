@@ -4,6 +4,7 @@
   import * as Table from "$lib/components/ui/table";
 
 	import type { Wine } from "$lib/api/wines";
+	import WineCardEditDialog from "./WineCardEditDialog.svelte";
 
   export let wine: Wine;
   export let image: string;
@@ -14,11 +15,16 @@
     <div class="grid grid-cols-[minmax(224px,1fr),3fr,2fr] pt-4">
       <img src={image} alt={wine.name} width="224" />
       <div>
-        <Card.Title class="font-medium mt-4 mb-2">
-          {wine.name}
-        </Card.Title>
+        <div class="grid grid-cols-2 items-center justify-between">
+          <div>
+            <Card.Title class="font-medium mt-4 mb-2">
+              {wine.name}
+            </Card.Title>
 
-        <p class="text-sm text-muted-foreground mb-4">{wine.vintage}&#xff5c;{wine.format}&#xff5c;{wine.region}&#xff5c;{wine.country}</p>
+            <p class="text-sm text-muted-foreground mb-4">{wine.vintage}&#xff5c;{wine.format}&#xff5c;{wine.region}&#xff5c;{wine.country}</p>
+          </div>
+          <WineCardEditDialog wine={wine} />
+        </div>
 
         <Card.Card class="bg-card w-[160px] mx-2 px-4 py-2 mb-2">
           <p class="text-sm">
