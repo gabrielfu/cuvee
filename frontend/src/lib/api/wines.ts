@@ -83,4 +83,4 @@ export const fakeWines: Wine[] = [
       ],
       summary: { quantity: 3, price: 573.33 },
     },
-  ];
+];
