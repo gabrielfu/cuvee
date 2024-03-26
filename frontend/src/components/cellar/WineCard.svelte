@@ -5,6 +5,7 @@
 
 	import type { Wine } from "$lib/api/wines";
 	import WineCardEditDialog from "./WineCardEditDialog.svelte";
+	import { CircleDollarSign, Wine as WineSign, Calendar, ChevronsUpDown } from "lucide-svelte";
 
   export let wine: Wine;
   export let image: string;
@@ -28,22 +29,22 @@
 
         <Card.Card class="bg-card w-[160px] mx-2 px-4 py-2 mb-2">
           <p class="text-sm">
-            <i class="fa-solid fa-bottle-droplet text-sm" /> &nbsp;{wine.summary.quantity} bottle{wine.summary.quantity > 1 ? 's' : ''}
+            <WineSign class="inline mr-2" size=20 />{wine.summary.quantity} bottle{wine.summary.quantity > 1 ? 's' : ''}
           </p>
           <p class="text-sm">
-            <i class="fa-solid fa-dollar-sign text-sm" /> &nbsp;{wine.summary.price.toFixed(2)}
+            <CircleDollarSign class="inline mr-2" size=20 />{wine.summary.price.toFixed(2)}
           </p>
         </Card.Card>
 
         <Collapsible.Root class="pl-4 pt-2">
-          <Collapsible.Trigger class="text-sm text-muted-foreground">Expand purchases <i class="fa-solid fa-chevron-down text-sm" /></Collapsible.Trigger>
+          <Collapsible.Trigger class="text-sm text-muted-foreground">Expand purchases <ChevronsUpDown class="inline" size=20 /></Collapsible.Trigger>
           <Collapsible.Content>
             <Table.Root class="w-auto pt-2">
               <Table.Header>
                 <Table.Row class="leading-none">
-                  <Table.Head class="h-auto py-1 text-sm text-muted-foreground"><i class="fa-solid fa-bottle-droplet text-sm" /></Table.Head>
-                  <Table.Head class="h-auto py-1 text-sm text-muted-foreground"><i class="fa-solid fa-dollar-sign text-sm" /></Table.Head>
-                  <Table.Head class="h-auto py-1 text-sm text-muted-foreground"><i class="fa-regular fa-calendar text-sm" /></Table.Head>
+                  <Table.Head class="h-auto py-1 text-sm text-muted-foreground"><WineSign class="inline mr-2" size=20 /></Table.Head>
+                  <Table.Head class="h-auto py-1 text-sm text-muted-foreground"><CircleDollarSign class="inline mr-2" size=20 /></Table.Head>
+                  <Table.Head class="h-auto py-1 text-sm text-muted-foreground"><Calendar class="inline mr-2" size=20 /></Table.Head>
                 </Table.Row>
               </Table.Header>
               <Table.Body>

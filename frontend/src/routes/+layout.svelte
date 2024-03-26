@@ -2,6 +2,7 @@
   import "../app.css";
   import Header from "../components/Header.svelte";
   import Footer from "../components/Footer.svelte";
+	import { ArrowUp } from "lucide-svelte";
 
   let y: number;
   let innerHeight = 0;
@@ -25,7 +26,7 @@
       on:click={goTop}
       class="ml-auto rounded-full bg-secondary text-secondary-foreground px-3 sm:px-4 hover:bg-primary hover:text-primary-foreground cursor-pointer aspect-square grid place-items-center"
     >
-      <i class="fa-solid fa-arrow-up" />
+      <ArrowUp/>
     </button>
   </div>
   <Header />

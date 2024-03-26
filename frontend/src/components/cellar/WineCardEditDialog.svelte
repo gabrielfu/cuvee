@@ -4,6 +4,7 @@
   import * as Dialog from "$lib/components/ui/dialog";
 	import Input from "$lib/components/ui/input/input.svelte";
 	import Label from "$lib/components/ui/label/label.svelte";
+	import { Pencil } from "lucide-svelte";
 
   export let wine: Wine;
 </script>
@@ -12,10 +13,10 @@
   <Dialog.Trigger class={
     buttonVariants({ 
       variant: "outline", 
-      class: "mx-2 mb-2 w-16 h-10 border-0 text-sm bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground",
+      class: "ml-2 mb-2 w-20 h-10 border-0 text-sm bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground",
     })
   }>
-      Edit&nbsp;<i class="fa-solid fa-pencil text-sm" />
+      Edit<Pencil class="inline ml-2" size=20 />
   </Dialog.Trigger>
   <Dialog.Content class="sm:max-w-[425px]">
     <Dialog.Header>
