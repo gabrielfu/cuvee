@@ -5,12 +5,13 @@
 	import { sortByOptions } from "$lib/sortBys";
 
   let selected = { value: "default", label: sortByOptions["default"] };
-
   export let onSelectedChange: (e: any) => void;
+
+  export let search = "";
 </script>
 
 <div class="flex items-center justify-between">
-  <Input class="max-w-sm h-[40px]" type="text" id="search" placeholder="Search" />
+  <Input class="max-w-sm h-[40px]" type="text" id="search" placeholder="Search" bind:value={search} />
 
   <div class="flex items-center space-x-2 my-4 px-2">
     <Label class="font-normal pr-1">Sort By</Label>
