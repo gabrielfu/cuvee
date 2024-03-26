@@ -2,20 +2,9 @@
   import { Input } from "$lib/components/ui/input";
   import { Label } from "$lib/components/ui/label";
   import * as Select from "$lib/components/ui/select";
-	import type { Selected } from "bits-ui";
+	import { sortByOptions } from "$lib/sortBys";
 
-  const sortBys = {
-    "default": "Default",
-    "name_asc": "Name (asc)",
-    "name_desc": "Name (desc)",
-    "vintage_asc": "Vintage (asc)",
-    "vintage_desc": "Vintage (desc)",
-    "price_asc": "Price (asc)",
-    "price_desc": "Price (desc)",
-    "newest": "Newest",
-    "oldest": "Oldest",
-  };
-  let selected = { value: "default", label: sortBys["default"] };
+  let selected = { value: "default", label: sortByOptions["default"] };
 
   export let onSelectedChange: (e: any) => void;
 </script>
@@ -30,7 +19,7 @@
         <Select.Value class="text-sm" placeholder="" />
       </Select.Trigger>
       <Select.Content>
-        {#each Object.entries(sortBys) as [value, label]}
+        {#each Object.entries(sortByOptions) as [value, label]}
         <Select.Item class="text-sm" value={value}>{label}</Select.Item>
         {/each}
       </Select.Content>
