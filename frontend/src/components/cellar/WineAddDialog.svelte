@@ -1,11 +1,11 @@
 <script lang="ts">
-	import type { Wine } from "$lib/api/wines";
   import { Button, buttonVariants } from "$lib/components/ui/button";
   import * as Dialog from "$lib/components/ui/dialog";
   import * as Form from "$lib/components/ui/form";
 	import Input from "$lib/components/ui/input/input.svelte";
-	import Label from "$lib/components/ui/label/label.svelte";
+  import { cn } from "$lib/utils.js";
 	import { CirclePlus } from "lucide-svelte";
+  import { tick } from "svelte";
 
   import { wineFormSchema, type WineFormSchema } from "./WineFormSchema";
   import {
@@ -21,6 +21,20 @@
     validators: zodClient(wineFormSchema),
   })
   const { form: formData, enhance } = form;
+  $formData.purchases = [...$formData.purchases, {quantity: 1, price: 0, date: new Date()}];
+
+	function addPurchase() {
+		$formData.purchases = [...$formData.purchases, {quantity: 1, price: 0, date: new Date()}];
+
+		tick().then(() => {
+			const urlInputs = Array.from(
+				document.querySelectorAll<HTMLElement>("#wine-form input[name='purchases']")
+			);
+			const lastInput = urlInputs[urlInputs.length - 1];
+			lastInput && lastInput.focus();
+		});
+	}
+
 </script>
 
 <Dialog.Root>
@@ -33,7 +47,7 @@
       Add<CirclePlus class="inline ml-2" size=20 />
   </Dialog.Trigger>
 
-  <Dialog.Content class="sm:max-w-[425px]">
+  <Dialog.Content class="min-w-[800px] sm:max-w-[425px] overflow-y-scroll max-h-screen">
     <Dialog.Header>
       <Dialog.Title>Add Wine</Dialog.Title>
       <Dialog.Description>
@@ -41,7 +55,7 @@
       </Dialog.Description>
     </Dialog.Header>
 
-    <form method="POST" use:enhance>
+    <form method="POST" use:enhance id="wine-form">
       <Form.Field {form} name="name">
         <Form.Control let:attrs>
           <Form.Label>Name</Form.Label>
@@ -49,6 +63,76 @@
         </Form.Control>
         <Form.FieldErrors />
       </Form.Field>
+
+      <Form.Field {form} name="vintage">
+        <Form.Control let:attrs>
+          <Form.Label>Vintage</Form.Label>
+          <Input {...attrs} bind:value={$formData.vintage} />
+        </Form.Control>
+        <Form.FieldErrors />
+      </Form.Field>
+
+      <Form.Field {form} name="format">
+        <Form.Control let:attrs>
+          <Form.Label>Format</Form.Label>
+          <Input {...attrs} bind:value={$formData.format} />
+        </Form.Control>
+        <Form.FieldErrors />
+      </Form.Field>
+
+      <Form.Field {form} name="country">
+        <Form.Control let:attrs>
+          <Form.Label>Coutry</Form.Label>
+          <Input {...attrs} bind:value={$formData.country} />
+        </Form.Control>
+        <Form.FieldErrors />
+      </Form.Field>
+
+      <Form.Field {form} name="region">
+        <Form.Control let:attrs>
+          <Form.Label>Region</Form.Label>
+          <Input {...attrs} bind:value={$formData.region} />
+        </Form.Control>
+        <Form.FieldErrors />
+      </Form.Field>
+
+      <div class="my-4">
+        <Form.Fieldset {form} name="purchases">
+          <Form.Legend>Purchases</Form.Legend>
+          {#each $formData.purchases as _, i}
+            <Form.ElementField {form} name="purchases[{i}]">
+              <Form.Description class={cn(i !== 0 && "sr-only")}>
+                Add details for your purchases.
+              </Form.Description>
+              <div class="grid grid-cols-3 gap-4">
+                <Form.Control let:attrs>
+                  <div class="grid grid-rows-2 gap-0 items-center">
+                    <Form.Label class="leading-3">Quantity</Form.Label>
+                    <Input type="number" min=1 {...attrs} bind:value={$formData.purchases[i].quantity} />
+                  </div>
+                </Form.Control>
+                <Form.Control let:attrs>
+                  <div class="grid grid-rows-2 gap-0 items-center">
+                    <Form.Label class="leading-3">Price</Form.Label>
+                    <Input type="number" step="any" class="[&::-webkit-inner-spin-button]:appearance-none" {...attrs} bind:value={$formData.purchases[i].price} />
+                  </div>
+                </Form.Control>
+                <Form.Control let:attrs>
+                  <div class="grid grid-rows-2 gap-0 items-center">
+                    <Form.Label class="leading-3">Date</Form.Label>
+                    <Input type="date" {...attrs} bind:value={$formData.purchases[i].date} />
+                  </div>
+                </Form.Control>
+              </div>
+              <Form.FieldErrors />
+            </Form.ElementField>
+          {/each}
+        </Form.Fieldset>
+        <Button type="button" variant="outline" size="sm" class="mt-2" on:click={addPurchase}>
+          Add Purchase
+        </Button>
+      </div>
+
       <Form.Button>Submit</Form.Button>
     </form>
 
