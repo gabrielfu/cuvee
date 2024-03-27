@@ -3,11 +3,16 @@
   import { Label } from "$lib/components/ui/label";
   import * as Select from "$lib/components/ui/select";
 	import { sortByOptions } from "$lib/sortBys";
+	import WineAddDialog from "./WineAddDialog.svelte";
+  import type { WineFormSchema } from "./WineFormSchema";
+  import type { SuperValidated, Infer} from "sveltekit-superforms";
 
   let selected = { value: "default", label: sortByOptions["default"] };
   export let onSelectedChange: (e: any) => void;
 
   export let search = "";
+
+  export let form: SuperValidated<Infer<WineFormSchema>>;  
 </script>
 
 <div class="flex items-center justify-between">
@@ -26,4 +31,6 @@
       </Select.Content>
     </Select.Root>
   </div>
+
+  <WineAddDialog data={form} />
 </div>

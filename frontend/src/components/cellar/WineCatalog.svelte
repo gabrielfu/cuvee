@@ -4,6 +4,8 @@
 	import WineCard from "./WineCard.svelte";
 	import WineCatalogNavbar from "./WineCatalogNavbar.svelte";
 	import { sortByOptions } from "$lib/sortBys";
+  import type { WineFormSchema } from "./WineFormSchema";
+  import type { SuperValidated, Infer} from "sveltekit-superforms";
 
   export let wines: Wine[];
   export let images: string[];
@@ -70,12 +72,14 @@
   } else {
     filteredWines = wines;
   }
+
+  export let form: SuperValidated<Infer<WineFormSchema>>;
 </script>
 
 <main>
   <h1 class="fira-sans font-bold text-3xl px-2">MY CELLAR </h1>
 
-  <WineCatalogNavbar onSelectedChange={onSelectedChange} bind:search={search} />
+  <WineCatalogNavbar onSelectedChange={onSelectedChange} bind:search={search} form={form} />
 
   {#each filteredWines as wine, i}
   <WineCard wine={wine} image={images[i]} />
