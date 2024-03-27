@@ -4,7 +4,6 @@
 	import WineCard from "./WineCard.svelte";
 	import WineCatalogNavbar from "./WineCatalogNavbar.svelte";
 	import { sortByOptions } from "$lib/sortBys";
-	import { derived } from "svelte/store";
 
   export let wines: Wine[];
   export let images: string[];
@@ -55,9 +54,19 @@
     }
   };
 
+  let normalize = (str: string): string => str.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
+
+  let wineMatches = (search: string, wine: Wine): boolean => {
+    search = normalize(search);
+    return normalize(wine.name).includes(search) 
+      || normalize(wine.vintage).includes(search) 
+      || normalize(wine.region).includes(search) 
+      || normalize(wine.country).includes(search);
+  }
+
   let search: string;
   $: if (search) {
-    filteredWines = wines.filter(wine => wine.name.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().includes(search.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase()));
+    filteredWines = wines.filter(wine => wineMatches(search, wine));
   } else {
     filteredWines = wines;
   }
