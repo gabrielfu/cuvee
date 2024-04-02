@@ -4,7 +4,7 @@
   import * as Form from "$lib/components/ui/form";
 	import { Input } from "$lib/components/ui/input";
 	import * as Table from "$lib/components/ui/table";
-	import { CirclePlus } from "lucide-svelte";
+	import { CirclePlus, Trash2 } from "lucide-svelte";
   import { tick } from "svelte";
 
   import { wineFormSchema, type WineFormSchema } from "./WineFormSchema";
@@ -35,6 +35,10 @@
 			lastInput && lastInput.focus();
 		});
 	}
+
+  function removePurchase(i: number) {
+    $formData.purchases = $formData.purchases.filter((_, index) => index !== i);
+  }
 
 </script>
 
@@ -106,6 +110,7 @@
                 <Table.Head class="h-auto text-sm">Quantity</Table.Head>
                 <Table.Head class="h-auto text-sm">Price</Table.Head>
                 <Table.Head class="h-auto text-sm">Date</Table.Head>
+                <Table.Head class="h-auto text-sm w-[20px] text-center">&nbsp;</Table.Head>
               </Table.Row>
             </Table.Header>
             <Table.Body>
@@ -126,10 +131,14 @@
                       <Input type="text" {...attrs} bind:value={$formData.purchases[i].date} />
                     </Form.Control>
                   </Table.Cell>
+                  <Table.Cell>
+                    <Button on:click={() => removePurchase(i)} disabled={$formData.purchases.length == 1}><Trash2 class="inline -m-1" size=20 /></Button>
+                  </Table.Cell>
                 </Table.Row>
               {/each}
             </Table.Body>
           </Table.Table>
+          <Form.FieldErrors />
         </Form.Fieldset>
         <Button type="button" variant="outline" size="sm" class="mt-2" on:click={addPurchase}>
           Add Purchase
