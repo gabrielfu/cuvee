@@ -74,6 +74,7 @@
           <Form.Label>Vintage</Form.Label>
           <Input {...attrs} bind:value={$formData.vintage} />
         </Form.Control>
+        <Form.Description>Year number or "NV"</Form.Description>
         <Form.FieldErrors />
       </Form.Field>
 
@@ -82,6 +83,7 @@
           <Form.Label>Format</Form.Label>
           <Input {...attrs} bind:value={$formData.format} />
         </Form.Control>
+        <Form.Description>E.g., 750ml</Form.Description>
         <Form.FieldErrors />
       </Form.Field>
 
