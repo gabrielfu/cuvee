@@ -2,8 +2,8 @@
   import { Button, buttonVariants } from "$lib/components/ui/button";
   import * as Dialog from "$lib/components/ui/dialog";
   import * as Form from "$lib/components/ui/form";
-	import Input from "$lib/components/ui/input/input.svelte";
-  import { cn } from "$lib/utils.js";
+	import { Input } from "$lib/components/ui/input";
+	import * as Table from "$lib/components/ui/table";
 	import { CirclePlus } from "lucide-svelte";
   import { tick } from "svelte";
 
@@ -99,34 +99,37 @@
       <div class="my-4">
         <Form.Fieldset {form} name="purchases">
           <Form.Legend>Purchases</Form.Legend>
-          {#each $formData.purchases as _, i}
-            <Form.ElementField {form} name="purchases[{i}]">
-              <Form.Description class={cn(i !== 0 && "sr-only")}>
-                Add details for your purchases.
-              </Form.Description>
-              <div class="grid grid-cols-3 gap-4">
-                <Form.Control let:attrs>
-                  <div class="grid grid-rows-2 gap-0 items-center">
-                    <Form.Label class="leading-3">Quantity</Form.Label>
-                    <Input type="number" min=1 {...attrs} bind:value={$formData.purchases[i].quantity} />
-                  </div>
-                </Form.Control>
-                <Form.Control let:attrs>
-                  <div class="grid grid-rows-2 gap-0 items-center">
-                    <Form.Label class="leading-3">Price</Form.Label>
-                    <Input type="number" step="any" class="[&::-webkit-inner-spin-button]:appearance-none" {...attrs} bind:value={$formData.purchases[i].price} />
-                  </div>
-                </Form.Control>
-                <Form.Control let:attrs>
-                  <div class="grid grid-rows-2 gap-0 items-center">
-                    <Form.Label class="leading-3">Date</Form.Label>
-                    <Input type="date" {...attrs} bind:value={$formData.purchases[i].date} />
-                  </div>
-                </Form.Control>
-              </div>
-              <Form.FieldErrors />
-            </Form.ElementField>
-          {/each}
+          <Table.Table>
+            <Table.Header>
+              <Table.Row>
+                <Table.Head class="h-auto text-sm">Quantity</Table.Head>
+                <Table.Head class="h-auto text-sm">Price</Table.Head>
+                <Table.Head class="h-auto text-sm">Date</Table.Head>
+              </Table.Row>
+            </Table.Header>
+            <Table.Body>
+              {#each $formData.purchases as _, i}
+                <Table.Row>
+                  <Table.Cell>
+                    <Form.Control let:attrs>
+                      <Input type="number" min=1 {...attrs} bind:value={$formData.purchases[i].quantity} />
+                    </Form.Control>
+                  </Table.Cell>
+                  <Table.Cell>
+                    <Form.Control let:attrs>
+                      <Input type="number" step="any" class="[&::-webkit-inner-spin-button]:appearance-none" {...attrs} bind:value={$formData.purchases[i].price} />
+                    </Form.Control>
+                  </Table.Cell>
+                  <Table.Cell>
+                    <Form.Control let:attrs>
+                      <Input type="date" {...attrs} bind:value={$formData.purchases[i].date} />
+                    </Form.Control>
+                  </Table.Cell>
+                </Table.Row>
+
+              {/each}
+            </Table.Body>
+          </Table.Table>
         </Form.Fieldset>
         <Button type="button" variant="outline" size="sm" class="mt-2" on:click={addPurchase}>
           Add Purchase
