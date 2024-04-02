@@ -7,9 +7,9 @@ export const wineFormSchema = z.object({
     country: z.string().min(1).max(255),
     region: z.string().min(1).max(255),
     purchases: z.array(z.object({
-        quantity: z.number().int().min(1).max(1000),
-        price: z.number().min(0),
-        date: z.date(),
+        quantity: z.coerce.number().int().min(1).max(1000),
+        price: z.coerce.number().min(0),
+        date: z.string(),
     })),
 });
  

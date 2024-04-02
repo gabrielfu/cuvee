@@ -18,13 +18,14 @@
   export let data: SuperValidated<Infer<WineFormSchema>>;
 
   const form = superForm(data, {
+    dataType: "json",
     validators: zodClient(wineFormSchema),
   })
   const { form: formData, enhance } = form;
-  $formData.purchases = [...$formData.purchases, {quantity: 1, price: 0, date: new Date()}];
+  $formData.purchases = [...$formData.purchases, {quantity: 1, price: 0, date: (new Date()).toISOString().split("T")[0]}];
 
 	function addPurchase() {
-		$formData.purchases = [...$formData.purchases, {quantity: 1, price: 0, date: new Date()}];
+		$formData.purchases = [...$formData.purchases, {quantity: 1, price: 0, date: (new Date()).toISOString().split("T")[0]}];
 
 		tick().then(() => {
 			const urlInputs = Array.from(
@@ -122,11 +123,10 @@
                   </Table.Cell>
                   <Table.Cell>
                     <Form.Control let:attrs>
-                      <Input type="date" {...attrs} bind:value={$formData.purchases[i].date} />
+                      <Input type="text" {...attrs} bind:value={$formData.purchases[i].date} />
                     </Form.Control>
                   </Table.Cell>
                 </Table.Row>
-
               {/each}
             </Table.Body>
           </Table.Table>

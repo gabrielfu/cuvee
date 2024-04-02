@@ -29,9 +29,11 @@ export const actions: Actions = {
       });
     }
 
-    console.log("add:", form.data);
-
-    const response = await fetch(`http://localhost:8080/wines`, { method: "POST", body: JSON.stringify(form.data) });
+    const response = await fetch(`http://localhost:8080/wines`, { 
+      method: "POST", 
+      body: JSON.stringify(form.data), 
+      headers: { "Content-Type": "application/json" },
+    });
     if (!response.ok) {
       return fail(500, {
         form,
