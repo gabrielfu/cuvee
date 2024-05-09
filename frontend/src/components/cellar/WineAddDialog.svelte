@@ -40,6 +40,12 @@
     $formData.purchases = $formData.purchases.filter((_, index) => index !== i);
   }
 
+  // function setPurchaseDate(event: Event, i: number) {
+  //   const target = event.target as HTMLInputElement;
+  //   const date = new Date(target.value);
+  //   $formData.purchases[i].date = date.toISOString().split("T")[0];
+  // }
+
 </script>
 
 <Dialog.Root>
@@ -106,40 +112,22 @@
       <div class="my-4">
         <Form.Fieldset {form} name="purchases">
           <Form.Legend>Purchases</Form.Legend>
-          <Table.Table>
-            <Table.Header>
-              <Table.Row>
-                <Table.Head class="h-auto text-sm">Quantity</Table.Head>
-                <Table.Head class="h-auto text-sm">Price</Table.Head>
-                <Table.Head class="h-auto text-sm">Date</Table.Head>
-                <Table.Head class="h-auto text-sm w-[20px] text-center">&nbsp;</Table.Head>
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
-              {#each $formData.purchases as _, i}
-                <Table.Row>
-                  <Table.Cell>
+            {#each $formData.purchases as _, i}
+            <div class=" border-[1px] border-input">
+              <Form.ElementField {form} name="purchases[{i}]">
                     <Form.Control let:attrs>
                       <Input type="number" min=1 {...attrs} bind:value={$formData.purchases[i].quantity} />
                     </Form.Control>
-                  </Table.Cell>
-                  <Table.Cell>
                     <Form.Control let:attrs>
                       <Input type="number" step="any" class="[&::-webkit-inner-spin-button]:appearance-none" {...attrs} bind:value={$formData.purchases[i].price} />
                     </Form.Control>
-                  </Table.Cell>
-                  <Table.Cell>
                     <Form.Control let:attrs>
                       <Input type="text" {...attrs} bind:value={$formData.purchases[i].date} />
                     </Form.Control>
-                  </Table.Cell>
-                  <Table.Cell>
                     <Button on:click={() => removePurchase(i)} disabled={$formData.purchases.length == 1}><Trash2 class="inline -m-1" size=20 /></Button>
-                  </Table.Cell>
-                </Table.Row>
-              {/each}
-            </Table.Body>
-          </Table.Table>
+              </Form.ElementField>
+            </div>
+            {/each}
           <Form.FieldErrors />
         </Form.Fieldset>
         <Button type="button" variant="outline" size="sm" class="mt-2" on:click={addPurchase}>
