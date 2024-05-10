@@ -22,6 +22,7 @@ type WineDAO struct {
 	Country   string             `bson:"country"`
 	Region    string             `bson:"region"`
 	Purchases []PurchaseDAO      `bson:"purchases"`
+	ImageUrl  string             `bson:"image_url"`
 }
 
 // WineRepository implements WineRepository

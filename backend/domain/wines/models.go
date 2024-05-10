@@ -20,6 +20,7 @@ type Wine struct {
 	Region    string          `json:"region" validate:"required"`
 	Purchases []Purchase      `json:"purchases" validate:"dive,required"` // purchase records
 	Summary   PurchaseSummary `json:"summary"`                            // total quantity and average price
+	ImageUrl  string          `json:"image_url"`
 }
 
 func daoToWine(w WineDAO) Wine {
@@ -36,6 +37,7 @@ func daoToWine(w WineDAO) Wine {
 		Region:    w.Region,
 		Purchases: purchases,
 		Summary:   SummarizePurchases(purchases),
+		ImageUrl:  w.ImageUrl,
 	}
 }
 
@@ -51,6 +53,7 @@ func wineToDAO(w Wine) WineDAO {
 		Country:   w.Country,
 		Region:    w.Region,
 		Purchases: purchases,
+		ImageUrl:  w.ImageUrl,
 	}
 }
 
