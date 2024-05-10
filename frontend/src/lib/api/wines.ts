@@ -20,6 +20,7 @@ export type Wine = {
     region: string;
     purchases: Purchase[];
     summary: PurchaseSummary;
+    imageUrl: string;
 };
 
 export const listWines = async (): Promise<Wine[]> => {
@@ -53,6 +54,7 @@ export const fakeWines: Wine[] = [
         { quantity: 1, price: 5000, date: new Date("2024-01-01") },
       ],
       summary: { quantity: 1, price: 5000 },
+      imageUrl: "https://images.vivino.com/thumbs/uDMfPG10R1efm5H1do--Ow_pb_600x600.png",
     },
     {
       id: "2",
@@ -69,6 +71,7 @@ export const fakeWines: Wine[] = [
         { quantity: 1, price: 820, date: new Date("2024-02-06") },
       ],
       summary: { quantity: 8, price: 780 },
+      imageUrl: "https://images.vivino.com/thumbs/Eh506eKdSXGvndyHHfqPug_pb_600x600.png",
     },
     {
       id: "3",
@@ -82,5 +85,6 @@ export const fakeWines: Wine[] = [
         { quantity: 2, price: 560, date: new Date("2024-03-04") },
       ],
       summary: { quantity: 3, price: 573.33 },
+      imageUrl: "https://images.vivino.com/thumbs/MCs7Ix2zS56U3-vs6GOR4A_pb_600x600.png",
     },
 ];

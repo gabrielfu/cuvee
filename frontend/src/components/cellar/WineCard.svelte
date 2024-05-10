@@ -8,13 +8,12 @@
 	import { CircleDollarSign, Wine as WineSign, Calendar, ChevronsUpDown } from "lucide-svelte";
 
   export let wine: Wine;
-  export let image: string;
 </script>
 
 <Card.Card class="bg-transparent border-x-transparent border-t-transparent text-card-foreground">
   <Card.Content>
     <div class="grid grid-cols-[minmax(224px,1fr),3fr,2fr] pt-4">
-      <img src={image} alt={wine.name} width="224" />
+      <img src={wine.imageUrl} alt={wine.name} width="224" />
       <div>
         <div class="grid grid-cols-2 items-center justify-between">
           <div>

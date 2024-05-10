@@ -8,7 +8,6 @@
   import type { SuperValidated, Infer} from "sveltekit-superforms";
 
   export let wines: Wine[];
-  export let images: string[];
 
   $: filteredWines = wines;
 
@@ -82,6 +81,6 @@
   <WineCatalogNavbar onSelectedChange={onSelectedChange} bind:search={search} form={form} />
 
   {#each filteredWines as wine, i}
-  <WineCard wine={wine} image={images[i]} />
+  <WineCard wine={wine} />
   {/each}
 </main>

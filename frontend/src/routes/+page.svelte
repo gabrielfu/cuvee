@@ -9,4 +9,4 @@
   <title>cuvée</title>
 </svelte:head>
 
-<WineCatalog wines={data.wines} images={data.images} form={data.form}/>
+<WineCatalog wines={data.wines} form={data.form}/>
