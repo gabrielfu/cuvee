@@ -58,7 +58,7 @@
       Add<CirclePlus class="inline ml-2" size=20 />
   </Dialog.Trigger>
 
-  <Dialog.Content class="min-w-[800px] sm:max-w-[425px] overflow-y-scroll max-h-screen">
+  <Dialog.Content class="min-w-[800px] sm:max-w-[425px] overflow-y-scroll max-h-screen p-8">
     <Dialog.Header>
       <Dialog.Title>Add Wine</Dialog.Title>
       <Dialog.Description>
