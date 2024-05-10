@@ -3,8 +3,7 @@
   import * as Dialog from "$lib/components/ui/dialog";
   import * as Form from "$lib/components/ui/form";
 	import { Input } from "$lib/components/ui/input";
-	import * as Table from "$lib/components/ui/table";
-	import { CirclePlus, Trash2, X } from "lucide-svelte";
+	import { CirclePlus, X } from "lucide-svelte";
   import { tick } from "svelte";
 
   import { wineFormSchema, type WineFormSchema } from "./WineFormSchema";
@@ -14,6 +13,8 @@
     superForm,
   } from "sveltekit-superforms";
   import { zodClient } from "sveltekit-superforms/adapters";
+	import { Label } from "$lib/components/ui/label";
+	import { searchImages, type ImageResult } from "$lib/api/images";
 
   export let data: SuperValidated<Infer<WineFormSchema>>;
 
@@ -46,6 +47,17 @@
   //   $formData.purchases[i].date = date.toISOString().split("T")[0];
   // }
 
+  let imageCandidates: ImageResult[] = [];
+  let imageLoading = false;
+  function searchWineImages() {
+    imageLoading = true;
+    searchImages($formData.name, $formData.vintage, $formData.country, $formData.region).then((images) => {
+      imageCandidates = images;
+    }).finally(() => {
+      imageLoading = false;
+      tick();
+    });
+  }
 </script>
 
 <Dialog.Root>
@@ -142,6 +154,17 @@
         <Button type="button" variant="outline" size="sm" class="mt-2 h-8" on:click={addPurchase}>
           Add Purchase
         </Button>
+      </div>
+
+      <div class="grid grid-flow-row my-4">
+        <Label>Add Image</Label>
+        <Button type="button" variant="outline" size="sm" class="mt-2 h-8" on:click={searchWineImages} disabled={imageLoading}>
+          Search for an image online
+        </Button>
+        {#each imageCandidates as image}
+          <p>{image.link}</p>
+          <!-- <img src={image.link} alt="Wine Image" class="w-32 h-32" /> -->
+        {/each}
       </div>
 
       <Form.Button class="h-8">Submit</Form.Button>

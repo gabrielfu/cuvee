@@ -1,4 +1,4 @@
-const baseUrl = 'http://localhost:8080';
+import { baseUrl } from "./utils";
 
 export type PurchaseSummary = {
     quantity: number;
