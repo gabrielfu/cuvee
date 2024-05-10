@@ -13,7 +13,7 @@
   <Dialog.Trigger class={
     buttonVariants({ 
       variant: "outline", 
-      class: "ml-2 mb-2 w-20 h-10 border-0 text-sm bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground",
+      class: "px-2 ml-2 mb-2 w-20 h-8 border-0 text-sm bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground",
     })
   }>
       Edit<Pencil class="inline ml-2" size=20 />
@@ -48,7 +48,7 @@
       </div>
     </div>
     <Dialog.Footer>
-      <Button type="submit" class="text-sm bg-primary text-primary-foreground rounded-md p-4">Save</Button>
+      <Button type="submit" class="text-sm h-8 bg-primary text-primary-foreground rounded-md p-4">Save</Button>
     </Dialog.Footer>
   </Dialog.Content>
 </Dialog.Root>

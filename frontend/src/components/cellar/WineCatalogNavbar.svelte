@@ -16,7 +16,7 @@
 </script>
 
 <div class="flex items-center justify-between">
-  <Input class="max-w-sm h-[40px]" type="text" id="search" placeholder="Search" bind:value={search} />
+  <Input class="max-w-sm" type="text" id="search" placeholder="Search" bind:value={search} />
 
   <div class="flex items-center space-x-2 my-4 px-2">
     <Label class="font-normal pr-1">Sort By</Label>

@@ -4,7 +4,7 @@
   import * as Form from "$lib/components/ui/form";
 	import { Input } from "$lib/components/ui/input";
 	import * as Table from "$lib/components/ui/table";
-	import { CirclePlus, Trash2 } from "lucide-svelte";
+	import { CirclePlus, Trash2, X } from "lucide-svelte";
   import { tick } from "svelte";
 
   import { wineFormSchema, type WineFormSchema } from "./WineFormSchema";
@@ -52,7 +52,7 @@
   <Dialog.Trigger class={
     buttonVariants({ 
       variant: "outline", 
-      class: "ml-2 mb-2 w-20 h-10 border-0 text-sm bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground",
+      class: "ml-2 w-20 h-8 border-0 text-sm bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground",
     })
   }>
       Add<CirclePlus class="inline ml-2" size=20 />
@@ -113,29 +113,38 @@
         <Form.Fieldset {form} name="purchases">
           <Form.Legend>Purchases</Form.Legend>
             {#each $formData.purchases as _, i}
-            <div class=" border-[1px] border-input">
+            <div class="grid grid-cols-[1fr_48px] gap-4 rounded-md border-[1px] border-input px-4 py-4">
               <Form.ElementField {form} name="purchases[{i}]">
-                    <Form.Control let:attrs>
-                      <Input type="number" min=1 {...attrs} bind:value={$formData.purchases[i].quantity} />
-                    </Form.Control>
-                    <Form.Control let:attrs>
-                      <Input type="number" step="any" class="[&::-webkit-inner-spin-button]:appearance-none" {...attrs} bind:value={$formData.purchases[i].price} />
-                    </Form.Control>
-                    <Form.Control let:attrs>
-                      <Input type="text" {...attrs} bind:value={$formData.purchases[i].date} />
-                    </Form.Control>
-                    <Button on:click={() => removePurchase(i)} disabled={$formData.purchases.length == 1}><Trash2 class="inline -m-1" size=20 /></Button>
+                <Form.Control let:attrs>
+                  <div class="flex gap-4 mb-2 items-start w-auto">
+                    <Form.Label class="w-32 mt-2">Quantity</Form.Label>
+                    <Input type="number" min=1 {...attrs} bind:value={$formData.purchases[i].quantity} />
+                  </div>
+                </Form.Control>
+                <Form.Control let:attrs>
+                  <div class="flex gap-4 mb-2 items-start w-auto">
+                    <Form.Label class="w-32 mt-2">Average Price</Form.Label>
+                    <Input type="number" step="any" class="[&::-webkit-inner-spin-button]:appearance-none" {...attrs} bind:value={$formData.purchases[i].price} />
+                  </div>
+                </Form.Control>
+                <Form.Control let:attrs>
+                  <div class="flex gap-4 mb-2 items-start w-auto">
+                    <Form.Label class="w-32 mt-2">Date</Form.Label>
+                    <Input type="text" {...attrs} bind:value={$formData.purchases[i].date} />
+                  </div>
+                </Form.Control>
               </Form.ElementField>
+              <Button class="w-8 h-8" on:click={() => removePurchase(i)} disabled={$formData.purchases.length == 1}><X class="inline -m-2" size=20 /></Button>
             </div>
             {/each}
           <Form.FieldErrors />
         </Form.Fieldset>
-        <Button type="button" variant="outline" size="sm" class="mt-2" on:click={addPurchase}>
+        <Button type="button" variant="outline" size="sm" class="mt-2 h-8" on:click={addPurchase}>
           Add Purchase
         </Button>
       </div>
 
-      <Form.Button>Submit</Form.Button>
+      <Form.Button class="h-8">Submit</Form.Button>
     </form>
 
   </Dialog.Content>
