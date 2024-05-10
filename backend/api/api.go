@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"cuvee/db"
+	"cuvee/domain/images"
 	"cuvee/domain/wines"
 	"log"
 	"net/http"
@@ -12,6 +13,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	_ "github.com/joho/godotenv/autoload"
 )
 
 func initServer(r *gin.Engine) {
@@ -61,11 +63,15 @@ func Run() {
 		log.Fatalf("Failed to connect to MongoDB: %v", err)
 	}
 
-	// register service routes
+	// register wine service
 	repo := wines.NewWineRepository(collection)
 	validate := wines.NewWineJSONValidator()
 	service := wines.NewWineService(repo, validate)
 	wines.RegisterRoutes(r, service)
+
+	// register image service
+	imageService := images.NewImageService(os.Getenv("GOOGLE_SEARCH_CX"), os.Getenv("GOOGLE_SEARCH_API_KEY"))
+	images.RegisterRoutes(r, imageService)
 
 	initServer(r)
 }
