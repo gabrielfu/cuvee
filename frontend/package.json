@@ -37,6 +37,7 @@
 	"dependencies": {
 		"bits-ui": "^0.19.7",
 		"clsx": "^2.1.0",
+		"embla-carousel-svelte": "^8.0.4",
 		"formsnap": "^0.5.1",
 		"lucide-svelte": "^0.358.0",
 		"tailwind-merge": "^2.2.1",

@@ -11,6 +11,7 @@ export const wineFormSchema = z.object({
         price: z.coerce.number().min(0),
         date: z.string(),
     })),
+    imageUrl: z.string().nullable(),
 });
  
 export type WineFormSchema = typeof wineFormSchema;

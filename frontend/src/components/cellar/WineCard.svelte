@@ -13,7 +13,7 @@
 <Card.Card class="bg-transparent border-x-transparent border-t-transparent text-card-foreground">
   <Card.Content>
     <div class="grid grid-cols-[minmax(224px,1fr),3fr,2fr] pt-4">
-      <img src={wine.imageUrl} alt={wine.name} width="224" />
+      <img src={wine.imageUrl} alt={wine.name} class="h-[224px] max-h-[224px] max-w-[224px]" />
       <div>
         <div class="grid grid-cols-2 items-center justify-between">
           <div>

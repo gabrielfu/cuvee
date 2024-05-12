@@ -3,6 +3,7 @@
   import * as Dialog from "$lib/components/ui/dialog";
   import * as Form from "$lib/components/ui/form";
 	import { Input } from "$lib/components/ui/input";
+  import * as Carousel from "$lib/components/ui/carousel";
 	import { CirclePlus, X } from "lucide-svelte";
   import { tick } from "svelte";
 
@@ -48,15 +49,27 @@
   // }
 
   let imageCandidates: ImageResult[] = [];
+  let imageError: string | null = null;
   let imageLoading = false;
   function searchWineImages() {
     imageLoading = true;
     searchImages($formData.name, $formData.vintage, $formData.country, $formData.region).then((images) => {
       imageCandidates = images;
+      imageError = null;
+    }).catch((error) => {
+      imageError = error.message;
     }).finally(() => {
       imageLoading = false;
       tick();
     });
+  }
+
+  function onImageClicked(image: ImageResult) {
+    if ($formData.imageUrl == image.link) {
+      $formData.imageUrl = null;
+    } else {
+      $formData.imageUrl = image.link;
+    }
   }
 </script>
 
@@ -161,10 +174,28 @@
         <Button type="button" variant="outline" size="sm" class="mt-2 h-8" on:click={searchWineImages} disabled={imageLoading}>
           Search for an image online
         </Button>
-        {#each imageCandidates as image}
-          <p>{image.link}</p>
-          <!-- <img src={image.link} alt="Wine Image" class="w-32 h-32" /> -->
-        {/each}
+        {#if imageError}
+          <p class="text-red-600 text-center p-2">{imageError}</p>
+        {:else}
+          <Carousel.Root>
+            <Carousel.Content class="my-4 ">
+              {#each imageCandidates as image (image.link)}
+                <!-- <p>{image.link}</p> -->
+                <Carousel.Item class="basis-1/4">
+                  <div 
+                    class={
+                      "rounded-md shadow-lg items-center text-center m-2 border-2 " 
+                      + ($formData.imageUrl == image.link ? "border-red-600" : "")
+                    } 
+                    on:click={() => onImageClicked(image)} 
+                  >
+                    <img src={image.link} alt={image.link} class="mx-auto h-[224px] max-h-[224px] max-w-[224px]" />
+                  </div>
+                </Carousel.Item>
+              {/each}
+            </Carousel.Content>
+          </Carousel.Root>
+        {/if}
       </div>
 
       <Form.Button class="h-8">Submit</Form.Button>
