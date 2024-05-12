@@ -12,19 +12,14 @@ export const searchImages = async (name: string, vintage: string, country: strin
     url += `&vintage=${encodeURIComponent(vintage)}`;
     url += `&country=${encodeURIComponent(country)}`;
     url += `&region=${encodeURIComponent(region)}`;
-    try {
-        const response = await fetch(url);
-        const result = await response.json();
-        if (response.ok) {
-            const items = result.items;
-            if (items != null && items.length > 0) {
-                return items;
-            }
-            throw new Error("No images found");
+    const response = await fetch(url);
+    const result = await response.json();
+    if (response.ok) {
+        const items = result.items;
+        if (items != null && items.length > 0) {
+            return items;
         }
-        throw new Error(`Failed to fetch images: ${result.error}`);
+        throw new Error("No images found");
     }
-    catch (error) {
-        throw new Error("Failed to fetch images");
-    }
+    throw new Error(`Failed to fetch images: ${result.error}`);
 }
