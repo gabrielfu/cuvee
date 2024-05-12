@@ -18,6 +18,14 @@ func handleImageSearch(s *ImageService) gin.HandlerFunc {
 			country: c.Query("country"),
 			region:  c.Query("region"),
 		}
+
+		if request.name == "" {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "name is required",
+			})
+			return
+		}
+
 		resp, err := s.Search(c, request)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
