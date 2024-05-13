@@ -1,7 +1,7 @@
 package wines
 
 import (
-	"strconv"
+	"regexp"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -54,6 +54,6 @@ func ValidateVintage(fl validator.FieldLevel) bool {
 	if value == "NV" {
 		return true
 	}
-	_, err := strconv.Atoi(value)
-	return err == nil
+	match, err := regexp.MatchString(`^\d{4}$`, value)
+	return err == nil && match
 }
