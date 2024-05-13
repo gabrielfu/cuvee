@@ -60,8 +60,25 @@ func validateImageLink(link string) bool {
 	return strings.HasPrefix(link, "https://") && validateIsImage(link)
 }
 
+func buildQuery(request ImageSearchRequest) string {
+	query := "vivino "
+	if request.name != "" {
+		query += request.name + " "
+	}
+	if request.vintage != "" {
+		query += request.vintage + " "
+	}
+	if request.country != "" {
+		query += request.country + " "
+	}
+	if request.region != "" {
+		query += request.region + " "
+	}
+	return url.QueryEscape(query)
+}
+
 func (s *ImageService) Search(ctx context.Context, request ImageSearchRequest) (ImageSearchResponse, error) {
-	query := url.QueryEscape("vivino " + request.name + " " + request.vintage + " " + request.country + " " + request.region)
+	query := buildQuery(request)
 	reqUrl := "https://content-customsearch.googleapis.com/customsearch/v1?searchType=image&q=" + query + "&cx=" + s.googleSearchCx + "&key=" + s.googleSearchApiKey
 	resp, err := http.Get(reqUrl)
 
