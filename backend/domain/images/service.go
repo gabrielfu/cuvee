@@ -47,19 +47,17 @@ func NewImageService(googleSearchCx string, googleSearchApiKey string) *ImageSer
 	return &ImageService{googleSearchCx: googleSearchCx, googleSearchApiKey: googleSearchApiKey}
 }
 
-var imageExtensions = []string{".jpg", ".jpeg", ".png", ".webp"}
-
-func validateImageExtensions(link string) bool {
-	for _, ext := range imageExtensions {
-		if strings.HasSuffix(link, ext) {
-			return true
-		}
+func validateIsImage(link string) bool {
+	resp, err := http.Get(link)
+	if err != nil || resp.StatusCode != http.StatusOK {
+		return false
 	}
-	return false
+	contentType := resp.Header.Get("Content-Type")
+	return strings.HasPrefix(contentType, "image/")
 }
 
 func validateImageLink(link string) bool {
-	return strings.HasPrefix(link, "https://") && validateImageExtensions(link)
+	return strings.HasPrefix(link, "https://") && validateIsImage(link)
 }
 
 func (s *ImageService) Search(ctx context.Context, request ImageSearchRequest) (ImageSearchResponse, error) {
