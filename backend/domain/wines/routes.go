@@ -19,14 +19,16 @@ func handleCreateWine(s *WineService) gin.HandlerFunc {
 		var wine Wine
 		if err := c.BindJSON(&wine); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
+				"type":  "bad request",
 				"error": err.Error(),
 			})
 			return
 		}
 
-		if err := s.validate.Validate(wine); err != nil {
+		if errs := s.validate.Validate(wine); len(errs) > 0 {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
+				"type":  "validation",
+				"error": errs,
 			})
 			return
 		}
@@ -34,6 +36,7 @@ func handleCreateWine(s *WineService) gin.HandlerFunc {
 		id, err := s.CreateWine(c, &wine)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
+				"type":  "internal",
 				"error": err.Error(),
 			})
 			return
@@ -77,20 +80,23 @@ func handleUpdateWine(s *WineService) gin.HandlerFunc {
 		var wine Wine
 		if err := c.BindJSON(&wine); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
+				"type":  "bad request",
 				"error": err.Error(),
 			})
 			return
 		}
 
-		if err := s.validate.Validate(wine); err != nil {
+		if errs := s.validate.Validate(wine); len(errs) > 0 {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
+				"type":  "validation",
+				"error": errs,
 			})
 			return
 		}
 
 		if err := s.UpdateWine(c, id, &wine); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
+				"type":  "internal",
 				"error": err.Error(),
 			})
 			return

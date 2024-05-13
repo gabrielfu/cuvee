@@ -241,8 +241,8 @@
 
       <Form.Button class="h-8">Submit</Form.Button>
       {#if $allErrors.length}
-        <p class="invalid">
-          Encountered error when trying to create a wine. Please try again later.
+        <p class="invalid pt-4 text-red-600" style="white-space: pre-wrap">
+          {$allErrors[0].messages[0]}
         </p>
       {/if}
     </form>

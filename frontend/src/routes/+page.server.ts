@@ -29,8 +29,23 @@ export const actions: Actions = {
       headers: { "Content-Type": "application/json" }
     });
     if (!response.ok) {
-      const text = await response.text();
-      return setError(form, "", text);
+      try {
+        const error = await response.json();
+        if (error.type == "validation") {
+          let message = "Invalid fields:\n";
+          for (const innerError of error.error) {
+            message += `${innerError.field}: ${innerError.message}\n`;
+          }
+          return setError(form, "", message);
+        }
+        return setError(form, "", error.error);
+      } catch (e) {
+        return setError(
+          form,
+          "",
+          "Encountered error when trying to create a wine. Please try again later."
+        );
+      }
     }
 
     return { form };
