@@ -2,7 +2,7 @@
   import "../app.css";
   import Header from "../components/Header.svelte";
   import Footer from "../components/Footer.svelte";
-	import { ArrowUp } from "lucide-svelte";
+  import { ArrowUp } from "lucide-svelte";
 
   let y: number;
   let innerHeight = 0;
@@ -13,20 +13,18 @@
   }
 </script>
 
-<div 
+<div
   class="container relative flex flex-col max-w-[1400px] mx-auto w-full text-sm sm:text-base min-h-screen"
 >
   <div
-    class={
-      "fixed bottom-0 w-full duration-200 flex p-10 z-[10] " +
-      (y > 0 ? " opacity-full pointer-events-auto" : " pointer-events-none opacity-0")
-    }
+    class={"fixed bottom-0 w-full duration-200 flex p-10 z-[10] " +
+      (y > 0 ? " opacity-full pointer-events-auto" : " pointer-events-none opacity-0")}
   >
     <button
       on:click={goTop}
       class="ml-auto rounded-full bg-secondary text-secondary-foreground px-3 sm:px-4 hover:bg-primary hover:text-primary-foreground cursor-pointer aspect-square grid place-items-center"
     >
-      <ArrowUp/>
+      <ArrowUp />
     </button>
   </div>
   <Header />

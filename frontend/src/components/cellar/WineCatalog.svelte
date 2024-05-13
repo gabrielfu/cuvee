@@ -1,11 +1,11 @@
 <script lang="ts">
   import type { Wine } from "$lib/api/wines";
-	import type { Selected } from "bits-ui";
-	import WineCard from "./WineCard.svelte";
-	import WineCatalogNavbar from "./WineCatalogNavbar.svelte";
-	import { sortByOptions } from "$lib/sortBys";
+  import type { Selected } from "bits-ui";
+  import WineCard from "./WineCard.svelte";
+  import WineCatalogNavbar from "./WineCatalogNavbar.svelte";
+  import { sortByOptions } from "$lib/sortBys";
   import type { WineFormSchema } from "./WineFormSchema";
-  import type { SuperValidated, Infer} from "sveltekit-superforms";
+  import type { SuperValidated, Infer } from "sveltekit-superforms";
 
   export let wines: Wine[];
 
@@ -21,10 +21,10 @@
         break;
       case "vintage_asc":
         filteredWines = wines.sort((a, b) => a.vintage.localeCompare(b.vintage));
-        break
+        break;
       case "vintage_desc":
         filteredWines = wines.sort((a, b) => b.vintage.localeCompare(a.vintage));
-        break
+        break;
       case "price_asc":
         filteredWines = wines.sort((a, b) => a.summary.price - b.summary.price);
         break;
@@ -55,19 +55,25 @@
     }
   };
 
-  let normalize = (str: string): string => str.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
+  let normalize = (str: string): string =>
+    str
+      .normalize("NFD")
+      .replace(/\p{Diacritic}/gu, "")
+      .toLowerCase();
 
   let wineMatches = (search: string, wine: Wine): boolean => {
     search = normalize(search);
-    return normalize(wine.name).includes(search) 
-      || normalize(wine.vintage).includes(search) 
-      || normalize(wine.region).includes(search) 
-      || normalize(wine.country).includes(search);
-  }
+    return (
+      normalize(wine.name).includes(search) ||
+      normalize(wine.vintage).includes(search) ||
+      normalize(wine.region).includes(search) ||
+      normalize(wine.country).includes(search)
+    );
+  };
 
   let search: string;
   $: if (search) {
-    filteredWines = wines.filter(wine => wineMatches(search, wine));
+    filteredWines = wines.filter((wine) => wineMatches(search, wine));
   } else {
     filteredWines = wines;
   }
@@ -76,11 +82,11 @@
 </script>
 
 <main>
-  <h1 class="fira-sans font-bold text-3xl px-2">MY CELLAR </h1>
+  <h1 class="fira-sans font-bold text-3xl px-2">MY CELLAR</h1>
 
-  <WineCatalogNavbar onSelectedChange={onSelectedChange} bind:search={search} form={form} />
+  <WineCatalogNavbar {onSelectedChange} bind:search {form} />
 
   {#each filteredWines as wine, i}
-  <WineCard wine={wine} />
+    <WineCard {wine} />
   {/each}
 </main>

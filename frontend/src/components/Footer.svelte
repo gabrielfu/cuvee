@@ -8,5 +8,5 @@
       <Icon name="github" />
     </a>
     <p class="fira-sans text-[16px]">©2024 cuvée. All rights reserved.</p>
-</div>
+  </div>
 </footer>

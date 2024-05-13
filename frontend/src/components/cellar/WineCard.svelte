@@ -3,9 +3,9 @@
   import * as Collapsible from "$lib/components/ui/collapsible";
   import * as Table from "$lib/components/ui/table";
 
-	import type { Wine } from "$lib/api/wines";
-	import WineCardEditDialog from "./WineCardEditDialog.svelte";
-	import { CircleDollarSign, Wine as WineSign, Calendar, ChevronsUpDown } from "lucide-svelte";
+  import type { Wine } from "$lib/api/wines";
+  import WineCardEditDialog from "./WineCardEditDialog.svelte";
+  import { CircleDollarSign, Wine as WineSign, Calendar, ChevronsUpDown } from "lucide-svelte";
 
   export let wine: Wine;
 </script>
@@ -21,47 +21,60 @@
               {wine.name}
             </Card.Title>
 
-            <p class="text-sm text-muted-foreground mb-4">{wine.vintage}&#xff5c;{wine.format}&#xff5c;{wine.region}&#xff5c;{wine.country}</p>
+            <p class="text-sm text-muted-foreground mb-4">
+              {wine.vintage}&#xff5c;{wine.format}&#xff5c;{wine.region}&#xff5c;{wine.country}
+            </p>
           </div>
-          <WineCardEditDialog wine={wine} />
+          <WineCardEditDialog {wine} />
         </div>
 
         <Card.Card class="bg-card w-[160px] mx-2 px-4 py-2 mb-2">
           <p class="text-sm">
-            <WineSign class="inline mr-2" size=20 />{wine.summary.quantity} bottle{wine.summary.quantity > 1 ? 's' : ''}
+            <WineSign class="inline mr-2" size="20" />{wine.summary.quantity} bottle{wine.summary
+              .quantity > 1
+              ? "s"
+              : ""}
           </p>
           <p class="text-sm">
-            <CircleDollarSign class="inline mr-2" size=20 />{wine.summary.price.toFixed(2)}
+            <CircleDollarSign class="inline mr-2" size="20" />{wine.summary.price.toFixed(2)}
           </p>
         </Card.Card>
 
         <Collapsible.Root class="pl-4 pt-2">
-          <Collapsible.Trigger class="text-sm text-muted-foreground">Expand purchases <ChevronsUpDown class="inline" size=20 /></Collapsible.Trigger>
+          <Collapsible.Trigger class="text-sm text-muted-foreground"
+            >Expand purchases <ChevronsUpDown class="inline" size="20" /></Collapsible.Trigger
+          >
           <Collapsible.Content>
             <Table.Root class="w-auto pt-2">
               <Table.Header>
                 <Table.Row class="leading-none">
-                  <Table.Head class="h-auto py-1 text-sm text-muted-foreground"><WineSign class="inline mr-2" size=20 /></Table.Head>
-                  <Table.Head class="h-auto py-1 text-sm text-muted-foreground"><CircleDollarSign class="inline mr-2" size=20 /></Table.Head>
-                  <Table.Head class="h-auto py-1 text-sm text-muted-foreground"><Calendar class="inline mr-2" size=20 /></Table.Head>
+                  <Table.Head class="h-auto py-1 text-sm text-muted-foreground"
+                    ><WineSign class="inline mr-2" size="20" /></Table.Head
+                  >
+                  <Table.Head class="h-auto py-1 text-sm text-muted-foreground"
+                    ><CircleDollarSign class="inline mr-2" size="20" /></Table.Head
+                  >
+                  <Table.Head class="h-auto py-1 text-sm text-muted-foreground"
+                    ><Calendar class="inline mr-2" size="20" /></Table.Head
+                  >
                 </Table.Row>
               </Table.Header>
               <Table.Body>
                 {#each [...wine.purchases].sort().reverse() as entry}
-                <Table.Row class="leading-none">
-                  <Table.Cell class="py-1 text-sm">{entry.quantity}</Table.Cell>
-                  <Table.Cell class="py-1 text-sm">{entry.price}</Table.Cell>
-                  <Table.Cell class="py-1 text-sm">{entry.date.toISOString().slice(0, 10)}</Table.Cell>
-                </Table.Row>
+                  <Table.Row class="leading-none">
+                    <Table.Cell class="py-1 text-sm">{entry.quantity}</Table.Cell>
+                    <Table.Cell class="py-1 text-sm">{entry.price}</Table.Cell>
+                    <Table.Cell class="py-1 text-sm"
+                      >{entry.date.toISOString().slice(0, 10)}</Table.Cell
+                    >
+                  </Table.Row>
                 {/each}
               </Table.Body>
             </Table.Root>
           </Collapsible.Content>
         </Collapsible.Root>
       </div>
-      <div>
-
-      </div>
+      <div></div>
     </div>
   </Card.Content>
 </Card.Card>

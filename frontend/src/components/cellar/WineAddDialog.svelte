@@ -1,34 +1,34 @@
 <script lang="ts">
-  import { Button, buttonVariants } from '$lib/components/ui/button';
-  import * as Dialog from '$lib/components/ui/dialog';
-  import * as Form from '$lib/components/ui/form';
-  import { Input } from '$lib/components/ui/input';
-  import * as Carousel from '$lib/components/ui/carousel';
-  import * as Card from '$lib/components/ui/card';
-  import { CirclePlus, X } from 'lucide-svelte';
-  import { tick } from 'svelte';
+  import { Button, buttonVariants } from "$lib/components/ui/button";
+  import * as Dialog from "$lib/components/ui/dialog";
+  import * as Form from "$lib/components/ui/form";
+  import { Input } from "$lib/components/ui/input";
+  import * as Carousel from "$lib/components/ui/carousel";
+  import * as Card from "$lib/components/ui/card";
+  import { CirclePlus, X } from "lucide-svelte";
+  import { tick } from "svelte";
 
-  import { wineFormSchema, type WineFormSchema } from './WineFormSchema';
-  import { type SuperValidated, type Infer, superForm } from 'sveltekit-superforms';
-  import { zodClient } from 'sveltekit-superforms/adapters';
-  import { searchImages, type ImageResult } from '$lib/api/images';
+  import { wineFormSchema, type WineFormSchema } from "./WineFormSchema";
+  import { type SuperValidated, type Infer, superForm } from "sveltekit-superforms";
+  import { zodClient } from "sveltekit-superforms/adapters";
+  import { searchImages, type ImageResult } from "$lib/api/images";
 
   export let data: SuperValidated<Infer<WineFormSchema>>;
 
   const form = superForm(data, {
-    dataType: 'json',
+    dataType: "json",
     validators: zodClient(wineFormSchema)
   });
   const { form: formData, enhance } = form;
   $formData.purchases = [
     ...$formData.purchases,
-    { quantity: 1, price: 0, date: new Date().toISOString().split('T')[0] }
+    { quantity: 1, price: 0, date: new Date().toISOString().split("T")[0] }
   ];
 
   function addPurchase() {
     $formData.purchases = [
       ...$formData.purchases,
-      { quantity: 1, price: 0, date: new Date().toISOString().split('T')[0] }
+      { quantity: 1, price: 0, date: new Date().toISOString().split("T")[0] }
     ];
 
     tick().then(() => {
@@ -55,15 +55,18 @@
   let imageLoading = false;
   function searchWineImages() {
     imageLoading = true;
-    searchImages($formData.name, $formData.vintage, $formData.country, $formData.region).then((images) => {
-      imageCandidates = images;
-      imageError = null;
-    }).catch((error) => {
-      imageError = error.message;
-    }).finally(() => {
-      imageLoading = false;
-      tick();
-    });
+    searchImages($formData.name, $formData.vintage, $formData.country, $formData.region)
+      .then((images) => {
+        imageCandidates = images;
+        imageError = null;
+      })
+      .catch((error) => {
+        imageError = error.message;
+      })
+      .finally(() => {
+        imageLoading = false;
+        tick();
+      });
   }
 
   function onImageClicked(image: ImageResult) {
@@ -76,21 +79,20 @@
 </script>
 
 <Dialog.Root>
-  <Dialog.Trigger class={
-    buttonVariants({ 
-      variant: "outline", 
-      class: "ml-2 w-20 h-8 border-0 text-sm bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground",
-    })
-  }>
-      Add<CirclePlus class="inline ml-2" size=20 />
+  <Dialog.Trigger
+    class={buttonVariants({
+      variant: "outline",
+      class:
+        "ml-2 w-20 h-8 border-0 text-sm bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"
+    })}
+  >
+    Add<CirclePlus class="inline ml-2" size="20" />
   </Dialog.Trigger>
 
   <Dialog.Content class="min-w-[800px] sm:max-w-[425px] overflow-y-scroll max-h-screen p-8">
     <Dialog.Header>
       <Dialog.Title>Add Wine</Dialog.Title>
-      <Dialog.Description>
-        Add a wine to your cellar.
-      </Dialog.Description>
+      <Dialog.Description>Add a wine to your cellar.</Dialog.Description>
     </Dialog.Header>
 
     <form method="POST" use:enhance id="wine-form">
@@ -140,18 +142,31 @@
         <Form.Fieldset {form} name="purchases">
           <Form.Legend>Purchases</Form.Legend>
           {#each $formData.purchases as _, i}
-            <div class="grid grid-cols-[1fr_48px] gap-4 rounded-md border-[1px] border-input px-4 py-4">
+            <div
+              class="grid grid-cols-[1fr_48px] gap-4 rounded-md border-[1px] border-input px-4 py-4"
+            >
               <Form.ElementField {form} name="purchases[{i}]">
                 <Form.Control let:attrs>
                   <div class="flex gap-4 mb-2 items-start w-auto">
                     <Form.Label class="w-32 mt-2">Quantity</Form.Label>
-                    <Input type="number" min=1 {...attrs} bind:value={$formData.purchases[i].quantity} />
+                    <Input
+                      type="number"
+                      min="1"
+                      {...attrs}
+                      bind:value={$formData.purchases[i].quantity}
+                    />
                   </div>
                 </Form.Control>
                 <Form.Control let:attrs>
                   <div class="flex gap-4 mb-2 items-start w-auto">
                     <Form.Label class="w-32 mt-2">Average Price</Form.Label>
-                    <Input type="number" step="any" class="[&::-webkit-inner-spin-button]:appearance-none" {...attrs} bind:value={$formData.purchases[i].price} />
+                    <Input
+                      type="number"
+                      step="any"
+                      class="[&::-webkit-inner-spin-button]:appearance-none"
+                      {...attrs}
+                      bind:value={$formData.purchases[i].price}
+                    />
                   </div>
                 </Form.Control>
                 <Form.Control let:attrs>
@@ -161,7 +176,12 @@
                   </div>
                 </Form.Control>
               </Form.ElementField>
-              <Button class="w-8 h-8" on:click={() => removePurchase(i)} disabled={$formData.purchases.length == 1}><X class="inline -m-2" size=20 /></Button>
+              <Button
+                class="w-8 h-8"
+                on:click={() => removePurchase(i)}
+                disabled={$formData.purchases.length == 1}
+                ><X class="inline -m-2" size="20" /></Button
+              >
             </div>
           {/each}
           <Form.FieldErrors />
@@ -190,17 +210,22 @@
             <Carousel.Root class="w-full max-w-lg">
               <Carousel.Content class="my-4 -ml-2">
                 {#each imageCandidates as image (image.link)}
-                <Carousel.Item class=" basis-[200px]">
-                  <div on:click={() => onImageClicked(image)}>
-                    <Card.Root 
-                      class={"items-center text-center shadow-lg overflow-hidden border-2 " + ($formData.imageUrl == image.link ? 'border-red-600' : '')}
-                    >
-                      <Card.Content>
-                      <img src={image.link} alt={image.link} class="m-auto max-h-[200px] max-w-[200px] " />
-                    </Card.Content>
-                  </Card.Root>
-                  </div>
-                </Carousel.Item>
+                  <Carousel.Item class=" basis-[200px]">
+                    <div on:click={() => onImageClicked(image)}>
+                      <Card.Root
+                        class={"items-center text-center shadow-lg overflow-hidden border-2 " +
+                          ($formData.imageUrl == image.link ? "border-red-600" : "")}
+                      >
+                        <Card.Content>
+                          <img
+                            src={image.link}
+                            alt={image.link}
+                            class="m-auto max-h-[200px] max-w-[200px]"
+                          />
+                        </Card.Content>
+                      </Card.Root>
+                    </div>
+                  </Carousel.Item>
                 {/each}
               </Carousel.Content>
             </Carousel.Root>
