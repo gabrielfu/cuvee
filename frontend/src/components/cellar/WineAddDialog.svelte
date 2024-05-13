@@ -1,42 +1,44 @@
 <script lang="ts">
-  import { Button, buttonVariants } from "$lib/components/ui/button";
-  import * as Dialog from "$lib/components/ui/dialog";
-  import * as Form from "$lib/components/ui/form";
-	import { Input } from "$lib/components/ui/input";
-  import * as Carousel from "$lib/components/ui/carousel";
-	import { CirclePlus, X } from "lucide-svelte";
-  import { tick } from "svelte";
+  import { Button, buttonVariants } from '$lib/components/ui/button';
+  import * as Dialog from '$lib/components/ui/dialog';
+  import * as Form from '$lib/components/ui/form';
+  import { Input } from '$lib/components/ui/input';
+  import * as Carousel from '$lib/components/ui/carousel';
+  import * as Card from '$lib/components/ui/card';
+  import { CirclePlus, X } from 'lucide-svelte';
+  import { tick } from 'svelte';
 
-  import { wineFormSchema, type WineFormSchema } from "./WineFormSchema";
-  import {
-    type SuperValidated,
-    type Infer,
-    superForm,
-  } from "sveltekit-superforms";
-  import { zodClient } from "sveltekit-superforms/adapters";
-	import { Label } from "$lib/components/ui/label";
-	import { searchImages, type ImageResult } from "$lib/api/images";
+  import { wineFormSchema, type WineFormSchema } from './WineFormSchema';
+  import { type SuperValidated, type Infer, superForm } from 'sveltekit-superforms';
+  import { zodClient } from 'sveltekit-superforms/adapters';
+  import { searchImages, type ImageResult } from '$lib/api/images';
 
   export let data: SuperValidated<Infer<WineFormSchema>>;
 
   const form = superForm(data, {
-    dataType: "json",
-    validators: zodClient(wineFormSchema),
-  })
+    dataType: 'json',
+    validators: zodClient(wineFormSchema)
+  });
   const { form: formData, enhance } = form;
-  $formData.purchases = [...$formData.purchases, {quantity: 1, price: 0, date: (new Date()).toISOString().split("T")[0]}];
+  $formData.purchases = [
+    ...$formData.purchases,
+    { quantity: 1, price: 0, date: new Date().toISOString().split('T')[0] }
+  ];
 
-	function addPurchase() {
-		$formData.purchases = [...$formData.purchases, {quantity: 1, price: 0, date: (new Date()).toISOString().split("T")[0]}];
+  function addPurchase() {
+    $formData.purchases = [
+      ...$formData.purchases,
+      { quantity: 1, price: 0, date: new Date().toISOString().split('T')[0] }
+    ];
 
-		tick().then(() => {
-			const urlInputs = Array.from(
-				document.querySelectorAll<HTMLElement>("#wine-form input[name='purchases']")
-			);
-			const lastInput = urlInputs[urlInputs.length - 1];
-			lastInput && lastInput.focus();
-		});
-	}
+    tick().then(() => {
+      const urlInputs = Array.from(
+        document.querySelectorAll<HTMLElement>("#wine-form input[name='purchases']")
+      );
+      const lastInput = urlInputs[urlInputs.length - 1];
+      lastInput && lastInput.focus();
+    });
+  }
 
   function removePurchase(i: number) {
     $formData.purchases = $formData.purchases.filter((_, index) => index !== i);
@@ -137,7 +139,7 @@
       <div class="my-4">
         <Form.Fieldset {form} name="purchases">
           <Form.Legend>Purchases</Form.Legend>
-            {#each $formData.purchases as _, i}
+          {#each $formData.purchases as _, i}
             <div class="grid grid-cols-[1fr_48px] gap-4 rounded-md border-[1px] border-input px-4 py-4">
               <Form.ElementField {form} name="purchases[{i}]">
                 <Form.Control let:attrs>
@@ -161,7 +163,7 @@
               </Form.ElementField>
               <Button class="w-8 h-8" on:click={() => removePurchase(i)} disabled={$formData.purchases.length == 1}><X class="inline -m-2" size=20 /></Button>
             </div>
-            {/each}
+          {/each}
           <Form.FieldErrors />
         </Form.Fieldset>
         <Button type="button" variant="outline" size="sm" class="mt-2 h-8" on:click={addPurchase}>
@@ -169,37 +171,44 @@
         </Button>
       </div>
 
-      <div class="grid grid-flow-row my-4">
-        <Label>Add Image</Label>
-        <Button type="button" variant="outline" size="sm" class="mt-2 h-8" on:click={searchWineImages} disabled={imageLoading}>
-          Search for an image online
-        </Button>
-        {#if imageError}
-          <p class="text-red-600 text-center p-2">{imageError}</p>
-        {:else}
-          <Carousel.Root>
-            <Carousel.Content class="my-4 ">
-              {#each imageCandidates as image (image.link)}
-                <!-- <p>{image.link}</p> -->
-                <Carousel.Item class="basis-1/4">
-                  <div 
-                    class={
-                      "rounded-md shadow-lg items-center text-center m-2 border-2 " 
-                      + ($formData.imageUrl == image.link ? "border-red-600" : "")
-                    } 
-                    on:click={() => onImageClicked(image)} 
-                  >
-                    <img src={image.link} alt={image.link} class="mx-auto h-[224px] max-h-[224px] max-w-[224px]" />
+      <div class="my-4">
+        <Form.Fieldset {form} name="imageUrl">
+          <Form.Legend>Add Image</Form.Legend>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            class="mt-4 h-8"
+            on:click={searchWineImages}
+            disabled={imageLoading}
+          >
+            Search for an image online
+          </Button>
+          {#if imageError}
+            <p class="text-red-600 text-center p-2">{imageError}</p>
+          {:else}
+            <Carousel.Root class="w-full max-w-lg">
+              <Carousel.Content class="my-4 -ml-2">
+                {#each imageCandidates as image (image.link)}
+                <Carousel.Item class=" basis-[200px]">
+                  <div on:click={() => onImageClicked(image)}>
+                    <Card.Root 
+                      class={"items-center text-center shadow-lg overflow-hidden border-2 " + ($formData.imageUrl == image.link ? 'border-red-600' : '')}
+                    >
+                      <Card.Content>
+                      <img src={image.link} alt={image.link} class="m-auto max-h-[200px] max-w-[200px] " />
+                    </Card.Content>
+                  </Card.Root>
                   </div>
                 </Carousel.Item>
-              {/each}
-            </Carousel.Content>
-          </Carousel.Root>
-        {/if}
+                {/each}
+              </Carousel.Content>
+            </Carousel.Root>
+          {/if}
+        </Form.Fieldset>
       </div>
 
       <Form.Button class="h-8">Submit</Form.Button>
     </form>
-
   </Dialog.Content>
 </Dialog.Root>
