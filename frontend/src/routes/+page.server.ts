@@ -1,7 +1,7 @@
 import { superValidate, message } from "sveltekit-superforms";
 import { zod } from "sveltekit-superforms/adapters";
-import type { PageServerLoad } from "./$types";
-import { fail, type Actions } from "@sveltejs/kit";
+import type { PageServerLoad, Actions } from "./$types";
+import { fail } from "@sveltejs/kit";
 import { listWines } from "$lib/api/wines";
 import { wineFormSchema } from "../components/cellar/WineFormSchema";
 
@@ -15,7 +15,7 @@ export const load: PageServerLoad = async () => {
 };
 
 export const actions: Actions = {
-  default: async (event) => {
+  create: async (event) => {
     const form = await superValidate(event, zod(wineFormSchema));
     if (!form.valid) {
       return fail(400, {

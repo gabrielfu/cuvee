@@ -96,7 +96,7 @@
       <Dialog.Description>Add a wine to your cellar.</Dialog.Description>
     </Dialog.Header>
 
-    <form method="POST" use:enhance id="wine-form">
+    <form method="POST" use:enhance id="wine-form" action="?/create">
       <Form.Field {form} name="name">
         <Form.Control let:attrs>
           <Form.Label>Name</Form.Label>

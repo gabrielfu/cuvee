@@ -24,14 +24,13 @@ export type Wine = {
 };
 
 export const listWines = async (): Promise<Wine[]> => {
-  //
-  return fakeWines;
-  //
-  // const response = await fetch(`${baseUrl}/wines`);
-  // if (response.ok) {
-  //     return response.json();
-  // }
-  // throw new Error('Failed to fetch wines');
+  // return fakeWines;
+  // return [];
+  const response = await fetch(`${baseUrl}/wines`);
+  if (response.ok) {
+    return response.json();
+  }
+  throw new Error("Failed to fetch wines");
 };
 
 export const getWine = async (id: string): Promise<Wine> => {
