@@ -193,7 +193,7 @@
 
       <div class="my-4">
         <Form.Fieldset {form} name="imageUrl">
-          <Form.Legend>Add Image</Form.Legend>
+          <Form.Legend>Thumbnail</Form.Legend>
           <Button
             type="button"
             variant="outline"
