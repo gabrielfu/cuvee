@@ -7,7 +7,9 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"sort"
 	"strings"
+	"sync"
 )
 
 type ImageService struct {
@@ -23,6 +25,7 @@ type ImageSearchRequest struct {
 }
 
 type ImageSearchResponseItem struct {
+	ID     int    `json:"id"`
 	Link   string `json:"link"`
 	Height int    `json:"height"`
 	Width  int    `json:"width"`
@@ -32,15 +35,17 @@ type ImageSearchResponse struct {
 	Items []ImageSearchResponseItem `json:"items"`
 }
 
+type GoogleImageSearchResponseItem struct {
+	Link  string `json:"link"`
+	Image struct {
+		ContextLink string `json:"contextLink"`
+		Height      int    `json:"height"`
+		Width       int    `json:"width"`
+	} `json:"image"`
+}
+
 type GoogleImageSearchResponse struct {
-	Items []struct {
-		Link  string `json:"link"`
-		Image struct {
-			ContextLink string `json:"contextLink"`
-			Height      int    `json:"height"`
-			Width       int    `json:"width"`
-		} `json:"image"`
-	} `json:"items"`
+	Items []GoogleImageSearchResponseItem `json:"items"`
 }
 
 func NewImageService(googleSearchCx string, googleSearchApiKey string) *ImageService {
@@ -101,16 +106,36 @@ func (s *ImageService) Search(ctx context.Context, request ImageSearchRequest) (
 		return ImageSearchResponse{}, err
 	}
 
-	response := ImageSearchResponse{}
-	for _, item := range searchResponse.Items {
-		if !validateImageLink(item.Link) {
-			continue
-		}
-		response.Items = append(response.Items, ImageSearchResponseItem{
-			Link:   item.Link,
-			Height: item.Image.Height,
-			Width:  item.Image.Width,
-		})
+	output := ImageSearchResponse{}
+	ch := make(chan ImageSearchResponseItem)
+	var wg sync.WaitGroup // Add wait group
+
+	for i, respItem := range searchResponse.Items {
+		wg.Add(1) // Increment wait group counter
+		go func(id int, item GoogleImageSearchResponseItem) {
+			defer wg.Done() // Decrement wait group counter
+			if !validateImageLink(item.Link) {
+				return
+			}
+			ch <- ImageSearchResponseItem{
+				ID:     id,
+				Link:   item.Link,
+				Height: item.Image.Height,
+				Width:  item.Image.Width,
+			}
+		}(i, respItem)
 	}
-	return response, nil
+
+	go func() {
+		wg.Wait()
+		close(ch)
+	}()
+
+	for item := range ch {
+		output.Items = append(output.Items, item)
+	}
+	sort.Slice(output.Items, func(i, j int) bool {
+		return output.Items[i].ID < output.Items[j].ID
+	})
+	return output, nil
 }
