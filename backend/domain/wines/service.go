@@ -11,8 +11,15 @@ func NewWineService(repo *WineRepository, validate *WineJSONValidator) *WineServ
 	return &WineService{repo: repo, validate: validate}
 }
 
+func withDefaultWineImage(wine Wine) Wine {
+	if wine.ImageUrl == "" {
+		wine.ImageUrl = "https://static.vecteezy.com/system/resources/previews/016/475/672/original/transparent-dark-wine-bottle-with-blank-label-and-burgundy-foil-capsule-seal-png.png"
+	}
+	return wine
+}
+
 func (s *WineService) CreateWine(ctx context.Context, wine *Wine) (string, error) {
-	dao := wineToDAO(*wine)
+	dao := wineToDAO(withDefaultWineImage(*wine))
 	return s.repo.Create(ctx, &dao)
 }
 

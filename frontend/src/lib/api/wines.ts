@@ -41,9 +41,6 @@ export const getWine = async (id: string): Promise<Wine> => {
   throw new Error("Failed to fetch wine");
 };
 
-export const placeholderWineImageUrl =
-  "https://static.vecteezy.com/system/resources/previews/016/475/672/original/transparent-dark-wine-bottle-with-blank-label-and-burgundy-foil-capsule-seal-png.png";
-
 export const fakeWines: Wine[] = [
   {
     id: "1",
