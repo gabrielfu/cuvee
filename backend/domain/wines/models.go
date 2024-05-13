@@ -20,7 +20,7 @@ type Wine struct {
 	Region    string          `json:"region" validate:"required"`
 	Purchases []Purchase      `json:"purchases" validate:"dive,required"` // purchase records
 	Summary   PurchaseSummary `json:"summary"`                            // total quantity and average price
-	ImageUrl  string          `json:"image_url"`
+	ImageUrl  string          `json:"imageUrl"`
 }
 
 func daoToWine(w WineDAO) Wine {
