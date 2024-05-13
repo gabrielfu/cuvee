@@ -2,6 +2,7 @@
   import type { Wine } from "$lib/api/wines";
   import type { Selected } from "bits-ui";
   import WineCard from "./WineCard.svelte";
+  import WineCatalogEmpty from "./WineCatalogEmpty.svelte";
   import WineCatalogNavbar from "./WineCatalogNavbar.svelte";
   import { sortByOptions } from "$lib/sortBys";
   import type { WineFormSchema } from "./WineFormSchema";
@@ -86,7 +87,11 @@
 
   <WineCatalogNavbar {onSelectedChange} bind:search {form} />
 
-  {#each filteredWines as wine, i}
-    <WineCard {wine} />
-  {/each}
+  {#if filteredWines.length === 0}
+    <WineCatalogEmpty {form} />
+  {:else}
+    {#each filteredWines as wine, i}
+      <WineCard {wine} />
+    {/each}
+  {/if}
 </main>

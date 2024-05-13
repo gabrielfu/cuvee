@@ -14,6 +14,7 @@
   import { searchImages, type ImageResult } from "$lib/api/images";
 
   export let data: SuperValidated<Infer<WineFormSchema>>;
+  export let displayText: string;
 
   const form = superForm(data, {
     dataType: "json",
@@ -83,10 +84,10 @@
     class={buttonVariants({
       variant: "outline",
       class:
-        "ml-2 w-20 h-8 border-0 text-sm bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"
+        "ml-2 h-8 border-0 text-sm bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"
     })}
   >
-    Add<CirclePlus class="inline ml-2" size="20" />
+    {displayText}<CirclePlus class="inline ml-2" size="20" />
   </Dialog.Trigger>
 
   <Dialog.Content class="min-w-[800px] sm:max-w-[425px] overflow-y-scroll max-h-screen p-8">

@@ -32,5 +32,5 @@
     </Select.Root>
   </div>
 
-  <WineAddDialog data={form} />
+  <WineAddDialog data={form} displayText="Add" />
 </div>
