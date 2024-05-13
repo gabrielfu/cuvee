@@ -15,10 +15,12 @@ type WineValidationError struct {
 	Message string `json:"message"`
 }
 
-func tagToMessage(tag string) string {
+func tagToMessage(tag, param string) string {
 	switch tag {
 	case "required":
 		return "Field is required"
+	case "gte":
+		return "Field must be greater than or equal to " + param
 	case "vintage":
 		return "Vintage must be 'NV' or a year number"
 	default:
@@ -40,7 +42,7 @@ func (v *WineJSONValidator) Validate(i interface{}) []WineValidationError {
 		for i, err := range ve {
 			errs[i] = WineValidationError{
 				Field:   err.Field(),
-				Message: tagToMessage(err.Tag()),
+				Message: tagToMessage(err.Tag(), err.Param()),
 			}
 		}
 		return errs

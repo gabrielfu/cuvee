@@ -6,8 +6,8 @@ type PurchaseSummary struct {
 }
 
 type Purchase struct {
-	Quantity int     `json:"quantity" validate:"required"`
-	Price    float64 `json:"price" validate:"required"`
+	Quantity int     `json:"quantity" validate:"gte=1"`
+	Price    float64 `json:"price" validate:"gte=0"`
 	Date     string  `json:"date" validate:"required"`
 }
 
