@@ -1,6 +1,7 @@
 package wines
 
 import (
+	"fmt"
 	"regexp"
 
 	"github.com/go-playground/validator/v10"
@@ -15,14 +16,14 @@ type WineValidationError struct {
 	Message string `json:"message"`
 }
 
-func tagToMessage(tag, param string) string {
+func tagToMessage(tag, param string, value any) string {
 	switch tag {
 	case "required":
 		return "Field is required"
 	case "gte":
-		return "Field must be greater than or equal to " + param
+		return fmt.Sprintf("Field must be greater than or equal to %s, got %v", param, value)
 	case "vintage":
-		return "Vintage must be 'NV' or a year number"
+		return fmt.Sprintf("Vintage must be 'NV' or a year number, got %v", value)
 	default:
 		return ""
 	}
@@ -42,7 +43,7 @@ func (v *WineJSONValidator) Validate(i interface{}) []WineValidationError {
 		for i, err := range ve {
 			errs[i] = WineValidationError{
 				Field:   err.Field(),
-				Message: tagToMessage(err.Tag(), err.Param()),
+				Message: tagToMessage(err.Tag(), err.Param(), err.Value()),
 			}
 		}
 		return errs
