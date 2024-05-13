@@ -18,9 +18,14 @@
 
   const form = superForm(data, {
     dataType: "json",
-    validators: zodClient(wineFormSchema)
+    validators: zodClient(wineFormSchema),
+    onUpdated: ({ form: f }) => {
+      if (!f.valid) {
+        console.error("Form is invalid:", f.errors);
+      }
+    }
   });
-  const { form: formData, enhance } = form;
+  const { form: formData, enhance, allErrors, errors } = form;
   $formData.purchases = [
     ...$formData.purchases,
     { quantity: 1, price: 0, date: new Date().toISOString().split("T")[0] }
@@ -235,6 +240,11 @@
       </div>
 
       <Form.Button class="h-8">Submit</Form.Button>
+      {#if $allErrors.length}
+        <p class="invalid">
+          Encountered error when trying to create a wine. Please try again later.
+        </p>
+      {/if}
     </form>
   </Dialog.Content>
 </Dialog.Root>

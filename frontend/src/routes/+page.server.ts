@@ -1,4 +1,4 @@
-import { superValidate, message } from "sveltekit-superforms";
+import { superValidate, setError } from "sveltekit-superforms";
 import { zod } from "sveltekit-superforms/adapters";
 import type { PageServerLoad, Actions } from "./$types";
 import { fail } from "@sveltejs/kit";
@@ -29,13 +29,11 @@ export const actions: Actions = {
       headers: { "Content-Type": "application/json" }
     });
     if (!response.ok) {
-      return fail(500, {
-        form,
-        error: await response.text()
-      });
+      const text = await response.text();
+      return setError(form, "", text);
     }
 
-    return message(form, { text: "Success!" });
+    return { form };
   }
 };
 
