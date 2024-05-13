@@ -36,7 +36,7 @@ func (s *WineService) ListWines(ctx context.Context) ([]Wine, error) {
 	if err != nil {
 		return nil, err
 	}
-	var wines []Wine
+	wines := make([]Wine, len(daos))
 	for i := range daos {
 		wines = append(wines, daoToWine(daos[i]))
 	}

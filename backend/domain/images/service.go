@@ -107,6 +107,7 @@ func (s *ImageService) Search(ctx context.Context, request ImageSearchRequest) (
 	}
 
 	output := ImageSearchResponse{}
+	output.Items = make([]ImageSearchResponseItem, 0)
 	ch := make(chan ImageSearchResponseItem)
 	var wg sync.WaitGroup // Add wait group
 
