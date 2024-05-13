@@ -71,6 +71,9 @@ func Run() {
 	if err != nil {
 		log.Fatalf("Failed to connect to MongoDB: %v", err)
 	}
+	if err := collection.Database().Client().Ping(context.Background(), nil); err != nil {
+		log.Fatalf("Failed to ping MongoDB: %v", err)
+	}
 
 	// register wine service
 	repo := wines.NewWineRepository(collection)
