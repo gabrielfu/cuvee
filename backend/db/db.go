@@ -22,7 +22,8 @@ func NewMongoConnector(uri, database, collection string) *MongoConnector {
 }
 
 func (c *MongoConnector) Connect(ctx context.Context) (*mongo.Collection, error) {
-	opts := options.Client().ApplyURI(c.URI)
+	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
+	opts := options.Client().ApplyURI(c.URI).SetServerAPIOptions(serverAPI)
 	client, err := mongo.Connect(ctx, opts)
 	if err != nil {
 		return nil, err

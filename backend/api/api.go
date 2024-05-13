@@ -66,7 +66,11 @@ func initRouter() *gin.Engine {
 func Run() {
 	r := initRouter()
 
-	connector := db.NewMongoConnector("mongodb://localhost:27017", "cuvee", "wines")
+	connector := db.NewMongoConnector(
+		os.Getenv("MONGO_URI"),
+		os.Getenv("MONGO_DATABASE"),
+		os.Getenv("MONGO_COLLECTION"),
+	)
 	collection, err := connector.Connect(context.Background())
 	if err != nil {
 		log.Fatalf("Failed to connect to MongoDB: %v", err)
