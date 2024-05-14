@@ -12,6 +12,7 @@
   import { type SuperValidated, type Infer, superForm } from "sveltekit-superforms";
   import { zodClient } from "sveltekit-superforms/adapters";
   import { searchImages, type ImageResult } from "$lib/api/images";
+  import DatePicker from "../utils/DatePicker.svelte";
 
   export let data: SuperValidated<Infer<WineFormSchema>>;
   export let displayText: string;
@@ -178,7 +179,19 @@
                 <Form.Control let:attrs>
                   <div class="flex gap-4 mb-2 items-start w-auto">
                     <Form.Label class="w-32 mt-2">Date</Form.Label>
-                    <Input type="text" {...attrs} bind:value={$formData.purchases[i].date} />
+                    <DatePicker 
+                      class="flex h-8 w-full"
+                      attrs={attrs} 
+                      onValueChange={(v) => {
+                        if (v) {
+                          $formData.purchases[i].date = v.toString();
+                        } else {
+                          $formData.purchases[i].date = "";
+                        }
+                      }} 
+                      bind:formValue={$formData.purchases[i].date}
+                    />
+                    <input hidden name={attrs.name} bind:value={$formData.purchases[i].date} />
                   </div>
                 </Form.Control>
               </Form.ElementField>
