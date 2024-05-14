@@ -5,9 +5,10 @@
 
   import type { Wine } from "$lib/api/wines";
   import WineCardEditDialog from "./WineCardEditDialog.svelte";
-  import { CircleDollarSign, Wine as WineSign, Calendar, ChevronsUpDown } from "lucide-svelte";
+  import { CircleDollarSign, Wine as WineSign, Calendar, ChevronDown, ChevronUp } from "lucide-svelte";
 
   export let wine: Wine;
+  let collapsibleOpen = false;
 </script>
 
 <Card.Card class="bg-transparent border-x-transparent border-t-transparent text-card-foreground">
@@ -40,10 +41,14 @@
           </p>
         </Card.Card>
 
-        <Collapsible.Root class="pl-4 pt-2">
-          <Collapsible.Trigger class="text-sm text-muted-foreground"
-            >Expand purchases <ChevronsUpDown class="inline" size="20" /></Collapsible.Trigger
-          >
+        <Collapsible.Root class="pl-4 pt-2" bind:open={collapsibleOpen}>
+          <Collapsible.Trigger class="text-sm text-muted-foreground">
+            {#if collapsibleOpen}
+              Collapse purchases <ChevronUp class="inline" size="20" />
+            {:else}
+              Expand purchases <ChevronDown class="inline" size="20" />
+            {/if}
+          </Collapsible.Trigger>
           <Collapsible.Content>
             <Table.Root class="w-auto pt-2">
               <Table.Header>
