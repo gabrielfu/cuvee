@@ -5,6 +5,7 @@ import (
 	"cuvee/db"
 	"cuvee/domain/images"
 	"cuvee/domain/wines"
+	"cuvee/external/search"
 	"log"
 	"net/http"
 	"os"
@@ -86,7 +87,8 @@ func Run() {
 	wines.RegisterRoutes(r, service)
 
 	// register image service
-	imageService := images.NewImageService(os.Getenv("GOOGLE_SEARCH_CX"), os.Getenv("GOOGLE_SEARCH_API_KEY"))
+	searchEngine := search.NewGoogleSearchEngine(os.Getenv("GOOGLE_SEARCH_CX"), os.Getenv("GOOGLE_SEARCH_API_KEY"))
+	imageService := images.NewImageService(searchEngine)
 	images.RegisterRoutes(r, imageService)
 
 	initServer(r)

@@ -2,19 +2,15 @@ package images
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
-	"log"
+	"cuvee/external/search"
 	"net/http"
-	"net/url"
 	"sort"
 	"strings"
 	"sync"
 )
 
 type ImageService struct {
-	googleSearchCx     string
-	googleSearchApiKey string
+	searchEngine *search.SearchEngine
 }
 
 type ImageSearchRequest struct {
@@ -35,21 +31,8 @@ type ImageSearchResponse struct {
 	Items []ImageSearchResponseItem `json:"items"`
 }
 
-type GoogleImageSearchResponseItem struct {
-	Link  string `json:"link"`
-	Image struct {
-		ContextLink string `json:"contextLink"`
-		Height      int    `json:"height"`
-		Width       int    `json:"width"`
-	} `json:"image"`
-}
-
-type GoogleImageSearchResponse struct {
-	Items []GoogleImageSearchResponseItem `json:"items"`
-}
-
-func NewImageService(googleSearchCx string, googleSearchApiKey string) *ImageService {
-	return &ImageService{googleSearchCx: googleSearchCx, googleSearchApiKey: googleSearchApiKey}
+func NewImageService(searchEngine search.SearchEngine) *ImageService {
+	return &ImageService{searchEngine: &searchEngine}
 }
 
 func validateIsImage(link string) bool {
@@ -79,30 +62,13 @@ func buildQuery(request ImageSearchRequest) string {
 	if request.region != "" {
 		query += request.region + " "
 	}
-	return url.QueryEscape(query)
+	return query
 }
 
 func (s *ImageService) Search(ctx context.Context, request ImageSearchRequest) (ImageSearchResponse, error) {
 	query := buildQuery(request)
-	reqUrl := "https://content-customsearch.googleapis.com/customsearch/v1?searchType=image&q=" + query + "&cx=" + s.googleSearchCx + "&key=" + s.googleSearchApiKey
-	resp, err := http.Get(reqUrl)
-
-	if resp.StatusCode != http.StatusOK {
-		p := make([]byte, resp.ContentLength)
-		resp.Body.Read(p)
-		msg := fmt.Errorf("received %d response code from Google Image Search: %s", resp.StatusCode, string(p))
-		log.Printf("Google Image Search error (status=%d): %v\n", resp.StatusCode, msg)
-		return ImageSearchResponse{}, err
-	}
-
+	searchResponse, err := search.Search[search.GoogleImageSearchResponse](*s.searchEngine, query, search.ImageSearchGoogleSearchParam)
 	if err != nil {
-		return ImageSearchResponse{}, err
-	}
-	defer resp.Body.Close()
-
-	var searchResponse GoogleImageSearchResponse
-	if err := json.NewDecoder(resp.Body).Decode(&searchResponse); err != nil {
-		log.Printf("JSON decode Error: %v\n", err)
 		return ImageSearchResponse{}, err
 	}
 
@@ -113,7 +79,7 @@ func (s *ImageService) Search(ctx context.Context, request ImageSearchRequest) (
 
 	for i, respItem := range searchResponse.Items {
 		wg.Add(1) // Increment wait group counter
-		go func(id int, item GoogleImageSearchResponseItem) {
+		go func(id int, item search.GoogleImageSearchResponseItem) {
 			defer wg.Done() // Decrement wait group counter
 			if !validateImageLink(item.Link) {
 				return

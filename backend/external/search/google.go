@@ -15,6 +15,34 @@ type GoogleSearchParam struct {
 	searchType string
 }
 
+type GoogleImageSearchResponseItem struct {
+	Link  string `json:"link"`
+	Image struct {
+		ContextLink string `json:"contextLink"`
+		Height      int    `json:"height"`
+		Width       int    `json:"width"`
+	} `json:"image"`
+}
+
+type GoogleImageSearchResponse struct {
+	Items []GoogleImageSearchResponseItem `json:"items"`
+}
+
+type GoogleWebSearchResponseItem struct {
+	Title   string `json:"title"`
+	Link    string `json:"link"`
+	Snippet string `json:"snippet"`
+	PageMap struct {
+		Metatags []struct {
+			OGDescription string `json:"og:description"`
+		} `json:"metatags"`
+	} `json:"pagemap"`
+}
+
+type GoogleWebSearchResponse struct {
+	Items []GoogleWebSearchResponseItem `json:"items"`
+}
+
 var ImageSearchGoogleSearchParam = GoogleSearchParam{searchType: "image"}
 var WebSearchGoogleSearchParam = GoogleSearchParam{searchType: ""}
 
