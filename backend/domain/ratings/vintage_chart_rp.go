@@ -66,6 +66,7 @@ func loadChartFile(chartFile string) (RegionYearRatingMap, error) {
 		maturity := matches[2]
 
 		ratings[r.RegionLabel][r.Year] = Rating{
+			Region:   r.RegionLabel,
 			Score:    score,
 			Maturity: maturity,
 			Notes:    "",
@@ -106,6 +107,10 @@ func NewRPVintageChart(chartFile string, maturityFile string) (*RPVintageChart, 
 		regions:         regions,
 		maturityLegends: maturityLegends,
 	}, nil
+}
+
+func (r *RPVintageChart) Name() string {
+	return "Robert Parker"
 }
 
 func (r *RPVintageChart) ListRegions() []string {

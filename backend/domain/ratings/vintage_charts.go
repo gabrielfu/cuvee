@@ -1,6 +1,7 @@
 package ratings
 
 type Rating struct {
+	Region   string
 	Score    string
 	Maturity string
 	Notes    string
@@ -10,6 +11,8 @@ type Rating struct {
 type RegionYearRatingMap map[string]map[string]Rating
 
 type VintageChart interface {
+	Name() string
+
 	// ListRegions returns a list of regions.
 	ListRegions() []string
 
