@@ -113,6 +113,10 @@ func (r *RPVintageChart) Name() string {
 	return "Robert Parker"
 }
 
+func (r *RPVintageChart) ShortName() string {
+	return "RP"
+}
+
 func (r *RPVintageChart) ListRegions() []string {
 	return r.regions
 }
