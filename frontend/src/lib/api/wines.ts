@@ -28,7 +28,14 @@ export const listWines = async (): Promise<Wine[]> => {
   // return [];
   const response = await fetch(`${baseUrl}/wines`);
   if (response.ok) {
-    return response.json();
+    const data = await response.json();
+    // case dates
+    data.forEach((wine: Wine) => {
+      wine.purchases.forEach((purchase: Purchase) => {
+        purchase.date = new Date(purchase.date);
+      });
+    });
+    return data;
   }
   throw new Error("Failed to fetch wines");
 };
