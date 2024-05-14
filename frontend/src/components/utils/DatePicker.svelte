@@ -3,7 +3,6 @@
 	import {
 		CalendarDate,
 		type DateValue,
-		getLocalTimeZone,
 		parseDate,
 		today,
 	} from "@internationalized/date";
@@ -12,6 +11,7 @@
 	import { Calendar } from "$lib/components/ui/calendar";
 	import * as Popover from "$lib/components/ui/popover";
 
+  const tz = "UTC";
   function formatDate(date: Date): string {
     return date.toISOString().slice(0, 10);
   }
@@ -21,7 +21,7 @@
   let value: DateValue | undefined;
   $: value = formValue ? parseDate(formValue) : undefined;
   export let onValueChange: (v: DateValue | undefined) => void;
-  let placeholder: DateValue = today(getLocalTimeZone());
+  let placeholder: DateValue = today(tz);
 
   let className: string | null | undefined = undefined;
   export { className as class };
@@ -37,7 +37,7 @@
       className
     )}
   >
-    {value ? formatDate(value.toDate(getLocalTimeZone())) : "Pick a date"}
+    {value ? formatDate(value.toDate(tz)) : "Pick a date"}
     <CalendarIcon class="ml-auto h-4 w-4 opacity-50" />
   </Popover.Trigger>
   <Popover.Content class="w-auto p-0" side="top">
@@ -45,7 +45,7 @@
       {value}
       bind:placeholder
       minValue={new CalendarDate(1900, 1, 1)}
-      maxValue={today(getLocalTimeZone())}
+      maxValue={today(tz)}
       calendarLabel="Date of birth"
       initialFocus
       onValueChange={onValueChange}
