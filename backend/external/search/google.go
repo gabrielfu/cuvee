@@ -1,7 +1,6 @@
 package search
 
 import (
-	"fmt"
 	"net/http"
 	"net/url"
 )
@@ -46,22 +45,23 @@ type GoogleWebSearchResponse struct {
 var ImageSearchGoogleSearchParam = GoogleSearchParam{searchType: "image"}
 var WebSearchGoogleSearchParam = GoogleSearchParam{searchType: ""}
 
-func paramToQuery(param GoogleSearchParam) string {
-	if param.searchType == "" {
-		return ""
-	}
-	return fmt.Sprintf("searchType=%s", param.searchType)
-}
+const baseUrl = "https://www.googleapis.com/customsearch/v1"
 
 func NewGoogleSearchEngine(googleSearchCx string, googleSearchApiKey string) *GoogleSearchEngine {
 	return &GoogleSearchEngine{googleSearchCx: googleSearchCx, googleSearchApiKey: googleSearchApiKey}
 }
 
 func (g GoogleSearchEngine) Search(query string, param any) (*http.Response, error) {
-	reqUrl := fmt.Sprintf("https://www.googleapis.com/customsearch/v1?q=%s&cx=%s&key=%s", url.QueryEscape(query), g.googleSearchCx, g.googleSearchApiKey)
-	paramQuery := paramToQuery(param.(GoogleSearchParam))
-	if paramQuery != "" {
-		reqUrl += "&" + paramQuery
+	u, _ := url.Parse(baseUrl)
+
+	q := url.Values{}
+	q.Set("q", url.QueryEscape(query))
+	q.Set("cx", g.googleSearchCx)
+	q.Set("key", g.googleSearchApiKey)
+	if searchType := param.(GoogleSearchParam).searchType; searchType != "" {
+		q.Set("searchType", searchType)
 	}
-	return http.Get(reqUrl)
+
+	u.RawQuery = q.Encode()
+	return http.Get(u.String())
 }
