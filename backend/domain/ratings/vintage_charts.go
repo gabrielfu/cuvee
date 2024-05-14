@@ -2,6 +2,7 @@ package ratings
 
 type Rating struct {
 	Region   string
+	Year     string
 	Score    string
 	Maturity string
 	Notes    string

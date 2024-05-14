@@ -67,6 +67,7 @@ func loadChartFile(chartFile string) (RegionYearRatingMap, error) {
 
 		ratings[r.RegionLabel][r.Year] = Rating{
 			Region:   r.RegionLabel,
+			Year:     r.Year,
 			Score:    score,
 			Maturity: maturity,
 			Notes:    "",
