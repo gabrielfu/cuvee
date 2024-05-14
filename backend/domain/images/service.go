@@ -88,7 +88,7 @@ func (s *ImageService) Search(ctx context.Context, request ImageSearchRequest) (
 	resp, err := http.Get(reqUrl)
 
 	if resp.StatusCode != http.StatusOK {
-		p := make([]byte, 1024)
+		p := make([]byte, resp.ContentLength)
 		resp.Body.Read(p)
 		msg := fmt.Errorf("received %d response code from Google Image Search: %s", resp.StatusCode, string(p))
 		log.Printf("Google Image Search error (status=%d): %v\n", resp.StatusCode, msg)
