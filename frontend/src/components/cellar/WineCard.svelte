@@ -5,7 +5,13 @@
 
   import type { Wine } from "$lib/api/wines";
   import WineCardEditDialog from "./WineCardEditDialog.svelte";
-  import { CircleDollarSign, Wine as WineSign, Calendar, ChevronDown, ChevronUp } from "lucide-svelte";
+  import {
+    CircleDollarSign,
+    Wine as WineSign,
+    Calendar,
+    ChevronDown,
+    ChevronUp
+  } from "lucide-svelte";
 
   export let wine: Wine;
   let collapsibleOpen = false;
@@ -53,15 +59,15 @@
             <Table.Root class="w-auto pt-2">
               <Table.Header>
                 <Table.Row class="leading-none">
-                  <Table.Head class="h-auto py-1 text-sm text-muted-foreground"
-                    ><WineSign class="inline mr-2" size="20" /></Table.Head
-                  >
-                  <Table.Head class="h-auto py-1 text-sm text-muted-foreground"
-                    ><CircleDollarSign class="inline mr-2" size="20" /></Table.Head
-                  >
-                  <Table.Head class="h-auto py-1 text-sm text-muted-foreground"
-                    ><Calendar class="inline mr-2" size="20" /></Table.Head
-                  >
+                  <Table.Head class="h-auto py-1 text-sm text-muted-foreground">
+                    <WineSign class="inline mr-2" size="20" />
+                  </Table.Head>
+                  <Table.Head class="h-auto py-1 text-sm text-muted-foreground">
+                    <CircleDollarSign class="inline mr-2" size="20" />
+                  </Table.Head>
+                  <Table.Head class="h-auto py-1 text-sm text-muted-foreground">
+                    <Calendar class="inline mr-2" size="20" />
+                  </Table.Head>
                 </Table.Row>
               </Table.Header>
               <Table.Body>
@@ -69,9 +75,9 @@
                   <Table.Row class="leading-none">
                     <Table.Cell class="py-1 text-sm">{entry.quantity}</Table.Cell>
                     <Table.Cell class="py-1 text-sm">{entry.price}</Table.Cell>
-                    <Table.Cell class="py-1 text-sm"
-                      >{entry.date.toISOString().slice(0, 10)}</Table.Cell
-                    >
+                    <Table.Cell class="py-1 text-sm">
+                      {entry.date.toISOString().slice(0, 10)}
+                    </Table.Cell>
                   </Table.Row>
                 {/each}
               </Table.Body>
@@ -79,7 +85,6 @@
           </Collapsible.Content>
         </Collapsible.Root>
       </div>
-      <div></div>
     </div>
   </Card.Content>
 </Card.Card>
