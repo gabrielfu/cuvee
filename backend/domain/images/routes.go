@@ -33,6 +33,6 @@ func handleImageSearch(s *ImageService) gin.HandlerFunc {
 			})
 			return
 		}
-		c.JSON(http.StatusOK, resp)
+		c.JSON(http.StatusOK, &resp)
 	}
 }

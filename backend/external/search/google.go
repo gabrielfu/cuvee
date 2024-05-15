@@ -35,7 +35,7 @@ func (g *GoogleSearchEngine) WebSearch(query string, param any) (*WebSearchResul
 	}
 
 	var items []WebSearchResultItem
-	for _, item := range search.Items {
+	for i, item := range search.Items {
 		var pagemap GooglePageMap
 		if err := json.Unmarshal(item.Pagemap, &pagemap); err != nil {
 			return nil, err
@@ -45,6 +45,7 @@ func (g *GoogleSearchEngine) WebSearch(query string, param any) (*WebSearchResul
 			description = pagemap.Metatags[0].OGDescription
 		}
 		items = append(items, WebSearchResultItem{
+			Index:   i,
 			Title:   item.Title,
 			Link:    item.Link,
 			Snippet: item.Snippet,
@@ -63,7 +64,7 @@ func (g *GoogleSearchEngine) ImageSearch(query string, param any) (*ImageSearchR
 	var items []ImageSearchResultItem
 	for i, item := range search.Items {
 		items = append(items, ImageSearchResultItem{
-			ID:     i,
+			Index:  i,
 			Link:   item.Link,
 			Height: int(item.Image.Height),
 			Width:  int(item.Image.Width),

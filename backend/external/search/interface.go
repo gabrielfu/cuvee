@@ -1,7 +1,7 @@
 package search
 
 type ImageSearchResultItem struct {
-	ID     int    `json:"id"`
+	Index  int    `json:"index"`
 	Link   string `json:"link"`
 	Height int    `json:"height"`
 	Width  int    `json:"width"`
@@ -12,6 +12,7 @@ type ImageSearchResult struct {
 }
 
 type WebSearchResultItem struct {
+	Index   int    `json:"index"`
 	Title   string `json:"title"`
 	Link    string `json:"link"`
 	Snippet string `json:"snippet"`

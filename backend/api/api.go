@@ -87,7 +87,10 @@ func Run() {
 	wines.RegisterRoutes(r, service)
 
 	// register image service
-	searchEngine := search.NewGoogleSearchEngine(os.Getenv("GOOGLE_SEARCH_CX"), os.Getenv("GOOGLE_SEARCH_API_KEY"))
+	searchEngine, err := search.NewGoogleSearchEngine(os.Getenv("GOOGLE_SEARCH_CX"), os.Getenv("GOOGLE_SEARCH_API_KEY"))
+	if err != nil {
+		log.Fatalf("Failed to create Google search engine: %v", err)
+	}
 	imageService := images.NewImageService(searchEngine)
 	images.RegisterRoutes(r, imageService)
 
