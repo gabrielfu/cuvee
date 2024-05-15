@@ -20,7 +20,7 @@ func searchAboutWine(
 ) string {
 	query := fmt.Sprintf("%s wine region location", target.Name)
 	log.Println("Searching for:", query)
-	searchResponse, err := search.Search[search.GoogleWebSearchResponse](searchEngine, query, search.WebSearchGoogleSearchParam)
+	searchResponse, err := searchEngine.WebSearch(query, nil)
 	if err != nil {
 		return ""
 	}
@@ -31,12 +31,9 @@ func searchAboutWine(
 
 	snippets := ""
 	for _, item := range searchResponse.Items[:min(len(searchResponse.Items), 5)] {
-		var snippet string
-		if len(item.PageMap.Metatags) > 0 {
-			snippet = item.PageMap.Metatags[0].OGDescription
-		}
-		if snippet == "" {
-			snippet = item.Snippet
+		snippet := item.Snippet
+		if item.Desc != "" {
+			snippet = item.Desc
 		}
 		snippets += fmt.Sprintf("- %s\n", snippet)
 	}

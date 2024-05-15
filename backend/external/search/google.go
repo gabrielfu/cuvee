@@ -1,67 +1,73 @@
 package search
 
 import (
-	"net/http"
-	"net/url"
+	"context"
+	"encoding/json"
+
+	"google.golang.org/api/customsearch/v1"
+	"google.golang.org/api/option"
 )
 
 type GoogleSearchEngine struct {
-	googleSearchCx     string
-	googleSearchApiKey string
+	cse *customsearch.CseService
+	cx  string // Google Search cx
 }
 
-type GoogleSearchParam struct {
-	searchType string
+type GooglePageMap struct {
+	Metatags []struct {
+		OGDescription string `json:"og:description"`
+	} `json:"metatags"`
 }
 
-type GoogleImageSearchResponseItem struct {
-	Link  string `json:"link"`
-	Image struct {
-		ContextLink string `json:"contextLink"`
-		Height      int    `json:"height"`
-		Width       int    `json:"width"`
-	} `json:"image"`
+func NewGoogleSearchEngine(cx string, apiKey string) (*GoogleSearchEngine, error) {
+	s, err := customsearch.NewService(context.Background(), option.WithAPIKey(apiKey))
+	if err != nil {
+		return nil, err
+	}
+	cse := customsearch.NewCseService(s)
+	return &GoogleSearchEngine{cse: cse, cx: cx}, nil
 }
 
-type GoogleImageSearchResponse struct {
-	Items []GoogleImageSearchResponseItem `json:"items"`
-}
-
-type GoogleWebSearchResponseItem struct {
-	Title   string `json:"title"`
-	Link    string `json:"link"`
-	Snippet string `json:"snippet"`
-	PageMap struct {
-		Metatags []struct {
-			OGDescription string `json:"og:description"`
-		} `json:"metatags"`
-	} `json:"pagemap"`
-}
-
-type GoogleWebSearchResponse struct {
-	Items []GoogleWebSearchResponseItem `json:"items"`
-}
-
-var ImageSearchGoogleSearchParam = GoogleSearchParam{searchType: "image"}
-var WebSearchGoogleSearchParam = GoogleSearchParam{searchType: ""}
-
-const baseUrl = "https://www.googleapis.com/customsearch/v1"
-
-func NewGoogleSearchEngine(googleSearchCx string, googleSearchApiKey string) *GoogleSearchEngine {
-	return &GoogleSearchEngine{googleSearchCx: googleSearchCx, googleSearchApiKey: googleSearchApiKey}
-}
-
-func (g GoogleSearchEngine) Search(query string, param any) (*http.Response, error) {
-	u, _ := url.Parse(baseUrl)
-
-	q := url.Values{}
-	q.Set("q", url.QueryEscape(query))
-	q.Set("cx", g.googleSearchCx)
-	q.Set("key", g.googleSearchApiKey)
-	if searchType := param.(GoogleSearchParam).searchType; searchType != "" {
-		q.Set("searchType", searchType)
+func (g *GoogleSearchEngine) WebSearch(query string, param any) (*WebSearchResult, error) {
+	search, err := g.cse.List().Cx(g.cx).Q(query).Do()
+	if err != nil {
+		return nil, err
 	}
 
-	u.RawQuery = q.Encode()
-	return http.Get(u.String())
+	var items []WebSearchResultItem
+	for _, item := range search.Items {
+		var pagemap GooglePageMap
+		if err := json.Unmarshal(item.Pagemap, &pagemap); err != nil {
+			return nil, err
+		}
+		var description string
+		if len(pagemap.Metatags) > 0 {
+			description = pagemap.Metatags[0].OGDescription
+		}
+		items = append(items, WebSearchResultItem{
+			Title:   item.Title,
+			Link:    item.Link,
+			Snippet: item.Snippet,
+			Desc:    description,
+		})
+	}
+	return &WebSearchResult{Items: items}, nil
+}
+
+func (g *GoogleSearchEngine) ImageSearch(query string, param any) (*ImageSearchResult, error) {
+	search, err := g.cse.List().Cx(g.cx).Q(query).SearchType("image").Do()
+	if err != nil {
+		return nil, err
+	}
+
+	var items []ImageSearchResultItem
+	for i, item := range search.Items {
+		items = append(items, ImageSearchResultItem{
+			ID:     i,
+			Link:   item.Link,
+			Height: int(item.Image.Height),
+			Width:  int(item.Image.Width),
+		})
+	}
+	return &ImageSearchResult{Items: items}, nil
 }

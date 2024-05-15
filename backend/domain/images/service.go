@@ -10,7 +10,7 @@ import (
 )
 
 type ImageService struct {
-	searchEngine *search.SearchEngine
+	searchEngine search.SearchEngine
 }
 
 type ImageSearchRequest struct {
@@ -32,7 +32,7 @@ type ImageSearchResponse struct {
 }
 
 func NewImageService(searchEngine search.SearchEngine) *ImageService {
-	return &ImageService{searchEngine: &searchEngine}
+	return &ImageService{searchEngine: searchEngine}
 }
 
 func validateIsImage(link string) bool {
@@ -67,7 +67,7 @@ func buildQuery(request ImageSearchRequest) string {
 
 func (s *ImageService) Search(ctx context.Context, request ImageSearchRequest) (ImageSearchResponse, error) {
 	query := buildQuery(request)
-	searchResponse, err := search.Search[search.GoogleImageSearchResponse](*s.searchEngine, query, search.ImageSearchGoogleSearchParam)
+	searchResponse, err := s.searchEngine.ImageSearch(query, nil)
 	if err != nil {
 		return ImageSearchResponse{}, err
 	}
@@ -78,7 +78,7 @@ func (s *ImageService) Search(ctx context.Context, request ImageSearchRequest) (
 
 	for i, respItem := range searchResponse.Items {
 		wg.Add(1) // Increment wait group counter
-		go func(id int, item search.GoogleImageSearchResponseItem) {
+		go func(id int, item search.ImageSearchResultItem) {
 			defer wg.Done() // Decrement wait group counter
 			if !validateImageLink(item.Link) {
 				return
@@ -86,8 +86,8 @@ func (s *ImageService) Search(ctx context.Context, request ImageSearchRequest) (
 			ch <- ImageSearchResponseItem{
 				ID:     id,
 				Link:   item.Link,
-				Height: item.Image.Height,
-				Width:  item.Image.Width,
+				Height: item.Height,
+				Width:  item.Width,
 			}
 		}(i, respItem)
 	}
