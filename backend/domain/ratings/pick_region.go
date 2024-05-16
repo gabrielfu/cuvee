@@ -4,7 +4,8 @@ import (
 	"cuvee/external/llm"
 	"cuvee/external/search"
 	"fmt"
-	"log"
+	"regexp"
+	"strconv"
 )
 
 type WineInfo struct {
@@ -14,12 +15,13 @@ type WineInfo struct {
 	Region  string
 }
 
+var re = regexp.MustCompile(`Region: ([0-9]+)`)
+
 func searchAboutWine(
 	searchEngine search.SearchEngine,
 	target WineInfo,
 ) string {
 	query := fmt.Sprintf("%s wine region location", target.Name)
-	log.Println("Searching for:", query)
 	searchResponse, err := searchEngine.WebSearch(query, nil)
 	if err != nil {
 		return ""
@@ -63,32 +65,39 @@ Here is some information that I found online. They may or may not be useful.
 	}
 
 	regionPrompt := ""
-	for _, r := range regions {
-		regionPrompt += fmt.Sprintf("- %s\n", r)
+	regionMapping := make(map[string]string)
+	for i, r := range regions {
+		regionPrompt += fmt.Sprintf("(%d) %s\n", i+1, r)
+		regionMapping[strconv.Itoa(i+1)] = r
 	}
 	prompt += fmt.Sprintf(`
 You must choose one of the following regions as the producing region of the wine.
 If you are not sure, please choose OTHERS.
 
-- OTHERS
+(0) OTHERS
 %s
 
 IMPORTANT
 ---------
 You must answer in the following format, without any additional information.
-Region: <choice>
+Region: number
 ---------
 You must not answer a region that is not in the list.
 If none of the above regions is correct, please answer
-Region: OTHERS
+Region: 0
 `, regionPrompt)
 	messages = append(messages, llm.UserMessage(prompt))
-
-	log.Println(messages)
 
 	resp, err := llmObj.Chat(messages)
 	if err != nil {
 		return "", err
 	}
-	return resp.Content, nil
+
+	matches := re.FindStringSubmatch(resp.Content)
+	if matches == nil || len(matches) < 2 || matches[1] == "0" {
+		return "", nil
+	}
+
+	choice := matches[1]
+	return regionMapping[choice], nil
 }
