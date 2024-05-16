@@ -114,7 +114,7 @@ func (r *RPVintageChart) Name() string {
 	return "Robert Parker"
 }
 
-func (r *RPVintageChart) ShortName() string {
+func (r *RPVintageChart) Symbol() string {
 	return "RP"
 }
 

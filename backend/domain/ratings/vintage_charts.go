@@ -14,7 +14,7 @@ type RegionYearRatingMap map[string]map[string]Rating
 type VintageChart interface {
 	Name() string
 
-	ShortName() string
+	Symbol() string
 
 	// ListRegions returns a list of regions.
 	ListRegions() []string
