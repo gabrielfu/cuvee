@@ -43,6 +43,8 @@ func searchAboutWine(
 	return snippets
 }
 
+// PickRegion picks a region for the given wine within the list of regions.
+// Output is either an empty string or a value in the regions list.
 func PickRegion(
 	llmObj llm.LLM,
 	searchEngine search.SearchEngine,
