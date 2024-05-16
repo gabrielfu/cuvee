@@ -8,20 +8,13 @@ import (
 	"strconv"
 )
 
-type WineInfo struct {
-	Name    string
-	Vintage string
-	Country string
-	Region  string
-}
-
 var re = regexp.MustCompile(`Region: ([0-9]+)`)
 
 func searchAboutWine(
+	name string,
 	searchEngine search.SearchEngine,
-	target WineInfo,
 ) string {
-	query := fmt.Sprintf("%s wine region location", target.Name)
+	query := fmt.Sprintf("%s wine region location", name)
 	searchResponse, err := searchEngine.WebSearch(query, nil)
 	if err != nil {
 		return ""
@@ -46,10 +39,10 @@ func searchAboutWine(
 // PickRegion picks a region for the given wine within the list of regions.
 // Output is either an empty string or a value in the regions list.
 func PickRegion(
+	name, vintage, country, region string,
+	regions []string,
 	llmObj llm.LLM,
 	searchEngine search.SearchEngine,
-	target WineInfo,
-	regions []string,
 ) (string, error) {
 	messages := []llm.Message{
 		llm.SystemMessage("You are a wine expert. You are very familiar with different types of wines and different wine regions around the world."),
@@ -57,9 +50,9 @@ func PickRegion(
 
 	prompt := fmt.Sprintf(`Consider this wine: 
 Name: %s %s %s %s
-`, target.Name, target.Vintage, target.Country, target.Region)
+`, name, vintage, country, region)
 
-	if extra := searchAboutWine(searchEngine, target); extra != "" {
+	if extra := searchAboutWine(name, searchEngine); extra != "" {
 		prompt += fmt.Sprintf(
 			"\nHere is some information that I found online. They may or may not be useful.\n```\n%s\n```\n",
 			extra,
