@@ -78,7 +78,7 @@ func (r *WineRepository) Update(ctx context.Context, id string, w *WineDAO) erro
 	}
 	filter := bson.D{{Key: "_id", Value: objectId}}
 	update := bson.D{{Key: "$set", Value: w}}
-	_, err = r.collection.UpdateOne(context.Background(), filter, update)
+	_, err = r.collection.UpdateOne(ctx, filter, update)
 	return err
 }
 
@@ -88,6 +88,6 @@ func (r *WineRepository) Delete(ctx context.Context, id string) error {
 		return err
 	}
 	filter := bson.D{{Key: "_id", Value: objectId}}
-	_, err = r.collection.DeleteOne(context.Background(), filter)
+	_, err = r.collection.DeleteOne(ctx, filter)
 	return err
 }
