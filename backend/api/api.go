@@ -4,6 +4,7 @@ import (
 	"context"
 	"cuvee/db"
 	"cuvee/domain/images"
+	"cuvee/domain/ratings"
 	"cuvee/domain/wines"
 	"cuvee/external/search"
 	"log"
@@ -70,18 +71,18 @@ func Run() {
 	connector := db.NewMongoConnector(
 		os.Getenv("MONGO_URI"),
 		os.Getenv("MONGO_DATABASE"),
-		os.Getenv("MONGO_COLLECTION"),
 	)
-	collection, err := connector.Connect(context.Background())
+	db, err := connector.Connect(context.Background())
 	if err != nil {
 		log.Fatalf("Failed to connect to MongoDB: %v", err)
 	}
-	if err := collection.Database().Client().Ping(context.Background(), nil); err != nil {
+	if err := db.Client().Ping(context.Background(), nil); err != nil {
 		log.Fatalf("Failed to ping MongoDB: %v", err)
 	}
 
 	// register wine service
-	repo := wines.NewWineRepository(collection)
+	wineCollection := db.Collection(os.Getenv("MONGO_WINE_COLLECTION"))
+	repo := wines.NewWineRepository(wineCollection)
 	validate := wines.NewWineJSONValidator()
 	service := wines.NewWineService(repo, validate)
 	wines.RegisterRoutes(r, service)
@@ -93,6 +94,12 @@ func Run() {
 	}
 	imageService := images.NewImageService(searchEngine)
 	images.RegisterRoutes(r, imageService)
+
+	// register rating service
+	ratingCollection := db.Collection(os.Getenv("MONGO_RATING_COLLECTION"))
+	ratingRepo := ratings.NewRegionRepository(context.Background(), ratingCollection)
+	ratingService := ratings.NewRatingService(nil, nil, nil, ratingRepo)
+	ratings.RegisterRoutes(r, ratingService)
 
 	initServer(r)
 }

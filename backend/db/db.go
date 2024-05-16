@@ -8,20 +8,18 @@ import (
 )
 
 type MongoConnector struct {
-	URI        string
-	Database   string
-	Collection string
+	URI      string
+	Database string
 }
 
-func NewMongoConnector(uri, database, collection string) *MongoConnector {
+func NewMongoConnector(uri, database string) *MongoConnector {
 	return &MongoConnector{
-		URI:        uri,
-		Database:   database,
-		Collection: collection,
+		URI:      uri,
+		Database: database,
 	}
 }
 
-func (c *MongoConnector) Connect(ctx context.Context) (*mongo.Collection, error) {
+func (c *MongoConnector) Connect(ctx context.Context) (*mongo.Database, error) {
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
 	opts := options.Client().ApplyURI(c.URI).SetServerAPIOptions(serverAPI)
 	client, err := mongo.Connect(ctx, opts)
@@ -30,6 +28,5 @@ func (c *MongoConnector) Connect(ctx context.Context) (*mongo.Collection, error)
 	}
 
 	db := client.Database(c.Database)
-	collection := db.Collection(c.Collection)
-	return collection, nil
+	return db, nil
 }
