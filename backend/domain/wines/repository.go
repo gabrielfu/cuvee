@@ -50,15 +50,15 @@ func (r *WineRepository) List(ctx context.Context) ([]WineDAO, error) {
 	return wines, nil
 }
 
-func (r *WineRepository) Get(ctx context.Context, id string) (WineDAO, error) {
+func (r *WineRepository) Get(ctx context.Context, id string) (*WineDAO, error) {
 	objectId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		return WineDAO{}, err
+		return nil, err
 	}
-	var wine WineDAO
+	var wine *WineDAO
 	res := r.collection.FindOne(ctx, bson.D{{Key: "_id", Value: objectId}})
 	if err := res.Decode(&wine); err != nil {
-		return WineDAO{}, err
+		return nil, err
 	}
 	return wine, nil
 }

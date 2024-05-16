@@ -23,12 +23,13 @@ func (s *WineService) CreateWine(ctx context.Context, wine *Wine) (string, error
 	return s.repo.Create(ctx, &dao)
 }
 
-func (s *WineService) GetWine(ctx context.Context, id string) (Wine, error) {
+func (s *WineService) GetWine(ctx context.Context, id string) (*Wine, error) {
 	dao, err := s.repo.Get(ctx, id)
 	if err != nil {
-		return Wine{}, err
+		return nil, err
 	}
-	return daoToWine(dao), nil
+	wine := daoToWine(*dao)
+	return &wine, nil
 }
 
 func (s *WineService) ListWines(ctx context.Context) ([]Wine, error) {
