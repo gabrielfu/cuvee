@@ -58,10 +58,10 @@ Name: %s %s %s %s
 `, target.Name, target.Vintage, target.Country, target.Region)
 
 	if extra := searchAboutWine(searchEngine, target); extra != "" {
-		prompt += fmt.Sprintf(`
-Here is some information that I found online. They may or may not be useful.
-%s
-`, extra)
+		prompt += fmt.Sprintf(
+			"\nHere is some information that I found online. They may or may not be useful.\n```\n%s\n```\n",
+			extra,
+		)
 	}
 
 	regionPrompt := ""
