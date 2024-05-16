@@ -44,12 +44,8 @@ func (r *WineRepository) List(ctx context.Context) ([]WineDAO, error) {
 	defer cur.Close(ctx)
 
 	var wines []WineDAO
-	for cur.Next(ctx) {
-		var w WineDAO
-		if err := cur.Decode(&w); err != nil {
-			return nil, err
-		}
-		wines = append(wines, w)
+	if err = cur.All(ctx, &wines); err != nil {
+		return nil, err
 	}
 	return wines, nil
 }
