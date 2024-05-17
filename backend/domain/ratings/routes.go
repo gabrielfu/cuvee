@@ -60,8 +60,9 @@ func handleCreateRegion(s *RatingService) gin.HandlerFunc {
 			return
 		}
 
+		wineID := c.Param("wineId")
 		if err := s.CreateRegion(c, &Region{
-			WineID:   region.WineID,
+			WineID:   wineID,
 			VCSymbol: region.VCSymbol,
 			Region:   region.Region,
 		}); err != nil {
