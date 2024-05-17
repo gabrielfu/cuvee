@@ -82,10 +82,10 @@ func Run() {
 
 	// register wine service
 	wineCollection := db.Collection(os.Getenv("MONGO_WINE_COLLECTION"))
-	repo := wines.NewWineRepository(wineCollection)
+	wineRepo := wines.NewWineRepository(wineCollection)
 	validate := wines.NewWineJSONValidator()
-	service := wines.NewWineService(repo, validate)
-	wines.RegisterRoutes(r, service)
+	wineService := wines.NewWineService(wineRepo, validate)
+	wines.RegisterRoutes(r, wineService)
 
 	// register image service
 	searchEngine, err := search.NewGoogleSearchEngine(os.Getenv("GOOGLE_SEARCH_CX"), os.Getenv("GOOGLE_SEARCH_API_KEY"))
@@ -97,9 +97,9 @@ func Run() {
 
 	// register rating service
 	ratingCollection := db.Collection(os.Getenv("MONGO_RATING_COLLECTION"))
-	ratingRepo := ratings.NewRegionRepository(context.Background(), ratingCollection)
-	ratingService := ratings.NewRatingService(nil, nil, nil, ratingRepo)
-	ratings.RegisterRoutes(r, ratingService)
+	regionRepo := ratings.NewRegionRepository(context.Background(), ratingCollection)
+	ratingService := ratings.NewRatingService(nil, nil, nil, regionRepo)
+	ratings.RegisterRoutes(r, ratingService, wineService)
 
 	initServer(r)
 }
