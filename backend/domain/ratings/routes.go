@@ -18,6 +18,7 @@ func RegisterRoutes(r *gin.Engine, s *RatingService, ws *wines.WineService) {
 	r.GET("/ratings/regions/suggest", handleSuggestRegion(s, ws))
 
 	r.GET("/ratings/vcs", handleListVintageCharts(s))
+	r.GET("/ratings/vcs/:vcSymbol/regions", handleListVintageChartRegions(s))
 
 	r.GET("/ratings", handleGetRating(s))
 }
@@ -204,5 +205,21 @@ func handleGetRating(s *RatingService) gin.HandlerFunc {
 			return
 		}
 		c.JSON(http.StatusOK, rating)
+	}
+}
+
+func handleListVintageChartRegions(s *RatingService) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		vcSymbol := c.Param("vcSymbol")
+		vc, err := s.getVintageChartData(vcSymbol)
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{
+				"type":  "not found",
+				"error": err.Error(),
+			})
+			return
+		}
+		regions := vc.ListRegions()
+		c.JSON(http.StatusOK, regions)
 	}
 }
