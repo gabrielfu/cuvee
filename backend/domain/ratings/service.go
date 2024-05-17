@@ -2,8 +2,10 @@ package ratings
 
 import (
 	"context"
+	"cuvee/domain/wines"
 	"cuvee/external/llm"
 	"cuvee/external/search"
+	"fmt"
 )
 
 type RatingService struct {
@@ -53,4 +55,48 @@ func (s *RatingService) UpdateRegion(ctx context.Context, region *Region) error 
 
 func (s *RatingService) DeleteRegion(ctx context.Context, wineID, vcSymbol string) error {
 	return s.regionRepo.DeleteRegion(ctx, wineID, vcSymbol)
+}
+
+func (s *RatingService) ListVintageCharts() []VintageChart {
+	vcs := make([]VintageChart, 0)
+	for _, vc := range s.vcs {
+		vcs = append(vcs, VintageChart{
+			Name:   vc.Name(),
+			Symbol: vc.Symbol(),
+		})
+	}
+	return vcs
+}
+
+func (s *RatingService) getVintageChartData(vcSymbol string) (VintageChartData, error) {
+	for _, vc := range s.vcs {
+		if vc.Symbol() == vcSymbol {
+			return vc, nil
+		}
+	}
+	return nil, fmt.Errorf("vintage chart not found: %s", vcSymbol)
+}
+
+func (s *RatingService) SuggestRegion(ctx context.Context, wine *wines.Wine, vcSymbol string) (*Region, error) {
+	vc, err := s.getVintageChartData(vcSymbol)
+	if err != nil {
+		return nil, err
+	}
+	region, err := PickRegion(
+		wine.Name,
+		wine.Vintage,
+		wine.Country,
+		wine.Region,
+		vc.ListRegions(),
+		s.llm,
+		s.search,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &Region{
+		WineID:   wine.ID,
+		VCSymbol: vcSymbol,
+		Region:   region,
+	}, nil
 }

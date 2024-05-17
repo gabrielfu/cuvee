@@ -1,17 +1,22 @@
 package ratings
 
 import (
+	"cuvee/domain/wines"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterRoutes(r *gin.Engine, s *RatingService) {
+func RegisterRoutes(r *gin.Engine, s *RatingService, ws *wines.WineService) {
 	r.GET("/ratings/regions/wines/:wineId", handleListRegions(s))
 	r.GET("/ratings/regions/wines/:wineId/vc/:vcSymbol", handleGetRegion(s))
 	r.POST("/ratings/regions/wines/:wineId", handleCreateRegion(s))
 	r.PUT("/ratings/regions/wines/:wineId/vc/:vcSymbol", handleUpdateRegion(s))
 	r.DELETE("/ratings/regions/wines/:wineId/vc/:vcSymbol", handleDeleteRegion(s))
+
+	r.GET("/ratings/regions/suggest", handleSuggestRegion(s, ws))
+
+	r.GET("/ratings/vcs", handleListVintageCharts(s))
 }
 
 func handleListRegions(s *RatingService) gin.HandlerFunc {
@@ -111,5 +116,43 @@ func handleDeleteRegion(s *RatingService) gin.HandlerFunc {
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{})
+	}
+}
+
+func handleListVintageCharts(s *RatingService) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		vcs := s.ListVintageCharts()
+		c.JSON(http.StatusOK, vcs)
+	}
+}
+
+func handleSuggestRegion(s *RatingService, ws *wines.WineService) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var request SuggestRegionRequest
+		if err := c.BindJSON(&request); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"type":  "bad request",
+				"error": err.Error(),
+			})
+			return
+		}
+
+		wine, err := ws.GetWine(c, request.WineID)
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+
+		region, err := s.SuggestRegion(c, wine, request.VCSymbol)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"type":  "internal",
+				"error": err.Error(),
+			})
+			return
+		}
+		c.JSON(http.StatusOK, region)
 	}
 }
