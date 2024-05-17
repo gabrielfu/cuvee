@@ -11,7 +11,7 @@ type Rating struct {
 // a map of region to year to rating.
 type RegionYearRatingMap map[string]map[string]Rating
 
-type VintageChart interface {
+type VintageChartData interface {
 	Name() string
 
 	Symbol() string

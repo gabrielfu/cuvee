@@ -7,13 +7,13 @@ import (
 )
 
 type RatingService struct {
-	vcs        []VintageChart
+	vcs        []VintageChartData
 	llm        llm.LLM
 	search     search.SearchEngine
 	regionRepo *RegionRepository
 }
 
-func NewRatingService(vcs []VintageChart, llm llm.LLM, search search.SearchEngine, regionRepo *RegionRepository) *RatingService {
+func NewRatingService(vcs []VintageChartData, llm llm.LLM, search search.SearchEngine, regionRepo *RegionRepository) *RatingService {
 	return &RatingService{
 		vcs:        vcs,
 		llm:        llm,

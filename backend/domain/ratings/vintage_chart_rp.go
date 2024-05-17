@@ -8,13 +8,13 @@ import (
 	"sort"
 )
 
-type RPVintageChart struct {
+type RPVintageChartData struct {
 	ratings         RegionYearRatingMap // Ratings is a map of region to year to rating.
 	regions         []string            // Regions is a list of regions.
 	maturityLegends map[string]string
 }
 
-type RobertParkerRating struct {
+type RPRating struct {
 	Group       string `json:"group"`
 	SubGroup    string `json:"subGroup"`
 	Country     string `json:"country"`
@@ -24,13 +24,13 @@ type RobertParkerRating struct {
 	Rating      string `json:"rating"`
 }
 
-func readChartFile(chartFile string) ([]RobertParkerRating, error) {
+func readChartFile(chartFile string) ([]RPRating, error) {
 	f, err := os.Open(chartFile)
 	if err != nil {
 		return nil, err
 	}
 	defer f.Close()
-	var ratings []RobertParkerRating
+	var ratings []RPRating
 	if err := json.NewDecoder(f).Decode(&ratings); err != nil {
 		return nil, err
 	}
@@ -89,7 +89,7 @@ func loadMaturityLegends(maturityFile string) (map[string]string, error) {
 	return legends, nil
 }
 
-func NewRPVintageChart(chartFile string, maturityFile string) (*RPVintageChart, error) {
+func NewRPVintageChartData(chartFile string, maturityFile string) (*RPVintageChartData, error) {
 	ratings, err := loadChartFile(chartFile)
 	if err != nil {
 		return nil, err
@@ -103,26 +103,26 @@ func NewRPVintageChart(chartFile string, maturityFile string) (*RPVintageChart, 
 		return nil, err
 	}
 
-	return &RPVintageChart{
+	return &RPVintageChartData{
 		ratings:         ratings,
 		regions:         regions,
 		maturityLegends: maturityLegends,
 	}, nil
 }
 
-func (r *RPVintageChart) Name() string {
+func (r *RPVintageChartData) Name() string {
 	return "Robert Parker"
 }
 
-func (r *RPVintageChart) Symbol() string {
+func (r *RPVintageChartData) Symbol() string {
 	return "RP"
 }
 
-func (r *RPVintageChart) ListRegions() []string {
+func (r *RPVintageChartData) ListRegions() []string {
 	return r.regions
 }
 
-func (r *RPVintageChart) GetRating(region string, year string) Rating {
+func (r *RPVintageChartData) GetRating(region string, year string) Rating {
 	rating, ok := r.ratings[region][year]
 	if !ok {
 		return Rating{}
