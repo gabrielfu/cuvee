@@ -100,3 +100,12 @@ func (s *RatingService) SuggestRegion(ctx context.Context, wine *wines.Wine, vcS
 		Region:   region,
 	}, nil
 }
+
+func (s *RatingService) GetRating(ctx context.Context, vcSymbol, region, vintage string) (*Rating, error) {
+	vc, err := s.getVintageChartData(vcSymbol)
+	if err != nil {
+		return nil, err
+	}
+	rating := vc.GetRating(region, vintage)
+	return &rating, nil
+}

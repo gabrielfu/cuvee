@@ -33,3 +33,9 @@ type SuggestRegionRequest struct {
 	WineID   string `json:"wineId"`
 	VCSymbol string `json:"vcSymbol"`
 }
+
+type GetRatingRequest struct {
+	VCSymbol string `json:"vcSymbol"`
+	Region   string `json:"region"`
+	Vintage  string `json:"vintage"`
+}
