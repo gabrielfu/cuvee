@@ -6,6 +6,7 @@ import (
 	"cuvee/domain/images"
 	"cuvee/domain/ratings"
 	"cuvee/domain/wines"
+	"cuvee/external/llm"
 	"cuvee/external/search"
 	"log"
 	"net/http"
@@ -96,9 +97,22 @@ func Run() {
 	images.RegisterRoutes(r, imageService)
 
 	// register rating service
+	rpVintageChartData, err := ratings.NewRPVintageChartData(
+		"data/vintage_charts/robert_parker_chart.json",
+		"data/vintage_charts/robert_parker_maturity.json",
+	)
+	if err != nil {
+		log.Fatalf("Failed to create RP vintage chart data: %v", err)
+	}
+	vcs := []ratings.VintageChartData{rpVintageChartData}
+	openaiLLM := llm.NewOpenAILLM(os.Getenv("OPENAI_API_KEY"), os.Getenv("OPENAI_MODEL"))
+	googleSearch, err := search.NewGoogleSearchEngine(os.Getenv("GOOGLE_SEARCH_CX"), os.Getenv("GOOGLE_SEARCH_API_KEY"))
+	if err != nil {
+		log.Fatalf("Failed to create Google search engine: %v", err)
+	}
 	ratingCollection := db.Collection(os.Getenv("MONGO_RATING_COLLECTION"))
 	regionRepo := ratings.NewRegionRepository(context.Background(), ratingCollection)
-	ratingService := ratings.NewRatingService(nil, nil, nil, regionRepo)
+	ratingService := ratings.NewRatingService(vcs, openaiLLM, googleSearch, regionRepo)
 	ratings.RegisterRoutes(r, ratingService, wineService)
 
 	initServer(r)
