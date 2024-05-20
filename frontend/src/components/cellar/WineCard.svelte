@@ -2,6 +2,8 @@
   import * as Card from "$lib/components/ui/card";
   import * as Collapsible from "$lib/components/ui/collapsible";
   import * as Table from "$lib/components/ui/table";
+  import * as Accordion from "$lib/components/ui/accordion/index.js";
+  import { Label } from "$lib/components/ui/label";
 
   import type { Wine } from "$lib/api/wines";
   import WineCardEditDialog from "./WineCardEditDialog.svelte";
@@ -84,6 +86,26 @@
             </Table.Root>
           </Collapsible.Content>
         </Collapsible.Root>
+      </div>
+
+      <div>
+        <Accordion.Root class="">
+          <Accordion.Item value="rp">
+            <Accordion.Trigger class="hover:no-underline py-2">
+              <Label class="rounded-sm w-[40px] text-center bg-orange-400 shadow-sm py-1 text-xs text-white">RP</Label>
+              91
+            </Accordion.Trigger>
+            <Accordion.Content>Some notes</Accordion.Content>
+          </Accordion.Item>
+          
+          <Accordion.Item value="js">
+            <Accordion.Trigger class="hover:no-underline py-2">
+              <Label class="rounded-sm w-[40px] text-center bg-orange-400 shadow-sm py-1 text-xs text-white">JS</Label>
+              88
+            </Accordion.Trigger>
+            <Accordion.Content>Some notes</Accordion.Content>
+          </Accordion.Item>
+        </Accordion.Root> 
       </div>
     </div>
   </Card.Content>
