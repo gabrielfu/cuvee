@@ -6,9 +6,9 @@ type VintageChart struct {
 }
 
 type Rating struct {
-	Region   string
-	Year     string
-	Score    string
-	Maturity string
-	Notes    string
+	Region   string `json:"region"`
+	Year     string `json:"year"`
+	Score    string `json:"score"`
+	Maturity string `json:"maturity"`
+	Notes    string `json:"notes"`
 }
