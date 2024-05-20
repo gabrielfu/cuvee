@@ -14,9 +14,23 @@
     ChevronDown,
     ChevronUp
   } from "lucide-svelte";
+  import { getRating, listVintageCharts, type RatingWithSymbol } from "$lib/api/vintageCharts";
 
   export let wine: Wine;
   let collapsibleOpen = false;
+
+  let ratings: RatingWithSymbol[] = [];
+  function getRatings() {
+    listVintageCharts().then((vcs) => {
+      vcs.forEach((vc) => {
+        getRating(vc.symbol, "Beaujolais", "2015").then((rating) => {
+          ratings = [...ratings, { ...rating, symbol: vc.symbol}];
+        })
+      });
+    });
+  }
+  getRatings();
+
 </script>
 
 <Card.Card class="bg-transparent border-x-transparent border-t-transparent text-card-foreground">
@@ -90,21 +104,17 @@
 
       <div>
         <Accordion.Root class="">
+          {#each ratings as rating}
           <Accordion.Item value="rp">
             <Accordion.Trigger class="hover:no-underline py-2">
-              <Label class="rounded-sm w-[40px] text-center bg-orange-400 shadow-sm py-1 text-xs text-white">RP</Label>
-              91
+              <Label class="rounded-sm w-[40px] text-center bg-orange-400 shadow-sm py-1 text-xs text-white">
+                {rating.symbol}
+              </Label>
+              {rating.score}
             </Accordion.Trigger>
-            <Accordion.Content>Some notes</Accordion.Content>
+            <Accordion.Content>{rating.maturity} {rating.notes}</Accordion.Content>
           </Accordion.Item>
-          
-          <Accordion.Item value="js">
-            <Accordion.Trigger class="hover:no-underline py-2">
-              <Label class="rounded-sm w-[40px] text-center bg-orange-400 shadow-sm py-1 text-xs text-white">JS</Label>
-              88
-            </Accordion.Trigger>
-            <Accordion.Content>Some notes</Accordion.Content>
-          </Accordion.Item>
+          {/each}
         </Accordion.Root> 
       </div>
     </div>
