@@ -109,7 +109,7 @@ func Run() {
 		"data/vintage_charts/robert_parker_maturity.json",
 	)
 	if err != nil {
-		log.Fatalf("Failed to create RP vintage chart data: %v", err)
+		log.Fatalf("Failed to create RP provider: %v", err)
 	}
 	providers := []vintagecharts.Provider{rpProvider}
 	openaiLLM := llm.NewOpenAILLM(os.Getenv("OPENAI_API_KEY"), os.Getenv("OPENAI_MODEL"))
