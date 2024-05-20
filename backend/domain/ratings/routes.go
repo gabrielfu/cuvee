@@ -9,16 +9,15 @@ import (
 )
 
 func RegisterRoutes(r *gin.Engine, s *RatingService, ws *wines.WineService) {
-	r.GET("/ratings/regions/wines/:wineId", handleListRegions(s))
-	r.GET("/ratings/regions/wines/:wineId/vcs/:vcSymbol", handleGetRegion(s))
-	r.POST("/ratings/regions/wines/:wineId", handleCreateRegion(s))
-	r.PUT("/ratings/regions/wines/:wineId/vcs/:vcSymbol", handleUpdateRegion(s))
-	r.DELETE("/ratings/regions/wines/:wineId/vcs/:vcSymbol", handleDeleteRegion(s))
+	r.GET("/regions/wines/:wineId", handleListRegions(s))
+	r.GET("/regions/wines/:wineId/vcs/:vcSymbol", handleGetRegion(s))
+	r.POST("/regions/wines/:wineId", handleCreateRegion(s))
+	r.PUT("/regions/wines/:wineId/vcs/:vcSymbol", handleUpdateRegion(s))
+	r.DELETE("/regions/wines/:wineId/vcs/:vcSymbol", handleDeleteRegion(s))
+	r.GET("/regions/suggest", handleSuggestRegion(s, ws))
 
-	r.GET("/ratings/regions/suggest", handleSuggestRegion(s, ws))
-
-	r.GET("/ratings/vcs", handleListVintageCharts(s))
-	r.GET("/ratings/vcs/:vcSymbol/regions", handleListVintageChartRegions(s))
+	r.GET("/vcs", handleListVintageCharts(s))
+	r.GET("/vcs/:vcSymbol/regions", handleListVintageChartRegions(s))
 
 	r.GET("/ratings", handleGetRating(s))
 }
