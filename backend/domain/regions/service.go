@@ -26,8 +26,8 @@ func (s *RegionService) ListRegions(ctx context.Context, wineID string) ([]Regio
 	return regions, nil
 }
 
-func (s *RegionService) GetRegion(ctx context.Context, wineID, vcSymbol string) (*Region, error) {
-	dao, err := s.regionRepo.GetRegion(ctx, wineID, vcSymbol)
+func (s *RegionService) GetRegion(ctx context.Context, wineID, symbol string) (*Region, error) {
+	dao, err := s.regionRepo.GetRegion(ctx, wineID, symbol)
 	if err != nil {
 		return nil, err
 	}
@@ -43,6 +43,6 @@ func (s *RegionService) UpdateRegion(ctx context.Context, region *Region) error 
 	return s.regionRepo.UpdateRegion(ctx, regionToDAO(region))
 }
 
-func (s *RegionService) DeleteRegion(ctx context.Context, wineID, vcSymbol string) error {
-	return s.regionRepo.DeleteRegion(ctx, wineID, vcSymbol)
+func (s *RegionService) DeleteRegion(ctx context.Context, wineID, symbol string) error {
+	return s.regionRepo.DeleteRegion(ctx, wineID, symbol)
 }

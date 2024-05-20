@@ -11,10 +11,10 @@ import (
 
 // RegionDAO represents a region for a wine-vintage chart pair.
 type RegionDAO struct {
-	ID       primitive.ObjectID `bson:"_id,omitempty"`
-	WineID   string             `bson:"wine_id"`
-	VCSymbol string             `bson:"vc_symbol"`
-	Region   string             `bson:"region"`
+	ID     primitive.ObjectID `bson:"_id,omitempty"`
+	WineID string             `bson:"wine_id"`
+	Symbol string             `bson:"symbol"`
+	Region string             `bson:"region"`
 }
 
 type RegionRepository struct {
@@ -30,11 +30,11 @@ func NewRegionRepository(ctx context.Context, collection *mongo.Collection) *Reg
 }
 
 func (r *RegionRepository) createIndexes(ctx context.Context) {
-	// Unique pair of wine_id and vc_symbol
+	// Unique pair of wine_id and symbol
 	r.collection.Indexes().CreateOne(
 		ctx,
 		mongo.IndexModel{
-			Keys:    bson.D{{Key: "wine_id", Value: 1}, {Key: "vc_symbol", Value: 1}},
+			Keys:    bson.D{{Key: "wine_id", Value: 1}, {Key: "symbol", Value: 1}},
 			Options: options.Index().SetUnique(true),
 		},
 	)
@@ -52,9 +52,9 @@ func (r *RegionRepository) ListRegions(ctx context.Context, wineID string) ([]Re
 	return result, nil
 }
 
-func (r *RegionRepository) GetRegion(ctx context.Context, wineID, vcSymbol string) (*RegionDAO, error) {
+func (r *RegionRepository) GetRegion(ctx context.Context, wineID, symbol string) (*RegionDAO, error) {
 	var result *RegionDAO
-	res := r.collection.FindOne(ctx, bson.D{{Key: "wine_id", Value: wineID}, {Key: "vc_symbol", Value: vcSymbol}})
+	res := r.collection.FindOne(ctx, bson.D{{Key: "wine_id", Value: wineID}, {Key: "symbol", Value: symbol}})
 	if err := res.Decode(&result); err != nil {
 		return nil, err
 	}
@@ -67,11 +67,11 @@ func (r *RegionRepository) CreateRegion(ctx context.Context, region RegionDAO) e
 }
 
 func (r *RegionRepository) UpdateRegion(ctx context.Context, region RegionDAO) error {
-	_, err := r.collection.ReplaceOne(ctx, bson.D{{Key: "wine_id", Value: region.WineID}, {Key: "vc_symbol", Value: region.VCSymbol}}, region)
+	_, err := r.collection.ReplaceOne(ctx, bson.D{{Key: "wine_id", Value: region.WineID}, {Key: "symbol", Value: region.Symbol}}, region)
 	return err
 }
 
-func (r *RegionRepository) DeleteRegion(ctx context.Context, wineID, vcSymbol string) error {
-	_, err := r.collection.DeleteOne(ctx, bson.D{{Key: "wine_id", Value: wineID}, {Key: "vc_symbol", Value: vcSymbol}})
+func (r *RegionRepository) DeleteRegion(ctx context.Context, wineID, symbol string) error {
+	_, err := r.collection.DeleteOne(ctx, bson.D{{Key: "wine_id", Value: wineID}, {Key: "symbol", Value: symbol}})
 	return err
 }

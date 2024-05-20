@@ -9,10 +9,10 @@ import (
 
 func RegisterRoutes(r *gin.Engine, s *RegionService) {
 	r.GET("/regions/wines/:wineId", handleListRegions(s))
-	r.GET("/regions/wines/:wineId/vcs/:vcSymbol", handleGetRegion(s))
+	r.GET("/regions/wines/:wineId/vintage_charts/:symbol", handleGetRegion(s))
 	r.POST("/regions/wines/:wineId", handleCreateRegion(s))
-	r.PUT("/regions/wines/:wineId/vcs/:vcSymbol", handleUpdateRegion(s))
-	r.DELETE("/regions/wines/:wineId/vcs/:vcSymbol", handleDeleteRegion(s))
+	r.PUT("/regions/wines/:wineId/vintage_charts/:symbol", handleUpdateRegion(s))
+	r.DELETE("/regions/wines/:wineId/vintage_charts/:symbol", handleDeleteRegion(s))
 }
 
 func handleListRegions(s *RegionService) gin.HandlerFunc {
@@ -33,12 +33,12 @@ func handleListRegions(s *RegionService) gin.HandlerFunc {
 func handleGetRegion(s *RegionService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		wineID := c.Param("wineId")
-		vcSymbol := c.Param("vcSymbol")
-		region, err := s.GetRegion(c, wineID, vcSymbol)
+		symbol := c.Param("symbol")
+		region, err := s.GetRegion(c, wineID, symbol)
 		if err != nil {
 			c.JSON(http.StatusNotFound, gin.H{
 				"type":  "not found",
-				"error": fmt.Sprintf("region for wine %s and vc %s not found", wineID, vcSymbol),
+				"error": fmt.Sprintf("region for wine %s and vintage chart %s not found", wineID, symbol),
 			})
 			return
 		}
@@ -58,18 +58,18 @@ func handleCreateRegion(s *RegionService) gin.HandlerFunc {
 		}
 
 		wineID := c.Param("wineId")
-		if _, err := s.GetRegion(c, wineID, region.VCSymbol); err == nil {
+		if _, err := s.GetRegion(c, wineID, region.Symbol); err == nil {
 			c.JSON(http.StatusConflict, gin.H{
 				"type":  "conflict",
-				"error": fmt.Sprintf("region for wine %s and vc %s already exists", wineID, region.VCSymbol),
+				"error": fmt.Sprintf("region for wine %s and vintage chart %s already exists", wineID, region.Symbol),
 			})
 			return
 		}
 
 		if err := s.CreateRegion(c, &Region{
-			WineID:   wineID,
-			VCSymbol: region.VCSymbol,
-			Region:   region.Region,
+			WineID: wineID,
+			Symbol: region.Symbol,
+			Region: region.Region,
 		}); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"type":  "internal",
@@ -84,7 +84,7 @@ func handleCreateRegion(s *RegionService) gin.HandlerFunc {
 func handleUpdateRegion(s *RegionService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		wineID := c.Param("wineId")
-		vcSymbol := c.Param("vcSymbol")
+		symbol := c.Param("symbol")
 
 		var region Region
 		if err := c.BindJSON(&region); err != nil {
@@ -95,17 +95,17 @@ func handleUpdateRegion(s *RegionService) gin.HandlerFunc {
 			return
 		}
 
-		if _, err := s.GetRegion(c, wineID, region.VCSymbol); err != nil {
+		if _, err := s.GetRegion(c, wineID, region.Symbol); err != nil {
 			c.JSON(http.StatusNotFound, gin.H{
 				"type":  "not found",
-				"error": fmt.Sprintf("region for wine %s and vc %s not found", wineID, region.VCSymbol),
+				"error": fmt.Sprintf("region for wine %s and vintage chart %s not found", wineID, region.Symbol),
 			})
 		}
 
 		if err := s.UpdateRegion(c, &Region{
-			WineID:   wineID,
-			VCSymbol: vcSymbol,
-			Region:   region.Region,
+			WineID: wineID,
+			Symbol: symbol,
+			Region: region.Region,
 		}); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"type":  "internal",
@@ -120,16 +120,16 @@ func handleUpdateRegion(s *RegionService) gin.HandlerFunc {
 func handleDeleteRegion(s *RegionService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		wineID := c.Param("wineId")
-		vcSymbol := c.Param("vcSymbol")
+		symbol := c.Param("symbol")
 
-		if _, err := s.GetRegion(c, wineID, vcSymbol); err != nil {
+		if _, err := s.GetRegion(c, wineID, symbol); err != nil {
 			c.JSON(http.StatusNotFound, gin.H{
 				"type":  "not found",
-				"error": fmt.Sprintf("region for wine %s and vc %s not found", wineID, vcSymbol),
+				"error": fmt.Sprintf("region for wine %s and vintage chart %s not found", wineID, symbol),
 			})
 		}
 
-		if err := s.DeleteRegion(c, wineID, vcSymbol); err != nil {
+		if err := s.DeleteRegion(c, wineID, symbol); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"type":  "internal",
 				"error": err.Error(),
