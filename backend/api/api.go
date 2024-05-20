@@ -98,8 +98,8 @@ func Run() {
 	images.RegisterRoutes(r, imageService)
 
 	// register region service
-	ratingCollection := db.Collection(os.Getenv("MONGO_RATING_COLLECTION"))
-	regionRepo := regions.NewRegionRepository(context.Background(), ratingCollection)
+	regionCollection := db.Collection(os.Getenv("MONGO_REGION_COLLECTION"))
+	regionRepo := regions.NewRegionRepository(context.Background(), regionCollection)
 	regionService := regions.NewRegionService(regionRepo)
 	regions.RegisterRoutes(r, regionService)
 
