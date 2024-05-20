@@ -1,4 +1,4 @@
-package ratings
+package vintagecharts
 
 import (
 	"cuvee/external/llm"

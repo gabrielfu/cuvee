@@ -1,17 +1,9 @@
-package ratings
-
-type Rating struct {
-	Region   string
-	Year     string
-	Score    string
-	Maturity string
-	Notes    string
-}
+package vintagecharts
 
 // a map of region to year to rating.
 type RegionYearRatingMap map[string]map[string]Rating
 
-type VintageChartData interface {
+type Provider interface {
 	Name() string
 
 	Symbol() string
@@ -22,4 +14,11 @@ type VintageChartData interface {
 	// GetRating returns a rating for the given region and year.
 	// If the rating is not found, it returns an empty Rating object.
 	GetRating(region string, year string) Rating
+}
+
+func providerToVintageChart(provider Provider) VintageChart {
+	return VintageChart{
+		Name:   provider.Name(),
+		Symbol: provider.Symbol(),
+	}
 }

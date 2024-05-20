@@ -1,28 +1,21 @@
-package ratings
+package regions
 
 import (
-	"cuvee/domain/wines"
 	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterRoutes(r *gin.Engine, s *RatingService, ws *wines.WineService) {
+func RegisterRoutes(r *gin.Engine, s *RegionService) {
 	r.GET("/regions/wines/:wineId", handleListRegions(s))
 	r.GET("/regions/wines/:wineId/vcs/:vcSymbol", handleGetRegion(s))
 	r.POST("/regions/wines/:wineId", handleCreateRegion(s))
 	r.PUT("/regions/wines/:wineId/vcs/:vcSymbol", handleUpdateRegion(s))
 	r.DELETE("/regions/wines/:wineId/vcs/:vcSymbol", handleDeleteRegion(s))
-	r.GET("/regions/suggest", handleSuggestRegion(s, ws))
-
-	r.GET("/vcs", handleListVintageCharts(s))
-	r.GET("/vcs/:vcSymbol/regions", handleListVintageChartRegions(s))
-
-	r.GET("/ratings", handleGetRating(s))
 }
 
-func handleListRegions(s *RatingService) gin.HandlerFunc {
+func handleListRegions(s *RegionService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		wineID := c.Param("wineId")
 		regions, err := s.ListRegions(c, wineID)
@@ -37,7 +30,7 @@ func handleListRegions(s *RatingService) gin.HandlerFunc {
 	}
 }
 
-func handleGetRegion(s *RatingService) gin.HandlerFunc {
+func handleGetRegion(s *RegionService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		wineID := c.Param("wineId")
 		vcSymbol := c.Param("vcSymbol")
@@ -53,7 +46,7 @@ func handleGetRegion(s *RatingService) gin.HandlerFunc {
 	}
 }
 
-func handleCreateRegion(s *RatingService) gin.HandlerFunc {
+func handleCreateRegion(s *RegionService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var region Region
 		if err := c.BindJSON(&region); err != nil {
@@ -88,7 +81,7 @@ func handleCreateRegion(s *RatingService) gin.HandlerFunc {
 	}
 }
 
-func handleUpdateRegion(s *RatingService) gin.HandlerFunc {
+func handleUpdateRegion(s *RegionService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		wineID := c.Param("wineId")
 		vcSymbol := c.Param("vcSymbol")
@@ -124,7 +117,7 @@ func handleUpdateRegion(s *RatingService) gin.HandlerFunc {
 	}
 }
 
-func handleDeleteRegion(s *RatingService) gin.HandlerFunc {
+func handleDeleteRegion(s *RegionService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		wineID := c.Param("wineId")
 		vcSymbol := c.Param("vcSymbol")
@@ -144,81 +137,5 @@ func handleDeleteRegion(s *RatingService) gin.HandlerFunc {
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{})
-	}
-}
-
-func handleListVintageCharts(s *RatingService) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		vcs := s.ListVintageCharts()
-		c.JSON(http.StatusOK, vcs)
-	}
-}
-
-func handleSuggestRegion(s *RatingService, ws *wines.WineService) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		var request SuggestRegionRequest
-		if err := c.BindJSON(&request); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"type":  "bad request",
-				"error": err.Error(),
-			})
-			return
-		}
-
-		wine, err := ws.GetWine(c, request.WineID)
-		if err != nil {
-			c.JSON(http.StatusNotFound, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-
-		region, err := s.SuggestRegion(c, wine, request.VCSymbol)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"type":  "internal",
-				"error": err.Error(),
-			})
-			return
-		}
-		c.JSON(http.StatusOK, region)
-	}
-}
-
-func handleGetRating(s *RatingService) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		var request GetRatingRequest
-		if err := c.BindJSON(&request); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"type":  "bad request",
-				"error": err.Error(),
-			})
-			return
-		}
-		rating, err := s.GetRating(c, request.VCSymbol, request.Region, request.Vintage)
-		if err != nil {
-			c.JSON(http.StatusNotFound, gin.H{
-				"type":  "not found",
-				"error": err.Error(),
-			})
-			return
-		}
-		c.JSON(http.StatusOK, rating)
-	}
-}
-
-func handleListVintageChartRegions(s *RatingService) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		vcSymbol := c.Param("vcSymbol")
-		vc, err := s.getVintageChartData(vcSymbol)
-		if err != nil {
-			c.JSON(http.StatusNotFound, gin.H{
-				"type":  "not found",
-				"error": err.Error(),
-			})
-			return
-		}
-		regions := vc.ListRegions()
-		c.JSON(http.StatusOK, regions)
 	}
 }

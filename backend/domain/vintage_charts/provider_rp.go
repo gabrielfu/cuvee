@@ -1,4 +1,4 @@
-package ratings
+package vintagecharts
 
 import (
 	"encoding/json"
@@ -8,7 +8,7 @@ import (
 	"sort"
 )
 
-type RPVintageChartData struct {
+type RPProvider struct {
 	ratings         RegionYearRatingMap // Ratings is a map of region to year to rating.
 	regions         []string            // Regions is a list of regions.
 	maturityLegends map[string]string
@@ -89,7 +89,7 @@ func loadMaturityLegends(maturityFile string) (map[string]string, error) {
 	return legends, nil
 }
 
-func NewRPVintageChartData(chartFile string, maturityFile string) (*RPVintageChartData, error) {
+func NewRPProvider(chartFile string, maturityFile string) (*RPProvider, error) {
 	ratings, err := loadChartFile(chartFile)
 	if err != nil {
 		return nil, err
@@ -103,26 +103,26 @@ func NewRPVintageChartData(chartFile string, maturityFile string) (*RPVintageCha
 		return nil, err
 	}
 
-	return &RPVintageChartData{
+	return &RPProvider{
 		ratings:         ratings,
 		regions:         regions,
 		maturityLegends: maturityLegends,
 	}, nil
 }
 
-func (r *RPVintageChartData) Name() string {
+func (r *RPProvider) Name() string {
 	return "Robert Parker"
 }
 
-func (r *RPVintageChartData) Symbol() string {
+func (r *RPProvider) Symbol() string {
 	return "RP"
 }
 
-func (r *RPVintageChartData) ListRegions() []string {
+func (r *RPProvider) ListRegions() []string {
 	return r.regions
 }
 
-func (r *RPVintageChartData) GetRating(region string, year string) Rating {
+func (r *RPProvider) GetRating(region string, year string) Rating {
 	rating, ok := r.ratings[region][year]
 	if !ok {
 		return Rating{}

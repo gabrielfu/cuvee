@@ -4,7 +4,8 @@ import (
 	"context"
 	"cuvee/db"
 	"cuvee/domain/images"
-	"cuvee/domain/ratings"
+	"cuvee/domain/regions"
+	vintagecharts "cuvee/domain/vintage_charts"
 	"cuvee/domain/wines"
 	"cuvee/external/llm"
 	"cuvee/external/search"
@@ -96,24 +97,28 @@ func Run() {
 	imageService := images.NewImageService(searchEngine)
 	images.RegisterRoutes(r, imageService)
 
-	// register rating service
-	rpVintageChartData, err := ratings.NewRPVintageChartData(
+	// register region service
+	ratingCollection := db.Collection(os.Getenv("MONGO_RATING_COLLECTION"))
+	regionRepo := regions.NewRegionRepository(context.Background(), ratingCollection)
+	regionService := regions.NewRegionService(regionRepo)
+	regions.RegisterRoutes(r, regionService)
+
+	// register vintage charts service
+	rpProvider, err := vintagecharts.NewRPProvider(
 		"data/vintage_charts/robert_parker_chart.json",
 		"data/vintage_charts/robert_parker_maturity.json",
 	)
 	if err != nil {
 		log.Fatalf("Failed to create RP vintage chart data: %v", err)
 	}
-	vcs := []ratings.VintageChartData{rpVintageChartData}
+	providers := []vintagecharts.Provider{rpProvider}
 	openaiLLM := llm.NewOpenAILLM(os.Getenv("OPENAI_API_KEY"), os.Getenv("OPENAI_MODEL"))
 	googleSearch, err := search.NewGoogleSearchEngine(os.Getenv("GOOGLE_SEARCH_CX"), os.Getenv("GOOGLE_SEARCH_API_KEY"))
 	if err != nil {
 		log.Fatalf("Failed to create Google search engine: %v", err)
 	}
-	ratingCollection := db.Collection(os.Getenv("MONGO_RATING_COLLECTION"))
-	regionRepo := ratings.NewRegionRepository(context.Background(), ratingCollection)
-	ratingService := ratings.NewRatingService(vcs, openaiLLM, googleSearch, regionRepo)
-	ratings.RegisterRoutes(r, ratingService, wineService)
+	vintageChartService := vintagecharts.NewVintageChartService(providers, openaiLLM, googleSearch)
+	vintagecharts.RegisterRoutes(r, vintageChartService, wineService)
 
 	initServer(r)
 }

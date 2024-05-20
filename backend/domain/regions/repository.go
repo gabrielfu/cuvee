@@ -1,4 +1,4 @@
-package ratings
+package regions
 
 import (
 	"context"

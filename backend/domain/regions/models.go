@@ -1,9 +1,4 @@
-package ratings
-
-type VintageChart struct {
-	Name   string `json:"name"`
-	Symbol string `json:"symbol"`
-}
+package regions
 
 type Region struct {
 	ID       string `json:"id,omitempty"`
@@ -27,15 +22,4 @@ func daoToRegion(region *RegionDAO) Region {
 		VCSymbol: region.VCSymbol,
 		Region:   region.Region,
 	}
-}
-
-type SuggestRegionRequest struct {
-	WineID   string `json:"wineId"`
-	VCSymbol string `json:"vcSymbol"`
-}
-
-type GetRatingRequest struct {
-	VCSymbol string `json:"vcSymbol"`
-	Region   string `json:"region"`
-	Vintage  string `json:"vintage"`
 }
