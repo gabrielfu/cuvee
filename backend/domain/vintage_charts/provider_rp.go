@@ -9,8 +9,8 @@ import (
 )
 
 type RPProvider struct {
-	ratings         RegionYearRatingMap // Ratings is a map of region to year to rating.
-	regions         []string            // Regions is a list of regions.
+	ratings         RegionVintageRatingMap // Ratings is a map of region to vintage to rating.
+	regions         []string               // Regions is a list of regions.
 	maturityLegends map[string]string
 }
 
@@ -47,7 +47,7 @@ func sortedMapKeys(m interface{}) (keyList []string) {
 	return
 }
 
-func loadChartFile(chartFile string) (RegionYearRatingMap, error) {
+func loadChartFile(chartFile string) (RegionVintageRatingMap, error) {
 	rpRatings, err := readChartFile(chartFile)
 	if err != nil {
 		return nil, err
@@ -55,7 +55,7 @@ func loadChartFile(chartFile string) (RegionYearRatingMap, error) {
 
 	ratingRexgep := regexp.MustCompile(`([0-9\- ]+)?(C|E|NV|I|NT|R|T)?`)
 
-	ratings := make(RegionYearRatingMap)
+	ratings := make(RegionVintageRatingMap)
 	for _, r := range rpRatings {
 		if _, ok := ratings[r.RegionLabel]; !ok {
 			ratings[r.RegionLabel] = make(map[string]Rating)
@@ -67,7 +67,7 @@ func loadChartFile(chartFile string) (RegionYearRatingMap, error) {
 
 		ratings[r.RegionLabel][r.Year] = Rating{
 			Region:   r.RegionLabel,
-			Year:     r.Year,
+			Vintage:  r.Year,
 			Score:    score,
 			Maturity: maturity,
 			Notes:    "",
@@ -122,8 +122,8 @@ func (r *RPProvider) ListRegions() []string {
 	return r.regions
 }
 
-func (r *RPProvider) GetRating(region string, year string) Rating {
-	rating, ok := r.ratings[region][year]
+func (r *RPProvider) GetRating(region string, vintage string) Rating {
+	rating, ok := r.ratings[region][vintage]
 	if !ok {
 		return Rating{}
 	}

@@ -1,7 +1,7 @@
 package vintagecharts
 
-// a map of region to year to rating.
-type RegionYearRatingMap map[string]map[string]Rating
+// a map of region to vintage to rating.
+type RegionVintageRatingMap map[string]map[string]Rating
 
 type Provider interface {
 	Name() string
@@ -11,9 +11,9 @@ type Provider interface {
 	// ListRegions returns a list of regions.
 	ListRegions() []string
 
-	// GetRating returns a rating for the given region and year.
+	// GetRating returns a rating for the given region and vintage.
 	// If the rating is not found, it returns an empty Rating object.
-	GetRating(region string, year string) Rating
+	GetRating(region string, vintage string) Rating
 }
 
 func providerToVintageChart(provider Provider) VintageChart {
