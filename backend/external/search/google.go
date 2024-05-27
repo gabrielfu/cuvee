@@ -28,8 +28,12 @@ func NewGoogleSearchEngine(cx string, apiKey string) (*GoogleSearchEngine, error
 	return &GoogleSearchEngine{cse: cse, cx: cx}, nil
 }
 
+func (g *GoogleSearchEngine) doSearch(query string, searchType string) (*customsearch.Search, error) {
+	return g.cse.List().Cx(g.cx).Q(query).SearchType(searchType).Do()
+}
+
 func (g *GoogleSearchEngine) WebSearch(query string, param any) (*WebSearchResult, error) {
-	search, err := g.cse.List().Cx(g.cx).Q(query).Do()
+	search, err := g.doSearch(query, "searchTypeUndefined")
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +60,7 @@ func (g *GoogleSearchEngine) WebSearch(query string, param any) (*WebSearchResul
 }
 
 func (g *GoogleSearchEngine) ImageSearch(query string, param any) (*ImageSearchResult, error) {
-	search, err := g.cse.List().Cx(g.cx).Q(query).SearchType("image").Do()
+	search, err := g.doSearch(query, "image")
 	if err != nil {
 		return nil, err
 	}
