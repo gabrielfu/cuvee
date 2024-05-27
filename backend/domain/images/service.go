@@ -64,12 +64,13 @@ func (s *ImageService) Search(ctx context.Context, request ImageSearchRequest) (
 	valid := make([]bool, len(searchResponse.Items))
 	for i, respItem := range searchResponse.Items {
 		wg.Add(1)
+		_i := i
 		go func(id int, item search.ImageSearchResultItem) {
 			defer wg.Done()
 			if validateImageLink(item.Link) {
-				valid[i] = true
+				valid[id] = true
 			}
-		}(i, respItem)
+		}(_i, respItem)
 	}
 	wg.Wait()
 
