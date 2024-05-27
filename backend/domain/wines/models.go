@@ -74,8 +74,10 @@ func purchaseToDAO(p Purchase) PurchaseDAO {
 }
 
 func SummarizePurchases(purchases []Purchase) PurchaseSummary {
-	var totalQuantity int
-	var totalPrice float64
+	var (
+		totalQuantity int
+		totalPrice    float64
+	)
 	for i := range purchases {
 		totalQuantity += purchases[i].Quantity
 		totalPrice += purchases[i].Price * float64(purchases[i].Quantity)
