@@ -1,7 +1,6 @@
 package vintagecharts
 
 import (
-	"cuvee/domain/wines"
 	"cuvee/external/llm"
 	"cuvee/external/search"
 	"fmt"
@@ -40,7 +39,7 @@ func searchAboutWine(
 // PickRegion picks a region for the given wine within the list of regions.
 // Output is either an empty string or a value in the regions list.
 func PickRegion(
-	wine *wines.Wine,
+	request SuggestRequest,
 	regions []string,
 	llmObj llm.LLM,
 	searchEngine search.SearchEngine,
@@ -51,9 +50,9 @@ func PickRegion(
 
 	prompt := fmt.Sprintf(`Consider this wine: 
 Name: %s %s %s %s
-`, wine.Name, wine.Vintage, wine.Country, wine.Region)
+`, request.Name, request.Vintage, request.Country, request.Region)
 
-	if extra := searchAboutWine(wine.Name, searchEngine); extra != "" {
+	if extra := searchAboutWine(request.Name, searchEngine); extra != "" {
 		prompt += fmt.Sprintf(
 			"\nHere is some information that I found online. They may or may not be useful.\n```\n%s\n```\n",
 			extra,

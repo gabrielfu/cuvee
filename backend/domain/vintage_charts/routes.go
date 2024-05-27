@@ -1,16 +1,15 @@
 package vintagecharts
 
 import (
-	"cuvee/domain/wines"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterRoutes(r *gin.Engine, s *VintageChartService, ws *wines.WineService) {
+func RegisterRoutes(r *gin.Engine, s *VintageChartService) {
 	r.GET("/vintage_charts", handleListVintageCharts(s))
 	r.GET("/vintage_charts/:symbol/regions", handleListRegions(s))
-	r.GET("/vintage_charts/:symbol/suggest", handleSuggestRegion(s, ws))
+	r.POST("/vintage_charts/:symbol/suggest", handleSuggestRegion(s))
 	r.GET("/vintage_charts/:symbol/ratings", handleGetRating(s))
 }
 
@@ -36,15 +35,13 @@ func handleListRegions(s *VintageChartService) gin.HandlerFunc {
 	}
 }
 
-func handleSuggestRegion(s *VintageChartService, ws *wines.WineService) gin.HandlerFunc {
+func handleSuggestRegion(s *VintageChartService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		symbol := c.Param("symbol")
-		wineID := c.Query("wineId")
 
-		wine, err := ws.GetWine(c, wineID)
-		if err != nil {
-			c.JSON(http.StatusNotFound, gin.H{
-				"type":  "not found",
+		var request SuggestRequest
+		if err := c.BindJSON(&request); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
 				"error": err.Error(),
 			})
 			return
@@ -59,7 +56,7 @@ func handleSuggestRegion(s *VintageChartService, ws *wines.WineService) gin.Hand
 			return
 		}
 
-		region, err := s.SuggestRegion(c, wine, provider.ListRegions())
+		region, err := s.SuggestRegion(c, request, provider.ListRegions())
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"type":  "internal",

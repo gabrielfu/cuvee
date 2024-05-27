@@ -2,7 +2,6 @@ package vintagecharts
 
 import (
 	"context"
-	"cuvee/domain/wines"
 	"cuvee/external/llm"
 	"cuvee/external/search"
 	"fmt"
@@ -12,6 +11,13 @@ type VintageChartService struct {
 	providers []Provider
 	llm       llm.LLM
 	search    search.SearchEngine
+}
+
+type SuggestRequest struct {
+	Name    string `json:"name"`
+	Vintage string `json:"vintage,omitempty"`
+	Country string `json:"country,omitempty"`
+	Region  string `json:"region,omitempty"`
 }
 
 func NewVintageChartService(providers []Provider, llm llm.LLM, search search.SearchEngine) *VintageChartService {
@@ -47,8 +53,8 @@ func (s *VintageChartService) ListRegions(symbol string) ([]string, error) {
 	return vc.ListRegions(), nil
 }
 
-func (s *VintageChartService) SuggestRegion(ctx context.Context, wine *wines.Wine, regions []string) (string, error) {
-	region, err := PickRegion(wine, regions, s.llm, s.search)
+func (s *VintageChartService) SuggestRegion(ctx context.Context, request SuggestRequest, regions []string) (string, error) {
+	region, err := PickRegion(request, regions, s.llm, s.search)
 	if err != nil {
 		return "", err
 	}
