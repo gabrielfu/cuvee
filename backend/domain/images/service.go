@@ -13,10 +13,10 @@ type ImageService struct {
 }
 
 type ImageSearchRequest struct {
-	name    string
-	vintage string
-	country string
-	region  string
+	Name    string `json:"name"`
+	Vintage string `json:"vintage,omitempty"`
+	Country string `json:"country,omitempty"`
+	Region  string `json:"region,omitempty"`
 }
 
 func NewImageService(searchEngine search.SearchEngine) *ImageService {
@@ -38,17 +38,17 @@ func validateImageLink(link string) bool {
 
 func buildQuery(request ImageSearchRequest) string {
 	query := "vivino "
-	if request.name != "" {
-		query += request.name + " "
+	if request.Name != "" {
+		query += request.Name + " "
 	}
-	if request.vintage != "" {
-		query += request.vintage + " "
+	if request.Vintage != "" {
+		query += request.Vintage + " "
 	}
-	if request.country != "" {
-		query += request.country + " "
+	if request.Country != "" {
+		query += request.Country + " "
 	}
-	if request.region != "" {
-		query += request.region + " "
+	if request.Region != "" {
+		query += request.Region + " "
 	}
 	return query
 }

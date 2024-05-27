@@ -12,12 +12,18 @@ export const searchImages = async (
   country: string,
   region: string
 ): Promise<ImageResult[]> => {
-  let url = `${baseUrl}/images/search`;
-  url += `?name=${encodeURIComponent(name)}`;
-  url += `&vintage=${encodeURIComponent(vintage)}`;
-  url += `&country=${encodeURIComponent(country)}`;
-  url += `&region=${encodeURIComponent(region)}`;
-  const response = await fetch(url);
+  const url = `${baseUrl}/images/search`;
+  const data = {
+    name: encodeURIComponent(name),
+    vintage: encodeURIComponent(vintage),
+    country: encodeURIComponent(country),
+    region: encodeURIComponent(region),
+  }
+  const response = await fetch(url, {
+    method: "POST",
+    body: JSON.stringify(data),
+    headers: { "Content-Type": "application/json" },
+  });
   const result = await response.json();
   if (response.ok) {
     const items = result.items;

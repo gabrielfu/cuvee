@@ -7,19 +7,20 @@ import (
 )
 
 func RegisterRoutes(r *gin.Engine, s *ImageService) {
-	r.GET("/images/search", handleImageSearch(s))
+	r.POST("/images/search", handleImageSearch(s))
 }
 
 func handleImageSearch(s *ImageService) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		request := ImageSearchRequest{
-			name:    c.Query("name"),
-			vintage: c.Query("vintage"),
-			country: c.Query("country"),
-			region:  c.Query("region"),
+		var request ImageSearchRequest
+		if err := c.BindJSON(&request); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": err.Error(),
+			})
+			return
 		}
 
-		if request.name == "" {
+		if request.Name == "" {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": "name is required",
 			})
