@@ -118,7 +118,7 @@ func Run() {
 		log.Fatalf("Failed to create Google search engine: %v", err)
 	}
 	vintageChartService := vintagecharts.NewVintageChartService(providers, openaiLLM, googleSearch)
-	vintagecharts.RegisterRoutes(r, vintageChartService, wineService)
+	vintagecharts.RegisterRoutes(r, vintageChartService)
 
 	initServer(r)
 }
