@@ -48,15 +48,7 @@ func (s *VintageChartService) ListRegions(symbol string) ([]string, error) {
 }
 
 func (s *VintageChartService) SuggestRegion(ctx context.Context, wine *wines.Wine, regions []string) (string, error) {
-	region, err := PickRegion(
-		wine.Name,
-		wine.Vintage,
-		wine.Country,
-		wine.Region,
-		regions,
-		s.llm,
-		s.search,
-	)
+	region, err := PickRegion(wine, regions, s.llm, s.search)
 	if err != nil {
 		return "", err
 	}
