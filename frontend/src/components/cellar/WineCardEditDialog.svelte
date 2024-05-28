@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Wine } from "$lib/api/wines";
-  import { Button, buttonVariants } from "$lib/components/ui/button";
+  import { Button } from "$lib/components/ui/button";
   import * as Dialog from "$lib/components/ui/dialog";
   import Input from "$lib/components/ui/input/input.svelte";
   import Label from "$lib/components/ui/label/label.svelte";
@@ -10,13 +10,7 @@
 </script>
 
 <Dialog.Root>
-  <Dialog.Trigger
-    class={buttonVariants({
-      variant: "outline",
-      class:
-        "px-2 ml-2 mb-2 w-20 h-8 border-0 text-sm bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"
-    })}
-  >
+  <Dialog.Trigger class="text-sm text-muted-foreground font-light underline mb-4">
     Edit<Pencil class="inline ml-2" size="20" />
   </Dialog.Trigger>
   <Dialog.Content class="sm:max-w-[425px]">

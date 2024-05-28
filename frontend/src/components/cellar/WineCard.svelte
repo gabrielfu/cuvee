@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { Button } from "$lib/components/ui/button";
   import * as Card from "$lib/components/ui/card";
   import * as Collapsible from "$lib/components/ui/collapsible";
   import * as Table from "$lib/components/ui/table";
@@ -54,11 +53,12 @@
               {wine.name}
             </Card.Title>
 
-            <p class="text-sm text-muted-foreground mb-4">
+            <p class="text-sm text-muted-foreground mb-2">
               {wine.vintage}&#xff5c;{wine.format}&#xff5c;{wine.region}&#xff5c;{wine.country}
             </p>
+
+            <WineCardEditDialog {wine} />
           </div>
-          <WineCardEditDialog {wine} />
         </div>
 
         <Card.Card class="bg-card w-[160px] mx-2 px-4 py-2 mb-2">
@@ -74,7 +74,7 @@
         </Card.Card>
 
         <Collapsible.Root class="pl-4 pt-2" bind:open={collapsibleOpen}>
-          <Collapsible.Trigger class="text-sm text-muted-foreground">
+          <Collapsible.Trigger class="text-sm text-muted-foreground underline">
             {#if collapsibleOpen}
               Collapse purchases <ChevronUp class="inline" size="20" />
             {:else}
