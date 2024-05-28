@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Button } from "$lib/components/ui/button";
   import * as Card from "$lib/components/ui/card";
   import * as Collapsible from "$lib/components/ui/collapsible";
   import * as Table from "$lib/components/ui/table";
@@ -112,7 +113,7 @@
       </div>
 
       <div>
-        <Accordion.Root class="">
+        <Accordion.Root class="mb-2">
           {#each ratings as rating}
           <Accordion.Item value={rating.symbol}>
             <Accordion.Trigger class="hover:no-underline py-2">
@@ -122,18 +123,24 @@
               {rating.score}
             </Accordion.Trigger>
             <Accordion.Content>
-              {#if rating.maturity}
-                <Label>Maturity</Label>
-                <p class="text-sm">{rating.maturity}</p>
-              {/if}
-              {#if rating.notes}
-                <Label>Notes</Label>
-                <p class="text-sm">{rating.notes}</p>
-              {/if}
+              <div class="mb-2">
+                <Label>Region</Label>
+                <p class="text-sm text-muted-foreground">{rating.region}</p>
+                {#if rating.maturity}
+                  <Label>Maturity</Label>
+                  <p class="text-sm text-muted-foreground">{rating.maturity}</p>
+                {/if}
+                {#if rating.notes}
+                  <Label>Notes</Label>
+                  <p class="text-sm text-muted-foreground">{rating.notes}</p>
+                {/if}
+              </div>
+              <Label class="text-sm text-muted-foreground font-light underline">Delete</Label>
             </Accordion.Content>
           </Accordion.Item>
           {/each}
         </Accordion.Root> 
+        <Label class="text-sm text-muted-foreground font-light underline">Add Rating</Label>
       </div>
     </div>
   </Card.Content>
