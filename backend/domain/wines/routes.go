@@ -10,7 +10,7 @@ func RegisterRoutes(r gin.IRouter, s *WineService) {
 	r.POST("/wines", handleCreateWine(s))
 	r.GET("/wines/:id", handleGetWine(s))
 	r.GET("/wines", handleListWines(s))
-	r.PUT("/wines/:id", handleUpdateWine(s))
+	r.PATCH("/wines/:id", handleUpdateWine(s))
 	r.DELETE("/wines/:id", handleDeleteWine(s))
 }
 
@@ -82,14 +82,6 @@ func handleUpdateWine(s *WineService) gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"type":  "bad request",
 				"error": err.Error(),
-			})
-			return
-		}
-
-		if errs := s.validate.Validate(wine); len(errs) > 0 {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"type":  "validation",
-				"error": errs,
 			})
 			return
 		}

@@ -77,8 +77,34 @@ func (r *WineRepository) Update(ctx context.Context, id string, w *WineDAO) erro
 		return err
 	}
 	filter := bson.D{{Key: "_id", Value: objectId}}
-	update := bson.D{{Key: "$set", Value: w}}
-	_, err = r.collection.UpdateOne(ctx, filter, update)
+
+	var update bson.D
+	if w.Name != "" {
+		update = append(update, bson.E{Key: "name", Value: w.Name})
+	}
+	if w.Vintage != "" {
+		update = append(update, bson.E{Key: "vintage", Value: w.Vintage})
+	}
+	if w.Format != "" {
+		update = append(update, bson.E{Key: "format", Value: w.Format})
+	}
+	if w.Country != "" {
+		update = append(update, bson.E{Key: "country", Value: w.Country})
+	}
+	if w.Region != "" {
+		update = append(update, bson.E{Key: "region", Value: w.Region})
+	}
+	if w.ImageUrl != "" {
+		update = append(update, bson.E{Key: "image_url", Value: w.ImageUrl})
+	}
+	if w.Purchases != nil {
+		update = append(update, bson.E{Key: "purchases", Value: w.Purchases})
+	}
+	if len(update) == 0 {
+		return nil
+	}
+
+	_, err = r.collection.UpdateOne(ctx, filter, bson.D{{Key: "$set", Value: update}})
 	return err
 }
 

@@ -235,6 +235,31 @@ func TestUpdateWines(t *testing.T) {
 	}
 
 	assert.Equal(t, wine.Name, get.Name)
+	assert.Equal(t, wine.Region, get.Region)
+}
+
+func TestPartiallyUpdateWines(t *testing.T) {
+	repo := wines.NewWineRepository(collection)
+	ctx := context.Background()
+
+	wine := mockWine()
+	wineID := createWine(t, collection, wine)
+
+	update := wines.WineDAO{
+		Name: "Chateau Latour",
+	}
+	err := repo.Update(ctx, wineID, &update)
+	if err != nil {
+		t.Fatalf("Update wine failed: %s", err)
+	}
+
+	get, err := repo.Get(ctx, wineID)
+	if err != nil {
+		t.Fatalf("Get wine failed: %s", err)
+	}
+
+	assert.Equal(t, update.Name, get.Name)
+	assert.Equal(t, wine.Region, get.Region)
 }
 
 func TestDeleteWines(t *testing.T) {
@@ -261,13 +286,15 @@ func TestAddPurchaseToWine(t *testing.T) {
 	repo := wines.NewWineRepository(collection)
 	ctx := context.Background()
 
-	wine := mockWine()
+	wine := mockWineWithPurchases()
 	wineID := createWine(t, collection, wine)
 
-	purchase := mockPurchase()
-	wine.Purchases = append(wine.Purchases, purchase)
+	newPurchase := mockPurchase()
+	update := wines.WineDAO{
+		Purchases: append(wine.Purchases, newPurchase),
+	}
 
-	err := repo.Update(ctx, wineID, &wine)
+	err := repo.Update(ctx, wineID, &update)
 	if err != nil {
 		t.Fatalf("Create purchase failed: %s", err)
 	}
@@ -277,21 +304,23 @@ func TestAddPurchaseToWine(t *testing.T) {
 		t.Fatalf("Get wine failed: %s", err)
 	}
 
-	assert.Equal(t, 1, len(get.Purchases))
-	assert.Equal(t, purchase.Quantity, get.Purchases[0].Quantity)
+	assert.Equal(t, 3, len(get.Purchases))
+	assert.Equal(t, newPurchase.Quantity, get.Purchases[2].Quantity)
 }
 
-func TestModifyPurchasesInWine(t *testing.T) {
+func TestReplacePurchasesInWine(t *testing.T) {
 	repo := wines.NewWineRepository(collection)
 	ctx := context.Background()
 
 	wine := mockWineWithPurchases()
 	wineID := createWine(t, collection, wine)
 
-	purchase := mockPurchase3()
-	wine.Purchases = []wines.PurchaseDAO{purchase}
+	newPurchase := mockPurchase3()
+	update := wines.WineDAO{
+		Purchases: []wines.PurchaseDAO{newPurchase},
+	}
 
-	err := repo.Update(ctx, wineID, &wine)
+	err := repo.Update(ctx, wineID, &update)
 	if err != nil {
 		t.Fatalf("Create purchase failed: %s", err)
 	}
@@ -302,5 +331,5 @@ func TestModifyPurchasesInWine(t *testing.T) {
 	}
 
 	assert.Equal(t, 1, len(get.Purchases))
-	assert.Equal(t, purchase.Quantity, get.Purchases[0].Quantity)
+	assert.Equal(t, newPurchase.Quantity, get.Purchases[0].Quantity)
 }
