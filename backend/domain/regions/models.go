@@ -23,3 +23,7 @@ func daoToRegion(region *RegionDAO) Region {
 		Region: region.Region,
 	}
 }
+
+type UpdateRegionRequest struct {
+	Region string `json:"region" binding:"required"`
+}

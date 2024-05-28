@@ -39,8 +39,8 @@ func (s *RegionService) CreateRegion(ctx context.Context, region *Region) error 
 	return s.regionRepo.CreateRegion(ctx, regionToDAO(region))
 }
 
-func (s *RegionService) UpdateRegion(ctx context.Context, region *Region) error {
-	return s.regionRepo.UpdateRegion(ctx, regionToDAO(region))
+func (s *RegionService) UpdateRegion(ctx context.Context, wineID, symbol, region string) error {
+	return s.regionRepo.UpdateRegion(ctx, wineID, symbol, region)
 }
 
 func (s *RegionService) DeleteRegion(ctx context.Context, wineID, symbol string) error {

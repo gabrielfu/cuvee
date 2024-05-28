@@ -40,6 +40,10 @@ func (r *RegionRepository) createIndexes(ctx context.Context) {
 	)
 }
 
+func makeFilter(wineID, symbol string) bson.D {
+	return bson.D{{Key: "wine_id", Value: wineID}, {Key: "symbol", Value: symbol}}
+}
+
 func (r *RegionRepository) ListRegions(ctx context.Context, wineID string) ([]RegionDAO, error) {
 	cur, err := r.collection.Find(ctx, bson.D{{Key: "wine_id", Value: wineID}})
 	if err != nil {
@@ -54,7 +58,8 @@ func (r *RegionRepository) ListRegions(ctx context.Context, wineID string) ([]Re
 
 func (r *RegionRepository) GetRegion(ctx context.Context, wineID, symbol string) (*RegionDAO, error) {
 	var result *RegionDAO
-	res := r.collection.FindOne(ctx, bson.D{{Key: "wine_id", Value: wineID}, {Key: "symbol", Value: symbol}})
+	filter := makeFilter(wineID, symbol)
+	res := r.collection.FindOne(ctx, filter)
 	if err := res.Decode(&result); err != nil {
 		return nil, err
 	}
@@ -66,12 +71,15 @@ func (r *RegionRepository) CreateRegion(ctx context.Context, region RegionDAO) e
 	return err
 }
 
-func (r *RegionRepository) UpdateRegion(ctx context.Context, region RegionDAO) error {
-	_, err := r.collection.ReplaceOne(ctx, bson.D{{Key: "wine_id", Value: region.WineID}, {Key: "symbol", Value: region.Symbol}}, region)
+func (r *RegionRepository) UpdateRegion(ctx context.Context, wineID, symbol, region string) error {
+	filter := makeFilter(wineID, symbol)
+	update := bson.D{{Key: "$set", Value: bson.D{{Key: "region", Value: region}}}}
+	_, err := r.collection.ReplaceOne(ctx, filter, update)
 	return err
 }
 
 func (r *RegionRepository) DeleteRegion(ctx context.Context, wineID, symbol string) error {
-	_, err := r.collection.DeleteOne(ctx, bson.D{{Key: "wine_id", Value: wineID}, {Key: "symbol", Value: symbol}})
+	filter := makeFilter(wineID, symbol)
+	_, err := r.collection.DeleteOne(ctx, filter)
 	return err
 }

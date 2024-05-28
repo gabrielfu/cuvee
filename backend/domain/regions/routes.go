@@ -11,7 +11,7 @@ func RegisterRoutes(r gin.IRouter, s *RegionService) {
 	r.GET("/regions/wines/:wineId", handleListRegions(s))
 	r.GET("/regions/wines/:wineId/vintage_charts/:symbol", handleGetRegion(s))
 	r.POST("/regions/wines/:wineId", handleCreateRegion(s))
-	r.PUT("/regions/wines/:wineId/vintage_charts/:symbol", handleUpdateRegion(s))
+	r.PATCH("/regions/wines/:wineId/vintage_charts/:symbol", handleUpdateRegion(s))
 	r.DELETE("/regions/wines/:wineId/vintage_charts/:symbol", handleDeleteRegion(s))
 }
 
@@ -86,8 +86,8 @@ func handleUpdateRegion(s *RegionService) gin.HandlerFunc {
 		wineID := c.Param("wineId")
 		symbol := c.Param("symbol")
 
-		var region Region
-		if err := c.BindJSON(&region); err != nil {
+		var request UpdateRegionRequest
+		if err := c.BindJSON(&request); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"type":  "bad request",
 				"error": err.Error(),
@@ -95,18 +95,14 @@ func handleUpdateRegion(s *RegionService) gin.HandlerFunc {
 			return
 		}
 
-		if _, err := s.GetRegion(c, wineID, region.Symbol); err != nil {
+		if _, err := s.GetRegion(c, wineID, symbol); err != nil {
 			c.JSON(http.StatusNotFound, gin.H{
 				"type":  "not found",
-				"error": fmt.Sprintf("region for wine %s and vintage chart %s not found", wineID, region.Symbol),
+				"error": fmt.Sprintf("region for wine %s and vintage chart %s not found", wineID, symbol),
 			})
 		}
 
-		if err := s.UpdateRegion(c, &Region{
-			WineID: wineID,
-			Symbol: symbol,
-			Region: region.Region,
-		}); err != nil {
+		if err := s.UpdateRegion(c, wineID, symbol, request.Region); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"type":  "internal",
 				"error": err.Error(),
