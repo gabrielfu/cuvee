@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterRoutes(r *gin.Engine, s *VintageChartService) {
+func RegisterRoutes(r gin.IRouter, s *VintageChartService) {
 	r.GET("/vintage_charts", handleListVintageCharts(s))
 	r.GET("/vintage_charts/:symbol/regions", handleListRegions(s))
 	r.POST("/vintage_charts/:symbol/suggest", handleSuggestRegion(s))

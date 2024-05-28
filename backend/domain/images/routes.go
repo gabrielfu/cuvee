@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterRoutes(r *gin.Engine, s *ImageService) {
+func RegisterRoutes(r gin.IRouter, s *ImageService) {
 	r.POST("/images/search", handleImageSearch(s))
 }
 

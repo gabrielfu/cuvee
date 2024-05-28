@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterRoutes(r *gin.Engine, s *RegionService) {
+func RegisterRoutes(r gin.IRouter, s *RegionService) {
 	r.GET("/regions/wines/:wineId", handleListRegions(s))
 	r.GET("/regions/wines/:wineId/vintage_charts/:symbol", handleGetRegion(s))
 	r.POST("/regions/wines/:wineId", handleCreateRegion(s))

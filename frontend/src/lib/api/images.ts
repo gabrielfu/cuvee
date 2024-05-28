@@ -12,7 +12,7 @@ export const searchImages = async (
   country: string,
   region: string
 ): Promise<ImageResult[]> => {
-  const url = `${baseUrl}/images/search`;
+  const url = `${baseUrl}/api/v1/images/search`;
   const data = {
     name: encodeURIComponent(name),
     vintage: encodeURIComponent(vintage),

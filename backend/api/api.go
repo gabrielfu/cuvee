@@ -69,6 +69,7 @@ func initRouter() *gin.Engine {
 
 func Run() {
 	r := initRouter()
+	v1 := r.Group("/api/v1")
 
 	connector := db.NewMongoConnector(
 		os.Getenv("MONGO_URI"),
@@ -87,7 +88,7 @@ func Run() {
 	wineRepo := wines.NewWineRepository(wineCollection)
 	validate := wines.NewWineJSONValidator()
 	wineService := wines.NewWineService(wineRepo, validate)
-	wines.RegisterRoutes(r, wineService)
+	wines.RegisterRoutes(v1, wineService)
 
 	// register image service
 	searchEngine, err := search.NewGoogleSearchEngine(os.Getenv("GOOGLE_SEARCH_CX"), os.Getenv("GOOGLE_SEARCH_API_KEY"))
@@ -95,13 +96,13 @@ func Run() {
 		log.Fatalf("Failed to create Google search engine: %v", err)
 	}
 	imageService := images.NewImageService(searchEngine)
-	images.RegisterRoutes(r, imageService)
+	images.RegisterRoutes(v1, imageService)
 
 	// register region service
 	regionCollection := db.Collection(os.Getenv("MONGO_REGION_COLLECTION"))
 	regionRepo := regions.NewRegionRepository(context.Background(), regionCollection)
 	regionService := regions.NewRegionService(regionRepo)
-	regions.RegisterRoutes(r, regionService)
+	regions.RegisterRoutes(v1, regionService)
 
 	// register vintage charts service
 	rpProvider, err := vintagecharts.NewRPProvider(
@@ -118,7 +119,7 @@ func Run() {
 		log.Fatalf("Failed to create Google search engine: %v", err)
 	}
 	vintageChartService := vintagecharts.NewVintageChartService(providers, openaiLLM, googleSearch)
-	vintagecharts.RegisterRoutes(r, vintageChartService)
+	vintagecharts.RegisterRoutes(v1, vintageChartService)
 
 	initServer(r)
 }

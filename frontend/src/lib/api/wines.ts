@@ -26,7 +26,7 @@ export type Wine = {
 export const listWines = async (): Promise<Wine[]> => {
   // return fakeWines;
   // return [];
-  const response = await fetch(`${baseUrl}/wines`);
+  const response = await fetch(`${baseUrl}/api/v1/wines`);
   if (response.ok) {
     const data = await response.json();
     // case dates
@@ -41,7 +41,7 @@ export const listWines = async (): Promise<Wine[]> => {
 };
 
 export const getWine = async (id: string): Promise<Wine> => {
-  const response = await fetch(`${baseUrl}/wines/${id}`);
+  const response = await fetch(`${baseUrl}/api/v1/wines/${id}`);
   if (response.ok) {
     return response.json();
   }

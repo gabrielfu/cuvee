@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterRoutes(r *gin.Engine, s *WineService) {
+func RegisterRoutes(r gin.IRouter, s *WineService) {
 	r.POST("/wines", handleCreateWine(s))
 	r.GET("/wines/:id", handleGetWine(s))
 	r.GET("/wines", handleListWines(s))

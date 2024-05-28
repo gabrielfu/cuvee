@@ -4,6 +4,7 @@ import type { PageServerLoad, Actions } from "./$types";
 import { fail } from "@sveltejs/kit";
 import { listWines } from "$lib/api/wines";
 import { wineFormSchema } from "../components/cellar/WineFormSchema";
+import { baseUrl } from "$lib/api/utils";
 
 export const load: PageServerLoad = async () => {
   const wines = await listWines();
@@ -23,7 +24,7 @@ export const actions: Actions = {
       });
     }
 
-    const response = await fetch(`http://localhost:8080/wines`, {
+    const response = await fetch(`${baseUrl}/api/v1/wines`, {
       method: "POST",
       body: JSON.stringify(form.data),
       headers: { "Content-Type": "application/json" },
