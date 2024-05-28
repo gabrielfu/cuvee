@@ -76,9 +76,9 @@
         <Collapsible.Root class="pl-4 pt-2" bind:open={collapsibleOpen}>
           <Collapsible.Trigger class="text-sm text-muted-foreground underline">
             {#if collapsibleOpen}
-              Collapse purchases <ChevronUp class="inline" size="20" />
+              Collapse purchases<ChevronUp class="inline" size="20" />
             {:else}
-              Expand purchases <ChevronDown class="inline" size="20" />
+              Expand purchases<ChevronDown class="inline" size="20" />
             {/if}
           </Collapsible.Trigger>
           <Collapsible.Content>
