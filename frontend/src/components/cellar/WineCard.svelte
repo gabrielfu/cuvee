@@ -15,7 +15,7 @@
     ChevronUp
   } from "lucide-svelte";
   import { getRating, listVintageCharts, type RatingWithSymbol } from "$lib/api/vintageCharts";
-    import { getRegion, type Region } from "$lib/api/regions";
+  import { getRegion, type Region } from "$lib/api/regions";
 
   export let wine: Wine;
   let collapsibleOpen = false;
@@ -116,12 +116,21 @@
           {#each ratings as rating}
           <Accordion.Item value={rating.symbol}>
             <Accordion.Trigger class="hover:no-underline py-2">
-              <Label class="rounded-sm w-[40px] text-center bg-orange-400 shadow-sm py-1 text-xs text-white">
+              <Label class="rounded-sm w-[40px] text-center bg-accent shadow-sm py-1 text-xs text-accent-foreground">
                 {rating.symbol}
               </Label>
               {rating.score}
             </Accordion.Trigger>
-            <Accordion.Content>{rating.maturity} {rating.notes}</Accordion.Content>
+            <Accordion.Content>
+              {#if rating.maturity}
+                <Label>Maturity</Label>
+                <p class="text-sm">{rating.maturity}</p>
+              {/if}
+              {#if rating.notes}
+                <Label>Notes</Label>
+                <p class="text-sm">{rating.notes}</p>
+              {/if}
+            </Accordion.Content>
           </Accordion.Item>
           {/each}
         </Accordion.Root> 
