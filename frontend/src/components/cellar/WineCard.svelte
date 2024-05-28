@@ -15,21 +15,30 @@
     ChevronUp
   } from "lucide-svelte";
   import { getRating, listVintageCharts, type RatingWithSymbol } from "$lib/api/vintageCharts";
+    import { getRegion, type Region } from "$lib/api/regions";
 
   export let wine: Wine;
   let collapsibleOpen = false;
 
   let ratings: RatingWithSymbol[] = [];
-  function getRatings() {
+  function getRatings(wine: Wine) {
+    ratings = [];
     listVintageCharts().then((vcs) => {
       vcs.forEach((vc) => {
-        getRating(vc.symbol, "Beaujolais", "2015").then((rating) => {
-          ratings = [...ratings, { ...rating, symbol: vc.symbol}];
+        getRegion(wine.id, vc.symbol)
+        .then((region: Region) => {
+          console.log(wine, vc, region);
+          if (region) {
+            getRating(vc.symbol, region.region, wine.vintage).then((rating) => {
+              ratings = [...ratings, { ...rating, symbol: vc.symbol}];
+            })
+          }
         })
+        .catch((_) => {});
       });
     });
   }
-  getRatings();
+  getRatings(wine);
 
 </script>
 
@@ -105,7 +114,7 @@
       <div>
         <Accordion.Root class="">
           {#each ratings as rating}
-          <Accordion.Item value="rp">
+          <Accordion.Item value={rating.symbol}>
             <Accordion.Trigger class="hover:no-underline py-2">
               <Label class="rounded-sm w-[40px] text-center bg-orange-400 shadow-sm py-1 text-xs text-white">
                 {rating.symbol}
