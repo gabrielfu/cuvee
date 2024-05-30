@@ -50,6 +50,13 @@ export const getRating = async (vc: string, region: string, vintage: string): Pr
 }
 
 export const suggestRegion = async (vc: string, wine: Wine): Promise<SuggestRegionResponse> => {
+  console.log(`${baseUrl}/api/v1/vintage_charts/${vc}/suggest`);
+  console.log({
+    name: wine.name,
+    vintage: wine.vintage,
+    country: wine.country,
+    region: wine.region,
+  })
   const response = await fetch(`${baseUrl}/api/v1/vintage_charts/${vc}/suggest`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -59,8 +66,8 @@ export const suggestRegion = async (vc: string, wine: Wine): Promise<SuggestRegi
       country: wine.country,
       region: wine.region,
     }),
-    mode:"no-cors",
   });
+  console.log(response);
   if (response.ok) {
     const data = await response.json();
     return data as SuggestRegionResponse;

@@ -23,7 +23,6 @@ export const searchImages = async (
     method: "POST",
     body: JSON.stringify(data),
     headers: { "Content-Type": "application/json" },
-    mode:"no-cors",
   });
   const result = await response.json();
   if (response.ok) {
