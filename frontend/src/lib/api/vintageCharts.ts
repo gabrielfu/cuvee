@@ -59,6 +59,7 @@ export const suggestRegion = async (vc: string, wine: Wine): Promise<SuggestRegi
       country: wine.country,
       region: wine.region,
     }),
+    mode:"no-cors",
   });
   if (response.ok) {
     const data = await response.json();
