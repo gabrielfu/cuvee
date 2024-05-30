@@ -147,3 +147,15 @@ html {
 .fira-sans {
   font-family: "Fira Sans", sans-serif;
 }
+
+[data-tooltip]:hover::after {
+  display: block;
+  position: absolute;
+  content: attr(data-tooltip);
+  border: 1px solid black;
+  background: #eee;
+  padding: .25em;
+  font-size: 0.875rem/* 14px */;
+  line-height: 1.25rem;
+  width: 8rem;
+}

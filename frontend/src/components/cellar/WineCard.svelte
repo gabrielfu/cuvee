@@ -16,6 +16,7 @@
   } from "lucide-svelte";
   import { getRating, listVintageCharts, type RatingWithSymbol } from "$lib/api/vintageCharts";
   import { getRegion, type Region } from "$lib/api/regions";
+  import RatingAddDialog from "./RatingAddDialog.svelte";
 
   export let wine: Wine;
   let collapsibleOpen = false;
@@ -27,7 +28,6 @@
       vcs.forEach((vc) => {
         getRegion(wine.id, vc.symbol)
         .then((region: Region) => {
-          console.log(wine, vc, region);
           if (region) {
             getRating(vc.symbol, region.region, wine.vintage).then((rating) => {
               ratings = [...ratings, { ...rating, symbol: vc.symbol}];
@@ -140,7 +140,7 @@
           </Accordion.Item>
           {/each}
         </Accordion.Root> 
-        <Label class="text-sm text-muted-foreground font-light underline">Add Rating</Label>
+        <RatingAddDialog {wine} />
       </div>
     </div>
   </Card.Content>
