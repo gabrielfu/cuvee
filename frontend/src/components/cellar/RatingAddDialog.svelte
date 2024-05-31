@@ -30,7 +30,11 @@
   });
 
   function suggest(vc: string, wine: Wine) {
-    suggestRegion(vc, wine);
+    suggestRegion(vc, wine).then((resp) => {
+      selectedRegions[vc] = {value: resp.region, label: resp.region};
+    }).catch((error) => {
+      console.error(error);
+    })
   }
 </script>
 
@@ -42,7 +46,6 @@
     {#each vcs as vc}
     <div class="grid grid-flow-col items-center">
       <Label>{vc}</Label>
-      <!-- <Button on:click={() => suggest(vc, wine)}>Suggest</Button> -->
       <Select.Root bind:selected={selectedRegions[vc]}>
         <Select.Trigger class="w-[425px] h-8">
           <Select.Value placeholder="Pick a region" />
@@ -54,7 +57,11 @@
         </Select.Content>
       </Select.Root>
 
-      <div class="hover:cursor-pointer" data-tooltip="Ask AI to suggest a suitable region" on:click={() => suggest(vc, wine)}>
+      <div 
+        class="hover:cursor-pointer" 
+        data-tooltip="Ask AI to suggest a suitable region" 
+        on:click={() => suggest(vc, wine)}
+      >
         <WandSparkles class="inline ml-2" size="20" />
       </div>
     </div>
