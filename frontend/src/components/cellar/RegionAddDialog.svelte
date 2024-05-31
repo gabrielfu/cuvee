@@ -42,7 +42,10 @@
   <Dialog.Trigger class="text-sm text-muted-foreground font-light underline mb-4">
     Add Rating
   </Dialog.Trigger>
-  <Dialog.Content class="sm:max-w-[600px]">
+  <Dialog.Content class="sm:max-w-[600px] p-8">
+
+    <!-- <form method="POST" id="rating-form" action="?/updateRatings"> -->
+
     {#each vcs as vc}
     <div class="grid grid-flow-col items-center">
       <Label>{vc}</Label>
@@ -66,5 +69,11 @@
       </div>
     </div>
     {/each}
+
+    <Button type="submit" class="mt-4 h-8 max-w-[96px]" on:click={() => {
+      console.log(selectedRegions);
+    }}>Save</Button>
+    <!-- </form> -->
+
   </Dialog.Content>
 </Dialog.Root>

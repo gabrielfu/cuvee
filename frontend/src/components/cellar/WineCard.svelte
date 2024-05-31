@@ -16,7 +16,7 @@
   } from "lucide-svelte";
   import { getRating, listVintageCharts, type RatingWithSymbol } from "$lib/api/vintageCharts";
   import { getRegion, type Region } from "$lib/api/regions";
-  import RatingAddDialog from "./RatingAddDialog.svelte";
+  import RegionAddDialog from "./RegionAddDialog.svelte";
 
   export let wine: Wine;
   let collapsibleOpen = false;
@@ -140,7 +140,7 @@
           </Accordion.Item>
           {/each}
         </Accordion.Root> 
-        <RatingAddDialog {wine} />
+        <RegionAddDialog {wine} />
       </div>
     </div>
   </Card.Content>
