@@ -52,7 +52,7 @@ func initRouter() *gin.Engine {
 	r := gin.Default()
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
-		AllowHeaders:     []string{"Origin"},
+		AllowHeaders:     []string{"Origin", "Content-Type"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
