@@ -30,7 +30,8 @@
         .then((region: Region) => {
           if (region) {
             getRating(vc.symbol, region.region, wine.vintage).then((rating) => {
-              ratings = [...ratings, { ...rating, symbol: vc.symbol}];
+              const ratingWithSymbol = { ...rating, symbol: vc.symbol, region: region.region };
+              ratings = [...ratings, ratingWithSymbol];
             })
           }
         })
@@ -120,7 +121,7 @@
               <Label class="rounded-sm w-[40px] text-center bg-accent shadow-sm py-1 text-xs text-accent-foreground">
                 {rating.symbol}
               </Label>
-              {rating.score}
+              {rating.score || "No rating"}
             </Accordion.Trigger>
             <Accordion.Content>
               <div class="mb-2">
