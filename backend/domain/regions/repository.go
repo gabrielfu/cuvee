@@ -74,7 +74,7 @@ func (r *RegionRepository) CreateRegion(ctx context.Context, region RegionDAO) e
 func (r *RegionRepository) UpdateRegion(ctx context.Context, wineID, symbol, region string) error {
 	filter := makeFilter(wineID, symbol)
 	update := bson.D{{Key: "$set", Value: bson.D{{Key: "region", Value: region}}}}
-	_, err := r.collection.ReplaceOne(ctx, filter, update)
+	_, err := r.collection.UpdateOne(ctx, filter, update)
 	return err
 }
 

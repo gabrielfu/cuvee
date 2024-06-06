@@ -5,6 +5,7 @@ import { fail } from "@sveltejs/kit";
 import { listWines } from "$lib/api/wines";
 import { wineFormSchema } from "../components/cellar/WineFormSchema";
 import { baseUrl } from "$lib/api/utils";
+import { deleteRegion, upsertRegion } from "$lib/api/regions";
 
 export const load: PageServerLoad = async () => {
   const wines = await listWines();
@@ -14,6 +15,17 @@ export const load: PageServerLoad = async () => {
     form: await superValidate(zod(wineFormSchema))
   };
 };
+
+function parseQueryString(queryString: string): { [key: string]: string } {
+  const params = new URLSearchParams(queryString);
+  const result: { [key: string]: string } = {};
+
+  for (const [key, value] of params.entries()) {
+    result[key] = value;
+  }
+
+  return result;
+}
 
 export const actions: Actions = {
   create: async (event) => {
@@ -50,6 +62,18 @@ export const actions: Actions = {
     }
 
     return { form };
+  },
+  updateRegion: async (event) => {
+    // parse urlencoded form data
+    const data = await event.request.text();
+    const payload = parseQueryString(data) as { wineId: string; region: string; symbol: string };
+    const { wineId, region, symbol } = payload;
+
+    if (region) {
+      await upsertRegion(wineId, symbol, region);
+    } else {
+      await deleteRegion(wineId, symbol);
+    }
   }
 };
 

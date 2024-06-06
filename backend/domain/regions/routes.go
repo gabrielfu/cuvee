@@ -11,6 +11,7 @@ func RegisterRoutes(r gin.IRouter, s *RegionService) {
 	r.GET("/regions/wines/:wineId", handleListRegions(s))
 	r.GET("/regions/wines/:wineId/vintage_charts/:symbol", handleGetRegion(s))
 	r.POST("/regions/wines/:wineId", handleCreateRegion(s))
+	r.PUT("/regions/wines/:wineId", handleUpsertRegion(s))
 	r.PATCH("/regions/wines/:wineId/vintage_charts/:symbol", handleUpdateRegion(s))
 	r.DELETE("/regions/wines/:wineId/vintage_charts/:symbol", handleDeleteRegion(s))
 }
@@ -78,6 +79,45 @@ func handleCreateRegion(s *RegionService) gin.HandlerFunc {
 			return
 		}
 		c.JSON(http.StatusCreated, gin.H{})
+	}
+}
+
+func handleUpsertRegion(s *RegionService) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var region Region
+		if err := c.BindJSON(&region); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"type":  "bad request",
+				"error": err.Error(),
+			})
+			return
+		}
+
+		wineID := c.Param("wineId")
+		if _, err := s.GetRegion(c, wineID, region.Symbol); err == nil {
+			// if region exists, update it
+			if err := s.UpdateRegion(c, wineID, region.Symbol, region.Region); err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"type":  "internal",
+					"error": err.Error(),
+				})
+				return
+			}
+		} else {
+			// if region does not exist, create it
+			if err := s.CreateRegion(c, &Region{
+				WineID: wineID,
+				Symbol: region.Symbol,
+				Region: region.Region,
+			}); err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"type":  "internal",
+					"error": err.Error(),
+				})
+				return
+			}
+		}
+		c.JSON(http.StatusOK, gin.H{})
 	}
 }
 

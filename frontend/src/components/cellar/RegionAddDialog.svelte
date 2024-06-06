@@ -7,8 +7,8 @@
   
   import { suggestRegion, listVintageCharts, listVintageChartRegions } from "$lib/api/vintageCharts";
   import type { Wine } from "$lib/api/wines";
+  import { getRegion } from "$lib/api/regions";
   import type { Selected } from "bits-ui";
-    import { getRegion } from "$lib/api/regions";
 
   export let wine: Wine;
   let vcs: string[] = [];
@@ -29,12 +29,39 @@
     });
   });
 
-  function suggest(vc: string, wine: Wine) {
+  function suggest(vc: string) {
     suggestRegion(vc, wine).then((resp) => {
       selectedRegions[vc] = {value: resp.region, label: resp.region};
     }).catch((error) => {
       console.error(error);
     })
+  }
+
+  function saveRegions() {
+    for (const vc in selectedRegions) {
+      const region = selectedRegions[vc].value;
+      const data = new URLSearchParams({
+        wineId: wine.id,
+        symbol: vc,
+        region: region,
+      }).toString();
+
+      fetch(
+        "/?/updateRegion",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Accept": "application/json",
+          },
+          body: data,
+        }
+      ).then((response) => {
+        console.log(response);
+      }).catch((error) => {
+        console.error(error);
+      });
+    }
   }
 </script>
 
@@ -63,17 +90,14 @@
       <div 
         class="hover:cursor-pointer" 
         data-tooltip="Ask AI to suggest a suitable region" 
-        on:click={() => suggest(vc, wine)}
+        on:click={() => suggest(vc)}
       >
         <WandSparkles class="inline ml-2" size="20" />
       </div>
     </div>
     {/each}
 
-    <Button type="submit" class="mt-4 h-8 max-w-[96px]" on:click={() => {
-      console.log(selectedRegions);
-    }}>Save</Button>
-    <!-- </form> -->
+    <Button type="submit" class="mt-4 h-8 max-w-[96px]" on:click={saveRegions}>Save</Button>
 
   </Dialog.Content>
 </Dialog.Root>
