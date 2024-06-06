@@ -121,7 +121,7 @@
               <Label class="rounded-sm w-[40px] text-center bg-accent shadow-sm py-1 text-xs text-accent-foreground">
                 {rating.symbol}
               </Label>
-              {rating.score || "No rating"}
+              <span class={rating.score ? "" : "font-light text-sm text-muted-foreground"}>{rating.score || "No rating"}</span>
             </Accordion.Trigger>
             <Accordion.Content>
               <div class="mb-2">
