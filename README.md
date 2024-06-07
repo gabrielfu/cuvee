@@ -2,6 +2,10 @@
 
 A simple web application for managing wine cellars.
 
+This is my learing project for Go and Svelte. Currently it is a desktop-only web app.
+
+## Features
+
 <b>View all your wines and purchases</b>
 
 ![](assets/cellar.png)
