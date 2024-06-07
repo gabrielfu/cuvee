@@ -9,6 +9,7 @@
   import type { Wine } from "$lib/api/wines";
   import { getRegion } from "$lib/api/regions";
   import type { Selected } from "bits-ui";
+  import { invalidateAll } from "$app/navigation";
 
   export let wine: Wine;
   let vcs: string[] = [];
@@ -29,6 +30,8 @@
     });
   });
 
+  let open = false;
+
   function suggest(vc: string) {
     suggestRegion(vc, wine).then((resp) => {
       selectedRegions[vc] = {value: resp.region, label: resp.region};
@@ -38,6 +41,7 @@
   }
 
   function saveRegions() {
+    const promises = [];
     for (const vc in selectedRegions) {
       const region = selectedRegions[vc].value;
       const data = new URLSearchParams({
@@ -46,7 +50,7 @@
         region: region,
       }).toString();
 
-      fetch(
+      const p = fetch(
         "/?/updateRegion",
         {
           method: "POST",
@@ -56,16 +60,18 @@
           },
           body: data,
         }
-      ).then((response) => {
-        console.log(response);
-      }).catch((error) => {
-        console.error(error);
-      });
+      );
+      promises.push(p);
     }
+
+    Promise.all(promises).then(() => {
+      open = false;
+      invalidateAll();
+    });
   }
 </script>
 
-<Dialog.Root>
+<Dialog.Root bind:open>
   <Dialog.Trigger class="text-sm text-muted-foreground font-light underline mb-4">
     Add Rating
   </Dialog.Trigger>

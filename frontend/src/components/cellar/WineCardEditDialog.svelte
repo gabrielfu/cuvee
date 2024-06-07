@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { invalidateAll } from "$app/navigation";
+  import { invalidateAll } from "$app/navigation";
   import type { Wine } from "$lib/api/wines";
   import { Button } from "$lib/components/ui/button";
   import * as Dialog from "$lib/components/ui/dialog";
@@ -8,6 +8,7 @@
   import { Pencil } from "lucide-svelte";
 
   export let wine: Wine;
+  let open = false;
 
   function deleteWine() {
     const data = new URLSearchParams({
@@ -29,12 +30,13 @@
     }).catch((error) => {
       console.error(error);
     }).finally(() => {
+      open = false;
       invalidateAll();
     });
   };
 </script>
 
-<Dialog.Root>
+<Dialog.Root bind:open>
   <Dialog.Trigger class="text-sm text-muted-foreground font-light underline mb-4">
     Edit<Pencil class="inline ml-2" size="20" />
   </Dialog.Trigger>
