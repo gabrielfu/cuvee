@@ -2,7 +2,7 @@ import { superValidate, setError } from "sveltekit-superforms";
 import { zod } from "sveltekit-superforms/adapters";
 import type { PageServerLoad, Actions } from "./$types";
 import { fail } from "@sveltejs/kit";
-import { listWines } from "$lib/api/wines";
+import { deleteWine, listWines } from "$lib/api/wines";
 import { wineFormSchema } from "../components/cellar/WineFormSchema";
 import { baseUrl } from "$lib/api/utils";
 import { deleteRegion, upsertRegion } from "$lib/api/regions";
@@ -62,6 +62,14 @@ export const actions: Actions = {
     }
 
     return { form };
+  },
+  delete: async (event) => {
+    // parse urlencoded form data
+    const data = await event.request.text();
+    const payload = parseQueryString(data) as { wineId: string };
+    const { wineId } = payload;
+
+    await deleteWine(wineId);
   },
   updateRegion: async (event) => {
     // parse urlencoded form data

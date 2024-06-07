@@ -48,6 +48,15 @@ export const getWine = async (id: string): Promise<Wine> => {
   throw new Error("Failed to fetch wine");
 };
 
+export const deleteWine = async (id: string): Promise<void> => {
+  const response = await fetch(`${baseUrl}/api/v1/wines/${id}`, {
+    method: "DELETE"
+  });
+  if (!response.ok) {
+    throw new Error("Failed to delete wine");
+  }
+}
+
 export const fakeWines: Wine[] = [
   {
     id: "1",

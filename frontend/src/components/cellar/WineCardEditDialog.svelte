@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { invalidateAll } from "$app/navigation";
   import type { Wine } from "$lib/api/wines";
   import { Button } from "$lib/components/ui/button";
   import * as Dialog from "$lib/components/ui/dialog";
@@ -7,6 +8,30 @@
   import { Pencil } from "lucide-svelte";
 
   export let wine: Wine;
+
+  function deleteWine() {
+    const data = new URLSearchParams({
+      wineId: wine.id,
+    }).toString();
+
+    fetch(
+      "/?/delete",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Accept": "application/json",
+        },
+        body: data,
+      }
+    ).then((response) => {
+      console.log(response);
+    }).catch((error) => {
+      console.error(error);
+    }).finally(() => {
+      invalidateAll();
+    });
+  };
 </script>
 
 <Dialog.Root>
@@ -67,9 +92,16 @@
       </div>
     </div>
     <Dialog.Footer>
-      <Button type="submit" class="text-sm h-8 bg-primary text-primary-foreground rounded-md p-4"
-        >Save</Button
+      <Button 
+        type="submit" 
+        class="text-sm h-8 border-[1px] border-primary text-primary bg-transparent rounded-md p-4 hover:text-primary-foreground"
+        on:click={deleteWine}
       >
+        Delete
+      </Button>
+      <Button type="submit" class="text-sm h-8 bg-primary text-primary-foreground rounded-md p-4">
+        Save
+      </Button>
     </Dialog.Footer>
   </Dialog.Content>
 </Dialog.Root>
