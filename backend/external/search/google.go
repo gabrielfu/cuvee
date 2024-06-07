@@ -3,6 +3,7 @@ package search
 import (
 	"context"
 	"encoding/json"
+	"net/url"
 
 	"google.golang.org/api/customsearch/v1"
 	"google.golang.org/api/option"
@@ -33,7 +34,11 @@ func (g *GoogleSearchEngine) doSearch(query string, imageSearch bool) (*customse
 	if imageSearch {
 		call = call.SearchType("image")
 	}
-	return call.Cx(g.cx).Q(query).Do()
+	unescaped, err := url.PathUnescape(query)
+	if err != nil {
+		unescaped = query
+	}
+	return call.Cx(g.cx).Q(unescaped).Do()
 }
 
 func (g *GoogleSearchEngine) WebSearch(query string, param any) (*WebSearchResult, error) {
