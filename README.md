@@ -33,7 +33,9 @@ Click "Search for an image online" to add a picture of the wine.
 
 #### Backend
 
-It is recommended to run with [air](https://github.com/air-verse/air).
+First, you should create a `.env` file in the `backend` directory.
+
+Then, you can run the backend with [air](https://github.com/air-verse/air).
 
 ```shell
 cd backend
